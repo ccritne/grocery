@@ -31,8 +31,5 @@ fun BottomsBar(){
         IconButton(onClick = { screen.value = "SHOPPING CART" }) {
             Icon(imageVector = Icons.Default.ShoppingCart, contentDescription = "ShoppingCart" )
         }
-        IconButton(onClick = { screen.value = "NEW ITEM" }) {
-            Icon(imageVector = Icons.Default.Add, contentDescription = "Add" )
-        }
     }
 }

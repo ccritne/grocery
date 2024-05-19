@@ -1,4 +1,4 @@
-package com.example.testapp
+package com.example.testapp.body
 
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
@@ -38,6 +38,6 @@ import java.util.Locale
 import kotlin.random.Random
 
 @Composable
-fun NewItem(){
-    Text(text = "Sei in New Item. Complimenti!")
+fun ShoppingCart(){
+    Text(text = "Sei in Shopping Cart. Complimenti!")
 }

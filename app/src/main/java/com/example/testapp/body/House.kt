@@ -1,4 +1,4 @@
-package com.example.testapp
+package com.example.testapp.body
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

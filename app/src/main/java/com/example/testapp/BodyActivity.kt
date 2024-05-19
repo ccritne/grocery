@@ -1,5 +1,8 @@
 package com.example.testapp
 
+import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,12 +11,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.example.testapp.body.House
+import com.example.testapp.body.menu.Menu
+import com.example.testapp.body.ShoppingCart
 
 // Global variable
 val screen = mutableStateOf("CALENDAR")
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Body(){
+fun Body(context: Context){
     Row (
         modifier = Modifier
             .fillMaxWidth(),
@@ -22,9 +29,8 @@ fun Body(){
     ) {
         when (screen.value) {
             "HOUSE" -> House()
-            "CALENDAR" -> Calendar()
+            "CALENDAR" -> Menu(context)
             "SHOPPING CART" -> ShoppingCart()
-            "NEW ITEM" -> NewItem()
             else -> Text(text = "404")
         }
     }
