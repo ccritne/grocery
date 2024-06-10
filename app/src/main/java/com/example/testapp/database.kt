@@ -1,5 +1,6 @@
 package com.example.testapp
 
+import android.annotation.SuppressLint
 import android.content.ContentValues
 import android.content.Context
 import android.database.Cursor
@@ -52,6 +53,7 @@ class DbManager
         ) {
         val db = dbHelper.writableDatabase
         val cv = ContentValues()
+
         cv.put("name", name)
         cv.put("grams", grams)
         cv.put("momentSelector", momentSelector)
@@ -62,10 +64,37 @@ class DbManager
             cv.put("idParent", idParent)
 
         try {
-            db.insert("menu", null, cv)
+            val cursor = db.insertOrThrow("menu", null, cv)
         } catch (e: SQLiteException) {
             e.printStackTrace()
             Log.e("INSERT", "Couldn't insert data : ${e.message.toString()}")
+        }
+    }
+
+    fun drop(){
+        val db = dbHelper.writableDatabase
+        db.execSQL("DROP TABLE IF EXISTS menu")
+    }
+
+    fun createIfNotExists(){
+        try {
+            val db = dbHelper.readableDatabase
+
+            val query = """CREATE TABLE IF NOT EXISTS menu  (
+                        id             INTEGER     PRIMARY KEY AUTOINCREMENT
+                                                   NOT NULL,
+                        name           TEXT (15)   NOT NULL,
+                        grams          INTEGER (4) NOT NULL,
+                        momentSelector INTEGER (2) NOT NULL,
+                        date           TEXT (10)   NOT NULL,
+                        price          REAL (4, 2) DEFAULT (-1.0),
+                        idParent       INTEGER     DEFAULT ( -1)
+                    );"""
+
+            db.execSQL(query)
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            Log.e("CREATE", "Couldn't create : ${e.message.toString()}")
         }
     }
 

@@ -18,7 +18,9 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,7 +33,8 @@ import com.example.testapp.DbManager
 import com.example.testapp.Food
 
 @Composable
-fun Dialog(foodDialog: String, gramsDialog: Int, dialogShow: MutableState<Boolean>, database: DbManager, id: Int){
+fun Dialog(foodDialog: String, gramsDialog: MutableIntState, dialogShow: MutableState<Boolean>, database: DbManager, id: Int){
+
     AlertDialog(
         onDismissRequest = { dialogShow.value = false },
         confirmButton = {
@@ -52,7 +55,10 @@ fun Dialog(foodDialog: String, gramsDialog: Int, dialogShow: MutableState<Boolea
             }
         },
         title = { Text(text = foodDialog, color = Color.Black) },
-        text = { TextField(value = gramsDialog.toString(), onValueChange = {/*TODO*/ }) },
+
+        text = { TextField(value = gramsDialog.intValue.toString(), onValueChange = {
+            gramsDialog.intValue = it.toInt()
+        }) },
     )
 }
 
@@ -81,7 +87,7 @@ fun Ingredients(
     if (dialogShow.value)
         Dialog(
             foodDialog = foodDialog.value,
-            gramsDialog = gramsDialog.intValue,
+            gramsDialog = gramsDialog,
             dialogShow = dialogShow,
             database = db,
             id = idDialog.intValue

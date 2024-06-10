@@ -43,6 +43,15 @@ import com.example.testapp.Food
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
+enum class Moments(){
+    Breakfast,
+    FirstSnack,
+    Lunch,
+    SecondSnack,
+    Dinner,
+    ThirdSnack
+}
+
 fun fromListFoodToMapBySelector(list: ArrayList<Food>) : MutableMap<Int, ArrayList<Food>>{
 
     val returnedMap : MutableMap<Int, ArrayList<Food>> = mutableMapOf()
@@ -80,15 +89,12 @@ fun Menu(context: Context) {
         Column(
             modifier = Modifier
                 .fillMaxHeight(0.92f)
-//                                .background(color = Color.Red)
                 .fillMaxWidth(0.92f)
                 .verticalScroll(ScrollState(0))
                 .padding(top = 10.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
         ) {
-
-
 
             var momentFood : Map<Int, ArrayList<Food>> = mapOf()
 
