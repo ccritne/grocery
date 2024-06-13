@@ -28,6 +28,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,18 +71,32 @@ fun fromListFoodToMapBySelector(list: ArrayList<Food>) : MutableMap<Int, ArrayLi
 @Composable
 fun Menu(context: Context, dbManager: DbManager) {
 
+    val formatterSql = DateTimeFormatter.ofPattern("y/MM/dd")
+    val date = remember { mutableStateOf(LocalDate.now()) }
+    val formattedDateSQL = date.value.format(formatterSql)
+
+    var momentFood : Map<Int, ArrayList<Food>> = mapOf()
+
+    val mapMomentSelector = mapOf(
+        0 to "Breakfast",
+        1 to "First snack",
+        2 to "Lunch",
+        3 to "Second snack",
+        4 to "Dinner",
+        5 to "Third snack"
+    )
+
+    dbManager.selectFromDay(formattedDateSQL) { listFood ->
+        momentFood = fromListFoodToMapBySelector(listFood)
+    }
 
     Column(
         modifier = Modifier
-            .fillMaxHeight(0.92f)
-//                            .background(color = Color.Green)
-            .fillMaxWidth(0.92f),
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround
     ) {
-        val formatterSql = DateTimeFormatter.ofPattern("y/MM/dd")
-        val date = remember { mutableStateOf(LocalDate.now()) }
-        val formattedDateSQL = date.value.format(formatterSql)
+
 
         Date(date, true, true)
 
@@ -94,21 +109,6 @@ fun Menu(context: Context, dbManager: DbManager) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
         ) {
-
-            var momentFood : Map<Int, ArrayList<Food>> = mapOf()
-
-            val mapMomentSelector = mapOf(
-                0 to "Breakfast",
-                1 to "First snack",
-                2 to "Lunch",
-                3 to "Second snack",
-                4 to "Dinner",
-                5 to "Third snack"
-            )
-
-            dbManager.selectFromDay(formattedDateSQL) { listFood ->
-                momentFood = fromListFoodToMapBySelector(listFood)
-            }
 
             if(momentFood.isNotEmpty()) {
                 momentFood.forEach { moment ->

@@ -41,9 +41,9 @@ fun Date(date : MutableState<LocalDate>, enableLeft: Boolean, enableRight: Boole
 
 
     Row(
+        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
-
     ) {
         IconButton(
             enabled = enableLeft,
@@ -51,7 +51,7 @@ fun Date(date : MutableState<LocalDate>, enableLeft: Boolean, enableRight: Boole
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "backDate",
-                modifier = Modifier.size(15.dp)
+                modifier = Modifier.size(25.dp)
             )
         }
         TextButton(
@@ -60,7 +60,7 @@ fun Date(date : MutableState<LocalDate>, enableLeft: Boolean, enableRight: Boole
         ) {
             Text(
                 text = formattedDateDesign,
-                fontSize = 25.sp,
+                fontSize = 35.sp,
                 fontWeight = FontWeight.ExtraBold,
                 fontFamily = FontFamily.Monospace,
             )
@@ -71,7 +71,7 @@ fun Date(date : MutableState<LocalDate>, enableLeft: Boolean, enableRight: Boole
             Icon(
                 imageVector = Icons.Default.ArrowForward,
                 contentDescription = "forwardDate",
-                modifier = Modifier.size(15.dp)
+                modifier = Modifier.size(25.dp)
             )
         }
     }

@@ -25,6 +25,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.example.testapp.body.fromGoogleToApp
 
 
 class MainActivity : ComponentActivity() {
@@ -35,8 +36,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val dbManager = DbManager(this as Context)
+        //dbManager.drop()
         dbManager.createIfNotExists()
 
+        //fromGoogleToApp(dbManager)
 
         setContent {
 

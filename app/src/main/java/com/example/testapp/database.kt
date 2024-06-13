@@ -11,12 +11,20 @@ import android.util.Log
 
 data class Food(
     var id: Int = 0,
-    var name: String,
-    var grams: Int,
-    var price: Float,
-    var date: String,
-    var momentSelector: Int,
-    var idParent: Int
+    var name: String = "",
+    var grams: Int = 0,
+    var date: String = "",
+    var momentSelector: Int = 0,
+    var checked: Boolean = false,
+    var price: Float = -1.0f,
+    var idParent: Int = -1
+)
+
+data class ShoppingCartItem(
+    var id: Int = 0,
+    var name: String = "",
+    var total: Int = 0,
+    var checkedTotal: Int = 0,
 )
 
 class DbHelper(context: Context?) :
@@ -30,6 +38,8 @@ class DbHelper(context: Context?) :
                         grams          INTEGER (4) NOT NULL,
                         momentSelector INTEGER (2) NOT NULL,
                         date           TEXT (10)   NOT NULL,
+                        checked        INTEGER     NOT NULL DEFAULT(0),
+                        checkedTotal        INTEGER     NOT NULL DEFAULT(0),
                         price          REAL (4, 2) DEFAULT (-1.0),
                         idParent       INTEGER     DEFAULT ( -1)
                     );
@@ -43,11 +53,6 @@ class DbHelper(context: Context?) :
 class DbManager
     (ctx: Context?) {
     private val dbHelper = DbHelper(ctx)
-
-    fun insertMany(){
-
-
-    }
 
     fun insertFood(
         name: String,
@@ -67,10 +72,13 @@ class DbManager
             cv.put("grams", grams)
             cv.put("momentSelector", momentSelector)
             cv.put("date", date)
+            cv.put("checked", false)
+            cv.put("checkedTotal", 0)
             if (price != -1.0f)
                 cv.put("price", price)
             if (idParent != -1)
                 cv.put("idParent", idParent)
+
 
             db.insertOrThrow("menu", null, cv)
         } catch (e: SQLiteException) {
@@ -84,10 +92,26 @@ class DbManager
         db.execSQL("DROP TABLE IF EXISTS menu")
     }
 
+    fun updateCart(name: String, startDate: String, endDate: String, newChecked: Boolean, newValue: Int){
+        println("$name $startDate $endDate $newChecked $newValue")
+
+        try {
+            val db = dbHelper.writableDatabase
+            val cv = ContentValues()
+            cv.put("checked", newChecked)
+            cv.put("checkedTotal", newValue)
+
+            db.update("menu", cv, "name=? and date >= ? and date <= ? ", arrayOf(name, startDate, endDate))
+        }catch (e: SQLiteException){
+            e.printStackTrace()
+            Log.i("UPDATE", "Couldn't update: ${e.message.toString()}")
+        }
+    }
+
     fun selectUniqueAggregate(
         startDate: String,
         endDate: String,
-        onDataTaken: (ArrayList<Pair<String, Int>>) -> Unit
+        onDataTaken: (List<ShoppingCartItem>) -> Unit
         )  {
 
         var cursor : Cursor? = null
@@ -96,7 +120,16 @@ class DbManager
         try {
             val db = dbHelper.readableDatabase
             val query = """
-                SELECT name, CASE WHEN grams = 0 THEN count(name) ELSE sum(grams) END as total from menu where date>="$startDate" and date <="$endDate" group by name
+                SELECT 
+                id,
+                name, 
+                CASE 
+                    WHEN grams = 0 THEN count(name) 
+                    ELSE sum(grams) 
+                END as total,
+                checkedTotal
+                from menu 
+                where date>="$startDate" and date <="$endDate" group by name
             """.trimIndent()
             cursor = db.rawQuery(query, null)
         } catch (e: SQLiteException) {
@@ -104,17 +137,19 @@ class DbManager
             Log.e("LOAD", "Couldn't load data : ${e.message.toString()}")
         }
 
-        var name: String
-        var total: Int
+        var food: ShoppingCartItem
 
-        val listFood : ArrayList<Pair<String, Int>> = ArrayList<Pair<String, Int>>()
+        val listFood : MutableList<ShoppingCartItem> = mutableListOf()
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
-                total = cursor.getInt(cursor.getColumnIndexOrThrow("total"))
+                food = ShoppingCartItem()
+                food.id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+                food.name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                food.total = cursor.getInt(cursor.getColumnIndexOrThrow("total"))
+                food.checkedTotal = cursor.getInt(cursor.getColumnIndexOrThrow("checkedTotal"))
 
-                listFood.add(Pair(name, total))
+                listFood.add(food)
 
             } while (cursor.moveToNext())
             cursor.close()
@@ -136,6 +171,8 @@ class DbManager
                         grams          INTEGER (4) NOT NULL,
                         momentSelector INTEGER (2) NOT NULL,
                         date           TEXT (10)   NOT NULL,
+                        checked        INTEGER     NOT NULL DEFAULT(0),
+                        checkedTotal        INTEGER     NOT NULL DEFAULT(0),
                         price          REAL (4, 2) DEFAULT (-1.0),
                         idParent       INTEGER     DEFAULT ( -1)
                     );"""
