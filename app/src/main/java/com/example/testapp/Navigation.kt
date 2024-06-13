@@ -20,17 +20,17 @@ enum class Screen(){
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NavigationGraph(navController: NavHostController, context: Context){
+fun NavigationGraph(navController: NavHostController, context: Context, dbManager: DbManager){
 
-    NavHost(navController = navController, startDestination = Screen.Menu.name){
+    NavHost(navController = navController, startDestination = Screen.ShoppingCart.name){
         composable(route = Screen.House.name){
             House()
         }
         composable(route = Screen.Menu.name){
-            Menu(context)
+            Menu(context, dbManager)
         }
         composable(route = Screen.ShoppingCart.name){
-            ShoppingCart()
+            ShoppingCart(context, dbManager)
         }
     }
 

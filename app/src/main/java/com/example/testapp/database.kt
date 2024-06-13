@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 
 data class Food(
-    var id: Int,
+    var id: Int = 0,
     var name: String,
     var grams: Int,
     var price: Float,
@@ -43,6 +43,12 @@ class DbHelper(context: Context?) :
 class DbManager
     (ctx: Context?) {
     private val dbHelper = DbHelper(ctx)
+
+    fun insertMany(){
+
+
+    }
+
     fun insertFood(
         name: String,
         grams: Int,
@@ -51,20 +57,22 @@ class DbManager
         price: Float = -1.0f,
         idParent: Int = -1
         ) {
-        val db = dbHelper.writableDatabase
-        val cv = ContentValues()
 
-        cv.put("name", name)
-        cv.put("grams", grams)
-        cv.put("momentSelector", momentSelector)
-        cv.put("date", date)
-        if (price != -1.0f)
-            cv.put("price", price)
-        if (idParent != -1)
-            cv.put("idParent", idParent)
 
         try {
-            val cursor = db.insertOrThrow("menu", null, cv)
+            val db = dbHelper.writableDatabase
+            val cv = ContentValues()
+
+            cv.put("name", name)
+            cv.put("grams", grams)
+            cv.put("momentSelector", momentSelector)
+            cv.put("date", date)
+            if (price != -1.0f)
+                cv.put("price", price)
+            if (idParent != -1)
+                cv.put("idParent", idParent)
+
+            db.insertOrThrow("menu", null, cv)
         } catch (e: SQLiteException) {
             e.printStackTrace()
             Log.e("INSERT", "Couldn't insert data : ${e.message.toString()}")
@@ -76,9 +84,50 @@ class DbManager
         db.execSQL("DROP TABLE IF EXISTS menu")
     }
 
+    fun selectUniqueAggregate(
+        startDate: String,
+        endDate: String,
+        onDataTaken: (ArrayList<Pair<String, Int>>) -> Unit
+        )  {
+
+        var cursor : Cursor? = null
+
+
+        try {
+            val db = dbHelper.readableDatabase
+            val query = """
+                SELECT name, CASE WHEN grams = 0 THEN count(name) ELSE sum(grams) END as total from menu where date>="$startDate" and date <="$endDate" group by name
+            """.trimIndent()
+            cursor = db.rawQuery(query, null)
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            Log.e("LOAD", "Couldn't load data : ${e.message.toString()}")
+        }
+
+        var name: String
+        var total: Int
+
+        val listFood : ArrayList<Pair<String, Int>> = ArrayList<Pair<String, Int>>()
+
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                total = cursor.getInt(cursor.getColumnIndexOrThrow("total"))
+
+                listFood.add(Pair(name, total))
+
+            } while (cursor.moveToNext())
+            cursor.close()
+        }
+
+        onDataTaken(listFood)
+
+    }
+
     fun createIfNotExists(){
         try {
             val db = dbHelper.readableDatabase
+
 
             val query = """CREATE TABLE IF NOT EXISTS menu  (
                         id             INTEGER     PRIMARY KEY AUTOINCREMENT

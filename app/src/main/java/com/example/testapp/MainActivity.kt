@@ -13,27 +13,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.example.testapp.body.Navbar
-import com.example.testapp.body.menu.Moments
 
 
 class MainActivity : ComponentActivity() {
@@ -44,7 +35,6 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         val dbManager = DbManager(this as Context)
-        dbManager.drop()
         dbManager.createIfNotExists()
 
 
@@ -53,21 +43,6 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
 
             Scaffold(
-                floatingActionButton = {
-                       IconButton(
-                           onClick = {
-                               dbManager.insertFood(
-                                   name = "Hummus",
-                                   date = "2024/06/10",
-                                   grams = 350,
-                                   momentSelector = 1
-                               )
-                               Log.i("Insert", "Inserted")
-
-                           }) {
-                            Icon(imageVector = Icons.Default.Edit, contentDescription = "Add food")
-                       }
-                },
                 topBar = {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -104,7 +79,7 @@ class MainActivity : ComponentActivity() {
                             .fillMaxSize()
                     ) {
 
-                        NavigationGraph(navController, context = applicationContext)
+                        NavigationGraph(navController, context = this@MainActivity as Context, dbManager)
                     }
                 }
             )

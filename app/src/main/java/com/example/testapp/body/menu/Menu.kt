@@ -68,9 +68,8 @@ fun fromListFoodToMapBySelector(list: ArrayList<Food>) : MutableMap<Int, ArrayLi
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Menu(context: Context) {
+fun Menu(context: Context, dbManager: DbManager) {
 
-    val db = DbManager(context)
 
     Column(
         modifier = Modifier
@@ -84,7 +83,7 @@ fun Menu(context: Context) {
         val date = remember { mutableStateOf(LocalDate.now()) }
         val formattedDateSQL = date.value.format(formatterSql)
 
-        Date(date)
+        Date(date, true, true)
 
         Column(
             modifier = Modifier
@@ -107,7 +106,7 @@ fun Menu(context: Context) {
                 5 to "Third snack"
             )
 
-            db.selectFromDay(formattedDateSQL) { listFood ->
+            dbManager.selectFromDay(formattedDateSQL) { listFood ->
                 momentFood = fromListFoodToMapBySelector(listFood)
             }
 
@@ -117,7 +116,7 @@ fun Menu(context: Context) {
                         momentName = mapMomentSelector[moment.key].toString(),
                         ingredientsCollection = moment.value,
                         idMoment = moment.key,
-                        dbManager = db
+                        dbManager = dbManager
                     )
                 }
             }

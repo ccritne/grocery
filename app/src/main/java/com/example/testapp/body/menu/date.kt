@@ -33,7 +33,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Date(date : MutableState<LocalDate>){
+fun Date(date : MutableState<LocalDate>, enableLeft: Boolean, enableRight: Boolean){
 
     val formatterDesign = DateTimeFormatter.ofPattern("dd MMM y")
 
@@ -41,16 +41,17 @@ fun Date(date : MutableState<LocalDate>){
 
 
     Row(
-        modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
 
     ) {
-        IconButton(onClick = { date.value = date.value.minusDays(1) }) {
+        IconButton(
+            enabled = enableLeft,
+            onClick = { date.value = date.value.minusDays(1) }) {
             Icon(
                 imageVector = Icons.Default.ArrowBack,
                 contentDescription = "backDate",
-                modifier = Modifier.size(25.dp)
+                modifier = Modifier.size(15.dp)
             )
         }
         TextButton(
@@ -64,12 +65,30 @@ fun Date(date : MutableState<LocalDate>){
                 fontFamily = FontFamily.Monospace,
             )
         }
-        IconButton(onClick = { date.value = date.value.plusDays(1) }) {
+        IconButton(
+            enabled = enableRight,
+            onClick = { date.value = date.value.plusDays(1) }) {
             Icon(
                 imageVector = Icons.Default.ArrowForward,
                 contentDescription = "forwardDate",
-                modifier = Modifier.size(25.dp)
+                modifier = Modifier.size(15.dp)
             )
         }
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun DoubleDate(startDate : MutableState<LocalDate>, endDate: MutableState<LocalDate>){
+
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceAround,
+        verticalAlignment = Alignment.CenterVertically
+
+    ) {
+        Date(date = startDate, true, startDate.value.isBefore(endDate.value))
+        Date(date = endDate, endDate.value.isAfter(startDate.value), true)
     }
 }
