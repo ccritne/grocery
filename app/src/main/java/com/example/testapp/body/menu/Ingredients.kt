@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -24,6 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.testapp.DbManager
 import com.example.testapp.Food
+import com.example.testapp.MainActivity
 
 @Composable
 fun Dialog(foodDialog: String, gramsDialog: MutableIntState, dialogShow: MutableState<Boolean>, database: DbManager, id: Int){
@@ -39,7 +42,10 @@ fun Dialog(foodDialog: String, gramsDialog: MutableIntState, dialogShow: Mutable
         onDismissRequest = { dialogShow.value = false },
         confirmButton = {
             IconButton(
-                onClick = { dialogShow.value = false }
+                onClick = {
+                    database.updateItem(id = id, newGrams = gramsDialog.intValue)
+                    dialogShow.value = false
+                }
             ) {
                 Icon(imageVector = Icons.Default.Check, contentDescription = "Okay")
             }
@@ -57,13 +63,15 @@ fun Dialog(foodDialog: String, gramsDialog: MutableIntState, dialogShow: Mutable
         title = { Text(text = foodDialog, color = Color.Black) },
 
         text = { TextField(value = gramsDialog.intValue.toString(), onValueChange = {
-            gramsDialog.intValue = it.toInt()
+            if (it.isNotEmpty() && it.toInt() >= 0)
+                gramsDialog.intValue = it.toInt()
         }) },
     )
 }
 
 @Composable
 fun Ingredients(
+    app: MainActivity,
     ingredients: List<Food>,
     db : DbManager
 ){
@@ -102,29 +110,15 @@ fun Ingredients(
         verticalArrangement = Arrangement.SpaceAround
     ) {
         ingredients.forEach { food ->
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        dialogShow.value = true
-                        foodDialog.value = food.name
-                        gramsDialog.intValue = food.grams
-                        idDialog.intValue = food.id
-                    },
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = food.name,
-                    fontSize = 25.sp
-                )
-
-                Text(
-                    text = food.grams.toString() + "g",
-                    fontSize = 25.sp
-                )
-            }
+            ItemMenu(
+                app,
+                food = food,
+                dbManager = db,
+                dialogShow = dialogShow,
+                foodDialog = foodDialog,
+                gramsDialog = gramsDialog,
+                idDialog = idDialog
+            )
 
         }
     }

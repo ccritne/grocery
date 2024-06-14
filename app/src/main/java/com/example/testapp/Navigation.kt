@@ -4,14 +4,12 @@ import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
 import com.example.testapp.body.House
-import com.example.testapp.body.menu.Menu
 import com.example.testapp.body.ShoppingCart
+import com.example.testapp.body.menu.Menu
 
 enum class Screen(){
     House,
@@ -20,17 +18,17 @@ enum class Screen(){
 }
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NavigationGraph(navController: NavHostController, context: Context, dbManager: DbManager){
+fun NavigationGraph(app: MainActivity, navController: NavHostController, context: Context, dbManager: DbManager){
 
-    NavHost(navController = navController, startDestination = Screen.ShoppingCart.name){
+    NavHost(navController = navController, startDestination = Screen.Menu.name){
         composable(route = Screen.House.name){
-            House()
+            House(app, dbManager)
         }
         composable(route = Screen.Menu.name){
-            Menu(context, dbManager)
+            Menu(app, context, dbManager)
         }
         composable(route = Screen.ShoppingCart.name){
-            ShoppingCart(context, dbManager)
+            ShoppingCart(app, context, dbManager)
         }
     }
 

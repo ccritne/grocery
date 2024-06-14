@@ -24,9 +24,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.testapp.DbManager
 import com.example.testapp.Food
+import com.example.testapp.MainActivity
 
 @Composable
 fun Moment(
+    app: MainActivity,
     momentName : String,
     ingredientsCollection: List<Food>,
     idMoment : Int,
@@ -59,7 +61,7 @@ fun Moment(
             )
 
             if(subMenuShow.value && idSelectedShow.intValue == idMoment)
-                Ingredients(ingredients = ingredientsCollection, db = dbManager)
+                Ingredients(app, ingredients = ingredientsCollection, db = dbManager)
 
 
         }
