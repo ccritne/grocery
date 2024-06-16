@@ -1,6 +1,5 @@
 package com.example.testapp.body
 
-import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
@@ -11,13 +10,11 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Icon
@@ -25,6 +22,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,82 +37,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.example.testapp.App
 import com.example.testapp.DbManager
-import com.example.testapp.Food
-import com.example.testapp.MainActivity
-import com.example.testapp.ShoppingCartItem
+import com.example.testapp.body.menu.Date
+import com.example.testapp.utilities.Food
+import com.example.testapp.utilities.Screen
+import com.example.testapp.utilities.Units
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 
-fun fromGoogleToApp(dbManager: DbManager){
-    val string = "SD2024/06/10;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;Pasta125g;Pumpkin200g;Banana;SM3;SM4;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/11;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;SM2;Pasta50g;Peas80g;JobLunch;Apple;SM3;SM4;Bread100g;Chickpeas125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/12;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;BroadBeans100g;Spinach400g;Bread150g;Apple;SM3;SM4;PizzaTeglia300g;SD2024/06/13;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;SM2;Pasta50g;Beans125g;JobLunch;Banana;SM3;SM4;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/14;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;Pasta80g;Soia130g;Tomatoes160g;Zucchini100g;Carrots100g;Banana;SM3;SM4;Flatbreads250g;PestoSauce95g;Mozzarella125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/15;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;SM2;Pasta125g;Eggs150g;Parmisan25g;Apple;SM3;SM4;Pizza250g;Mozzarella125g;SD2024/06/16;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;Pasta125g;TomatoSauce80g;JobLunch;Banana;SM3;SM4;Bread250g;Chickpeas125g;Zucchini100g;Iceberg/Batavia50g;Tomatoes100g"
-    val filterByDay = string.split("SD").toMutableList()
 
-    val foods: MutableList<Food> = mutableListOf()
-
-    filterByDay.forEach{ listDay->
-        if (listDay.isNotEmpty()){
-            val date = listDay.subSequence(0 .. 9).toString()
-            val moments = listDay.subSequence(11, listDay.length).split("SM")
-
-
-            moments.forEach{ moment ->
-                if(moment.isNotEmpty()){
-                    val ingredients = moment.split(";")
-                    val momentSelector = ingredients[0].toInt()
-                    val ingredientsPop= ingredients.subList(1, ingredients.size-1)
-
-                    ingredientsPop.forEach{
-                            ingredient ->
-
-                        if (ingredient.isNotEmpty()) {
-                            var changeIngredient = ingredient
-
-                            if(ingredient.last() == 'g' && ingredient[ingredient.length-2].isDigit())
-                                changeIngredient = ingredient.subSequence(0, ingredient.length-1).toString()
-
-                            val name = changeIngredient.filter { !it.isDigit() }
-                            val grams = changeIngredient.filter { it.isDigit() }
-
-                            val gramsInt = if(grams.isNotEmpty()) grams.toInt() else 0
-
-                            foods.add(
-                                Food(
-                                    date=date,
-                                    momentSelector=momentSelector,
-                                    name=name,
-                                    grams=gramsInt,
-                                    price = 0.0f,
-                                    idParent = -1,
-                                )
-                            )
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-
-    }
-
-    foods.forEach {
-            food ->
-
-        dbManager.insertFood(
-            price = food.price,
-            date = food.date,
-            name = food.name,
-            grams = food.grams,
-            momentSelector = food.momentSelector
-        )
-    }
-}
 
 @Composable
 fun DialogShopping(
@@ -167,22 +101,30 @@ fun DialogShopping(
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun ShoppingCart(app: MainActivity, context: Context, dbManager: DbManager){
+fun ShoppingCart(app: App) {
 
     val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
-
     val formatterDesign = DateTimeFormatter.ofPattern("dd/MM")
 
-    val formattedStartDateSQL: String = app.startDate.format(formatterSql)
-    val formattedEndDateSQL: String = app.endDate.format(formatterSql)
+    val startDate: MutableState<LocalDate> = remember {
+        mutableStateOf(
+            LocalDate.now().with(
+                TemporalAdjusters.previousOrSame(
+                    DayOfWeek.MONDAY
+                )
+            )
+        )
+    }
 
-    val formattedStartDateDesign: String = app.startDate.format(formatterDesign)
-    val formattedEndDateDesign: String = app.endDate.format(formatterDesign)
+    val endDate: MutableState<LocalDate> = remember {
+        mutableStateOf(startDate.value.plusDays(6))
+    }
+    val formattedStartDateSQL: String = startDate.value.format(formatterSql)
+    val formattedEndDateSQL: String = endDate.value.format(formatterSql)
 
-    var foods : List<ShoppingCartItem> = listOf()
-
-
-    dbManager.selectUniqueAggregate(formattedStartDateSQL, formattedEndDateSQL){
+    var foods : MutableList<Food> = mutableListOf()
+    
+    app.dbManager.selectShoppingCartInRange(formattedStartDateSQL, formattedEndDateSQL){
         foods = it
     }
 
@@ -194,11 +136,11 @@ fun ShoppingCart(app: MainActivity, context: Context, dbManager: DbManager){
         mutableIntStateOf(0)
     }
 
-    var defaultValue : Int by remember {
+    val defaultValue : Int by remember {
         mutableIntStateOf(0)
     }
 
-    var name by remember {
+    val name by remember {
         mutableStateOf("")
     }
 
@@ -207,14 +149,14 @@ fun ShoppingCart(app: MainActivity, context: Context, dbManager: DbManager){
             defaultValue
         ) { value, state ->
             if (state == true) {
-                dbManager.updateCart(
+                app.dbManager.updateCart(
                     name,
                     formattedStartDateSQL,
                     formattedEndDateSQL,
                     value >= maxValue,
                     value
                 )
-                dbManager.selectUniqueAggregate(formattedStartDateSQL, formattedEndDateSQL){
+                app.dbManager.selectShoppingCartInRange(formattedStartDateSQL, formattedEndDateSQL){
                     foods = it
                 }
             }
@@ -228,27 +170,28 @@ fun ShoppingCart(app: MainActivity, context: Context, dbManager: DbManager){
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f),
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
-            IconButton(onClick = {
-                app.startDate = app.startDate.minusDays(7)
-                app.endDate = app.endDate.minusDays(7)
-            }) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "backdate")
-            }
-            Text("$formattedStartDateDesign - $formattedEndDateDesign", fontSize = 25.sp)
-            IconButton(onClick = {
-                app.startDate = app.startDate.plusDays(7)
-                app.endDate = app.endDate.plusDays(7)
-
-            }) {
-                Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "forwarddate")
-            }
+            Date(
+                modifier = Modifier.fillMaxWidth(0.5f),
+                date = startDate,
+                enableLeft = true,
+                enableRight = startDate.value.isBefore(endDate.value),
+                modifierIcons = Modifier.size(20.dp),
+                fontSizeText = 25
+            )
+            Date(
+                modifier = Modifier.fillMaxWidth(),
+                date = endDate,
+                enableLeft = endDate.value.isAfter(startDate.value),
+                enableRight = true,
+                modifierIcons = Modifier.size(20.dp),
+                fontSizeText = 25
+            )
         }
-
 
         if (foods.isNotEmpty()) {
 
@@ -261,40 +204,7 @@ fun ShoppingCart(app: MainActivity, context: Context, dbManager: DbManager){
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 foods.forEach {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(text = it.name, fontSize = 25.sp)
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = it.checkedTotal.toString() + "/" + it.total.toString() + " " + if (it.total < 15) "pz" else "g",
-                                fontSize = 25.sp,
-                                color = if(it.checkedTotal >= it.total) Color.Green else Color.Black,
-                                modifier = Modifier
-                            )
-                            IconButton(
-                                onClick = {
-                                    name = it.name
-                                    maxValue = it.total
-                                    defaultValue = it.checkedTotal
-                                    isDialogVisible = true
-                                }
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "addChecked"
-                                )
-                            }
-                        }
-
-
-
-                    }
+                    Item(app = app, food = it)
                 }
             }
         } else {

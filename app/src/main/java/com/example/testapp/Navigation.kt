@@ -1,34 +1,33 @@
 package com.example.testapp
 
-import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.testapp.body.House
 import com.example.testapp.body.ShoppingCart
+import com.example.testapp.body.UpdateItem
 import com.example.testapp.body.menu.Menu
+import com.example.testapp.utilities.Screen
 
-enum class Screen(){
-    House,
-    Menu,
-    ShoppingCart
-}
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NavigationGraph(app: MainActivity, navController: NavHostController, context: Context, dbManager: DbManager){
+fun NavigationGraph(app: App){
 
-    NavHost(navController = navController, startDestination = Screen.Menu.name){
+    NavHost(navController = app.navController, startDestination = Screen.Menu.name){
         composable(route = Screen.House.name){
-            House(app, dbManager)
+            House(app)
         }
         composable(route = Screen.Menu.name){
-            Menu(app, context, dbManager)
+            Menu(app)
         }
         composable(route = Screen.ShoppingCart.name){
-            ShoppingCart(app, context, dbManager)
+            ShoppingCart(app)
+        }
+        composable(route = Screen.UpdateItem.name){
+            UpdateItem(app)
         }
     }
 
