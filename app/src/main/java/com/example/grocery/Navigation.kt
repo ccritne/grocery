@@ -5,9 +5,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.testapp.body.House
-import com.example.testapp.body.ShoppingCart
-import com.example.testapp.body.UpdateItem
+import com.example.grocery.App
+import com.example.grocery.body.UpdateItem
+import com.example.grocery.body.House
+import com.example.grocery.body.ShoppingCart
 import com.example.testapp.body.menu.Menu
 import com.example.testapp.utilities.Screen
 

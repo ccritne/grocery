@@ -1,4 +1,4 @@
-package com.example.testapp.body
+package com.example.grocery.body
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -37,12 +37,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.testapp.App
-import com.example.testapp.DbManager
+import com.example.grocery.App
 import com.example.testapp.body.menu.Date
 import com.example.testapp.utilities.Food
-import com.example.testapp.utilities.Screen
-import com.example.testapp.utilities.Units
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

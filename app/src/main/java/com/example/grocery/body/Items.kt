@@ -1,4 +1,4 @@
-package com.example.testapp.body
+package com.example.grocery.body
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,7 +19,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
@@ -49,7 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.example.testapp.App
+import com.example.grocery.App
 import com.example.testapp.body.menu.Date
 import com.example.testapp.body.menu.Moments
 import com.example.testapp.utilities.Food
@@ -220,7 +219,7 @@ fun UpdateItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        if (caller == Screen.Menu)
+        if (caller != null && caller == Screen.Menu)
             DropdownMenuSelection(list = app.dbManager.getAllFood(), starter = app.food.name)
         else{
             TextField(

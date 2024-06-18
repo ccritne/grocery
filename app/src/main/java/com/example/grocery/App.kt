@@ -1,4 +1,4 @@
-package com.example.testapp
+package com.example.grocery
 
 import android.content.Context
 import android.os.Build
@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.testapp.DbManager
+import com.example.testapp.NavigationGraph
 import com.example.testapp.utilities.Food
 import com.example.testapp.utilities.Screen
 import kotlinx.coroutines.launch
@@ -184,7 +186,3 @@ class App: ComponentActivity() {
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-fun main(){
-    App()
-}

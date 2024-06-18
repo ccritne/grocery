@@ -9,7 +9,6 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import com.example.testapp.utilities.Food
 import com.example.testapp.utilities.Screen
-import com.example.testapp.utilities.Units
 import com.example.testapp.utilities.fromGoogleToApp
 
 

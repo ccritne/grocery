@@ -17,10 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.testapp.App
-import com.example.testapp.body.Item
+import com.example.grocery.App
+import com.example.grocery.body.Item
 import com.example.testapp.utilities.Food
-import com.example.testapp.utilities.Screen
 
 
 @RequiresApi(Build.VERSION_CODES.O)
