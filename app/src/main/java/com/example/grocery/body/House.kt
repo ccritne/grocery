@@ -16,12 +16,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.grocery.App
+import com.example.testapp.utilities.Screen
 
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun House(app: App){
-
+    app.screen = Screen.House
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = { ButtonAdd(app = app) }

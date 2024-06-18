@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
 import com.example.testapp.utilities.Food
 import com.example.testapp.utilities.Screen
+import com.example.testapp.utilities.Units
 import com.example.testapp.utilities.fromGoogleToApp
 
 
@@ -93,6 +94,22 @@ class DbManager
             Log.e("INSERT", "Couldn't insert data : ${e.message.toString()}")
         }
     }
+
+    fun getUnitOf(name: String) : Units?{
+        var toRet: Units? = null
+        try {
+            val db = dbHelper.readableDatabase
+            val cursor = db.rawQuery("SELECT unit FROM inventory WHERE name=?", arrayOf(name))
+            if (cursor?.moveToFirst() == true)
+                toRet = Units.valueOf(cursor.getString(cursor.getColumnIndexOrThrow("unit")))
+            cursor.close()
+        } catch (e: SQLiteException) {
+            e.printStackTrace()
+            Log.e("GET", "Couldn't get data : ${e.message.toString()}")
+        }
+        return toRet
+    }
+
 
     fun insertFood(food: Food) {
 
@@ -219,14 +236,15 @@ class DbManager
     fun updateFood(food: Food){
         try {
             val db = dbHelper.writableDatabase
-            val cv = ContentValues()
+            var cv = ContentValues()
 
             cv.put("amount", food.amount)
-            cv.put("unit", food.unit.name)
             cv.put("momentSelector", food.momentSelector)
             cv.put("date", food.date)
 
             db.update("menu", cv, "id = ?", arrayOf(food.id.toString()))
+
+
         }catch (e: SQLiteException){
             e.printStackTrace()
             Log.i("UPDATE", "Couldn't update: ${e.message.toString()}")

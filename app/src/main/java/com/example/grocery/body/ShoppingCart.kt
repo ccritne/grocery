@@ -40,6 +40,7 @@ import androidx.compose.ui.window.Dialog
 import com.example.grocery.App
 import com.example.testapp.body.menu.Date
 import com.example.testapp.utilities.Food
+import com.example.testapp.utilities.Screen
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -99,6 +100,8 @@ fun DialogShopping(
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ShoppingCart(app: App) {
+
+    app.screen = Screen.ShoppingCart
 
     val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
     val formatterDesign = DateTimeFormatter.ofPattern("dd/MM")

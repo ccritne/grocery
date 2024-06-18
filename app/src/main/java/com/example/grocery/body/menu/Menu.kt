@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.dp
 import com.example.grocery.App
 import com.example.grocery.body.ButtonAdd
 import com.example.testapp.utilities.Food
+import com.example.testapp.utilities.Screen
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -52,6 +53,8 @@ fun fromListFoodToMapBySelector(list: ArrayList<Food>) : MutableMap<Int, ArrayLi
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Menu(app: App) {
+
+    app.screen = Screen.Menu
     val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
 
     val date: MutableState<LocalDate> = remember {

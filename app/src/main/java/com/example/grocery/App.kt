@@ -53,7 +53,9 @@ class App: ComponentActivity() {
     var food : Food = Food()
         private set
 
-    var isNewFood: Boolean? = null
+    var isNewFood: Boolean = false
+
+    var screen : Screen = Screen.Menu
 
     private var foodCollection: MutableList<Food> = mutableListOf()
 

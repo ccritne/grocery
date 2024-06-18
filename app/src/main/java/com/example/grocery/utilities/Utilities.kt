@@ -75,9 +75,14 @@ fun fromGoogleToApp(dbManager: DbManager){
     }
 }
 
+
 enum class Units(val symbol: String){
     Grams("g"),
-    Pieces("pz"),
+    Pieces("pz");
+
+    override fun toString(): String {
+        return symbol
+    }
 }
 enum class Screen(){
     House,

@@ -1,6 +1,7 @@
 package com.example.grocery.body
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +14,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.text.KeyboardActionScope
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -43,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -58,9 +62,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun AmountField(amount: MutableState<String>, unit: MutableState<Units>){
-
-    var amountField by amount
+fun AmountField(amount: MutableState<String>, unitEnable: MutableState<Boolean>, unit: MutableState<Units>){
 
     Row(
         modifier = Modifier
@@ -70,9 +72,10 @@ fun AmountField(amount: MutableState<String>, unit: MutableState<Units>){
         horizontalArrangement = Arrangement.SpaceEvenly
     ) {
         OutlinedTextField(
+            maxLines = 1,
             shape = RectangleShape,
-            value = amountField,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+            value = amount.value,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword, imeAction = ImeAction.Done),
             placeholder = {
                 Text(
                     text = "Amount",
@@ -82,11 +85,13 @@ fun AmountField(amount: MutableState<String>, unit: MutableState<Units>){
             },
             textStyle = TextStyle(textAlign = TextAlign.Center),
             onValueChange = {
-                amountField = it
+                amount.value = it
             },
             modifier = Modifier.fillMaxWidth(0.5f)
         )
-        DropdownMenuSelection(list = Units.entries.map{it.symbol}, starter = unit.value.symbol)
+        DropdownMenuSelection(list = Units.entries, enabled = unitEnable, starter = unit){
+            unit.value = it
+        }
     }
 }
 
@@ -131,63 +136,19 @@ fun ChoiceMoment(
     }
 }
 
-@Composable
-fun DropdownMenuSelection(
-    list: List<String>,
-    starter: String
-){
-    var expanded by remember { mutableStateOf(false) }
-    var selectedText by remember {
-        mutableStateOf(starter)
-    }
 
-    Column(
-        modifier = Modifier.fillMaxWidth(0.5f)
-    ) {
-        IconButton(
-            modifier = Modifier.fillMaxWidth(),
-            onClick =  { expanded = true }
-        ){
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(text = selectedText)
-                Icon(
-                    imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown,
-                    contentDescription = null
-                )
-            }
-        }
-        DropdownMenu(
-            expanded = expanded,
-            onDismissRequest = { expanded = false },
-        ) {
-            list.forEach { item ->
-                DropdownMenuItem(
-                    text = {
-                        Text(
-                            text = item,
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
-                        )
-                    },
-                    onClick = {
-                        selectedText = item
-                        expanded = false
-                    }
-                )
-            }
-        }
-    }
-}
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UpdateItem(
     app: App
 ){
-    var nameField by remember {
+    val nameField = remember {
         mutableStateOf(app.food.name)
+    }
+
+    val nameToSelect = remember {
+        mutableStateOf(false)
     }
 
     val amount = remember {
@@ -195,14 +156,14 @@ fun UpdateItem(
     }
 
     val unit = remember {
-        mutableStateOf(Units.valueOf(app.food.unit.name))
+        mutableStateOf(app.food.unit)
     }
 
     val momentSelector = remember {
         mutableStateOf(Moments.valueOf(Moments.entries[app.food.momentSelector].name))
     }
 
-    val caller = app.getPreviousRoute()
+
 
     val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
     val date: MutableState<LocalDate> = remember {
@@ -219,20 +180,29 @@ fun UpdateItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        if (caller != null && caller == Screen.Menu)
-            DropdownMenuSelection(list = app.dbManager.getAllFood(), starter = app.food.name)
-        else{
+        if (app.screen != Screen.House) {
+            DropdownMenuSelection(
+                list = app.dbManager.getAllFood(),
+                starter = nameField
+            ) {
+                nameField.value = it
+                if (nameField.value.isNotEmpty())
+                    unit.value = app.dbManager.getUnitOf(nameField.value)!!
+                else
+                    unit.value = app.food.unit
+            }
+        }else{
             TextField(
-                value = nameField,
-                onValueChange = {nameField = it},
+                value = nameField.value,
+                onValueChange = {nameField.value = it},
                 modifier = Modifier.fillMaxWidth(),
                 textStyle = TextStyle(textAlign = TextAlign.Center)
             )
         }
 
-        AmountField(amount = amount, unit = unit)
+        AmountField(amount = amount, nameToSelect, unit = unit)
 
-        if (caller == Screen.Menu) {
+        if (app.screen == Screen.Menu) {
             ChoiceMoment(momentSelector = momentSelector)
             Date(
                 date = date,
@@ -258,28 +228,28 @@ fun UpdateItem(
 
                 updatedFood.setUnit(unit.value)
 
-                val exists = app.dbManager.itemExists(nameField)
+                val exists = app.dbManager.itemExists(nameField.value)
 
                 updatedFood.update(
-                    newName = nameField,
+                    newName = nameField.value,
                     newAmount = amount.value.toInt(),
                 )
 
-                if (caller == Screen.Menu) {
+                if (app.screen == Screen.Menu) {
 
                     updatedFood.update(
                         newDate = date.value.format(formatterSql),
                         newMomentSelector = momentSelector.value.ordinal
                     )
 
-                    if(app.isNewFood == true) {
+                    if(app.isNewFood) {
 
                         if(exists.second){
                             updatedFood.setIdInventory(exists.first)
                             app.dbManager.insertFood(updatedFood)
                         }else{
                             app.dbManager.insertItemInventory(updatedFood)
-                            updatedFood.setIdInventory(app.dbManager.itemExists(nameField).first)
+                            updatedFood.setIdInventory(exists.first)
                             app.dbManager.insertFood(updatedFood)
                         }
                     }else{
@@ -287,12 +257,14 @@ fun UpdateItem(
                     }
                 }
 
-                if (caller == Screen.House){
-                    if(app.isNewFood == true && !exists.second)
+                if (app.screen == Screen.House){
+                    if(app.isNewFood && !exists.second)
                         app.dbManager.insertItemInventory(updatedFood)
                     else
                         app.dbManager.updateInventoryItem(updatedFood)
                 }
+
+                app.isNewFood = false
 
                 app.navController.navigateUp()
             }) {
