@@ -105,7 +105,7 @@ class App: ComponentActivity() {
                                 scope.launch {
                                     drawerState.close()
                                 }
-                                recreate()
+                                finish()
                             }
                         )
                     }

@@ -202,19 +202,13 @@ fun UpdateItem(
                         newMomentSelector = momentSelector.value.ordinal
                     )
 
-                    if (app.isNewFood.value) {
+                    updatedFood.setIdInventory(exists.first)
 
-                        if (exists.second) {
-                            updatedFood.setIdInventory(exists.first)
-                            app.dbManager.insertFood(updatedFood)
-                        } else {
-                            app.dbManager.insertItemInventory(updatedFood)
-                            updatedFood.setIdInventory(exists.first)
-                            app.dbManager.insertFood(updatedFood)
-                        }
-                    } else {
+                    if (app.isNewFood.value)
+                        app.dbManager.insertFood(updatedFood)
+                    else
                         app.dbManager.updateFood(updatedFood)
-                    }
+
                 }
 
                 if (app.screen == Screen.House) {

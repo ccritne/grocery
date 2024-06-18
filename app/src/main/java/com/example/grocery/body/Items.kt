@@ -153,7 +153,7 @@ fun ButtonAdd(
         onClick = {
             val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
             app.dateOperation = LocalDate.now().format(formatterSql)
-            app.isNewFood.value = app.screen == Screen.House
+            app.isNewFood.value = true
             app.setFood(Food())
             app.navController.navigate(Screen.UpdateItem.name)
         }) {

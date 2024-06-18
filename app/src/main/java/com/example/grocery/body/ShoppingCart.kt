@@ -102,18 +102,12 @@ fun DialogShopping(
 fun ShoppingCart(app: App) {
 
     app.screen = Screen.ShoppingCart
+    app.isNewFood.value = false
 
     val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
-    val formatterDesign = DateTimeFormatter.ofPattern("dd/MM")
 
     val startDate: MutableState<LocalDate> = remember {
-        mutableStateOf(
-            LocalDate.now().with(
-                TemporalAdjusters.previousOrSame(
-                    DayOfWeek.MONDAY
-                )
-            )
-        )
+        mutableStateOf(LocalDate.now())
     }
 
     val endDate: MutableState<LocalDate> = remember {
@@ -142,7 +136,7 @@ fun ShoppingCart(app: App) {
             Date(
                 modifier = Modifier.fillMaxWidth(0.5f),
                 date = startDate,
-                enableLeft = true,
+                enableLeft = startDate.value.isAfter(LocalDate.now()),
                 enableRight = startDate.value.isBefore(endDate.value),
                 modifierIcons = Modifier.size(20.dp),
                 fontSizeText = 25
