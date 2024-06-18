@@ -128,42 +128,6 @@ fun ShoppingCart(app: App) {
         foods = it
     }
 
-    var isDialogVisible by remember {
-        mutableStateOf(false)
-    }
-
-    var maxValue : Int by remember {
-        mutableIntStateOf(0)
-    }
-
-    val defaultValue : Int by remember {
-        mutableIntStateOf(0)
-    }
-
-    val name by remember {
-        mutableStateOf("")
-    }
-
-    if(isDialogVisible) {
-        DialogShopping(
-            defaultValue
-        ) { value, state ->
-            if (state == true) {
-                app.dbManager.updateCart(
-                    name,
-                    formattedStartDateSQL,
-                    formattedEndDateSQL,
-                    value >= maxValue,
-                    value
-                )
-                app.dbManager.selectShoppingCartInRange(formattedStartDateSQL, formattedEndDateSQL){
-                    foods = it
-                }
-            }
-            isDialogVisible = false
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize(),

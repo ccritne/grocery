@@ -29,6 +29,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -53,18 +55,13 @@ class App: ComponentActivity() {
     var food : Food = Food()
         private set
 
-    var isNewFood: Boolean = false
+    var isNewFood: MutableState<Boolean> = mutableStateOf(false)
 
     var screen : Screen = Screen.Menu
 
-    private var foodCollection: MutableList<Food> = mutableListOf()
 
     lateinit var navController: NavHostController
         private set
-
-    fun getInventoryCollection() : MutableList<Food>{
-        return foodCollection
-    }
 
     fun setFood(food: Food){
         this.food = food
@@ -72,18 +69,7 @@ class App: ComponentActivity() {
 
     private fun setupValues(){
         dbManager = DbManager(this as Context)
-        dbManager.selectInventoryItems{
-            foodCollection = it
-        }
-    }
 
-    @Composable
-    fun getPreviousRoute() : Screen? {
-        return navController.currentBackStackEntryAsState().value?.destination?.route?.let {
-            Screen.valueOf(
-                it
-            )
-        }
     }
 
 

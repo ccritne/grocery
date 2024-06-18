@@ -62,40 +62,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun AmountField(amount: MutableState<String>, unitEnable: MutableState<Boolean>, unit: MutableState<Units>){
-
-    Row(
-        modifier = Modifier
-            .fillMaxHeight(0.1f)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        OutlinedTextField(
-            maxLines = 1,
-            shape = RectangleShape,
-            value = amount.value,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword, imeAction = ImeAction.Done),
-            placeholder = {
-                Text(
-                    text = "Amount",
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
-                )
-            },
-            textStyle = TextStyle(textAlign = TextAlign.Center),
-            onValueChange = {
-                amount.value = it
-            },
-            modifier = Modifier.fillMaxWidth(0.5f)
-        )
-        DropdownMenuSelection(list = Units.entries, enabled = unitEnable, starter = unit){
-            unit.value = it
-        }
-    }
-}
-
-@Composable
 fun Moment(
     momentSelector: MutableState<Moments>,
     moment: Moments
@@ -134,145 +100,6 @@ fun ChoiceMoment(
             }
         }
     }
-}
-
-
-
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun UpdateItem(
-    app: App
-){
-    val nameField = remember {
-        mutableStateOf(app.food.name)
-    }
-
-    val nameToSelect = remember {
-        mutableStateOf(false)
-    }
-
-    val amount = remember {
-        mutableStateOf(app.food.amount.toString())
-    }
-
-    val unit = remember {
-        mutableStateOf(app.food.unit)
-    }
-
-    val momentSelector = remember {
-        mutableStateOf(Moments.valueOf(Moments.entries[app.food.momentSelector].name))
-    }
-
-
-
-    val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
-    val date: MutableState<LocalDate> = remember {
-        mutableStateOf(LocalDate.parse(app.dateOperation, formatterSql))
-    }
-
-
-
-    Column(
-        modifier = Modifier
-            .background(color = Color.White)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.SpaceAround,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-
-        if (app.screen != Screen.House) {
-            DropdownMenuSelection(
-                list = app.dbManager.getAllFood(),
-                starter = nameField
-            ) {
-                nameField.value = it
-                if (nameField.value.isNotEmpty())
-                    unit.value = app.dbManager.getUnitOf(nameField.value)!!
-                else
-                    unit.value = app.food.unit
-            }
-        }else{
-            TextField(
-                value = nameField.value,
-                onValueChange = {nameField.value = it},
-                modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(textAlign = TextAlign.Center)
-            )
-        }
-
-        AmountField(amount = amount, nameToSelect, unit = unit)
-
-        if (app.screen == Screen.Menu) {
-            ChoiceMoment(momentSelector = momentSelector)
-            Date(
-                date = date,
-                enableLeft = true,
-                enableRight = true,
-                modifierIcons = Modifier.size(25.dp),
-                fontSizeText = 35
-            )
-        }
-
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp),
-            horizontalArrangement = Arrangement.SpaceAround
-        ){
-            IconButton(onClick = { app.navController.navigateUp() }) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
-            IconButton(onClick = {
-                val updatedFood = app.food
-
-                updatedFood.setUnit(unit.value)
-
-                val exists = app.dbManager.itemExists(nameField.value)
-
-                updatedFood.update(
-                    newName = nameField.value,
-                    newAmount = amount.value.toInt(),
-                )
-
-                if (app.screen == Screen.Menu) {
-
-                    updatedFood.update(
-                        newDate = date.value.format(formatterSql),
-                        newMomentSelector = momentSelector.value.ordinal
-                    )
-
-                    if(app.isNewFood) {
-
-                        if(exists.second){
-                            updatedFood.setIdInventory(exists.first)
-                            app.dbManager.insertFood(updatedFood)
-                        }else{
-                            app.dbManager.insertItemInventory(updatedFood)
-                            updatedFood.setIdInventory(exists.first)
-                            app.dbManager.insertFood(updatedFood)
-                        }
-                    }else{
-                        app.dbManager.updateFood(updatedFood)
-                    }
-                }
-
-                if (app.screen == Screen.House){
-                    if(app.isNewFood && !exists.second)
-                        app.dbManager.insertItemInventory(updatedFood)
-                    else
-                        app.dbManager.updateInventoryItem(updatedFood)
-                }
-
-                app.isNewFood = false
-
-                app.navController.navigateUp()
-            }) {
-                Icon(imageVector = Icons.Default.Check, contentDescription = "Add item")
-            }
-        }
-    }
-
 }
 
 @Composable
@@ -326,7 +153,7 @@ fun ButtonAdd(
         onClick = {
             val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
             app.dateOperation = LocalDate.now().format(formatterSql)
-            app.isNewFood = true
+            app.isNewFood.value = app.screen == Screen.House
             app.setFood(Food())
             app.navController.navigate(Screen.UpdateItem.name)
         }) {
@@ -381,12 +208,10 @@ fun Item(
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
-                        app.isNewFood = false
                         app.setFood(food)
                         isDeleting = true
                     },
                     onTap = {
-                        app.isNewFood = false
                         app.setFood(food)
                         app.navController.navigate(Screen.UpdateItem.name)
                     }

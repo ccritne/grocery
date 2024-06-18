@@ -115,6 +115,7 @@ class Food() {
                     eaten = cursor.getInt(cursor.getColumnIndexOrThrow("eaten")) == 1
                 }
                 Screen.ShoppingCart ->{
+                    idInventory = cursor.getInt(cursor.getColumnIndexOrThrow("idInventory"))
                     amountInventory = cursor.getInt(cursor.getColumnIndexOrThrow("amountInventory"))
                 }
                 else -> { }

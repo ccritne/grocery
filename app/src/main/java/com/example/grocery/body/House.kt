@@ -23,6 +23,9 @@ import com.example.testapp.utilities.Screen
 @Composable
 fun House(app: App){
     app.screen = Screen.House
+
+    val foodCollection = app.dbManager.selectInventoryItems()
+
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = { ButtonAdd(app = app) }
@@ -36,9 +39,7 @@ fun House(app: App){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-
-
-            if (app.getInventoryCollection().isNotEmpty()) {
+            if (foodCollection.isNotEmpty()) {
 
                 Column(
                     modifier = Modifier
@@ -48,7 +49,7 @@ fun House(app: App){
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    app.getInventoryCollection().forEach {food ->
+                    foodCollection.forEach {food ->
                         Item(
                             app = app,
                             food = food,

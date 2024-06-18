@@ -194,15 +194,14 @@ class DbManager
         }
     }
 
-    fun updateCart(name: String, startDate: String, endDate: String, newChecked: Boolean, newValue: Int){
+    fun updateCart(idInventory: Int,  newValue: Int){
 
         try {
             val db = dbHelper.writableDatabase
             val cv = ContentValues()
-            cv.put("checked", newChecked)
-            cv.put("checkedTotal", newValue)
+            cv.put("amount", newValue)
 
-            db.update("menu", cv, "name=? and date >= ? and date <= ? ", arrayOf(name, startDate, endDate))
+            db.update("inventory", cv, "id=?", arrayOf(idInventory.toString()))
         }catch (e: SQLiteException){
             e.printStackTrace()
             Log.i("UPDATE", "Couldn't update: ${e.message.toString()}")
@@ -265,8 +264,7 @@ class DbManager
     }
 
     fun selectInventoryItems(
-        onDataTaken: (MutableList<Food>) -> Unit
-    ){
+    ) : List<Food>{
         var cursor : Cursor? = null
 
         try {
@@ -280,26 +278,35 @@ class DbManager
                 from inventory
             """.trimIndent()
             cursor = db.rawQuery(query, null)
+
+            var food: Food
+
+            val listFood : MutableList<Food> = mutableListOf()
+
+            if (cursor != null && cursor.moveToFirst()) {
+                do {
+                    food = Food(cursor, Screen.House)
+
+                    listFood.add(food)
+
+                } while (cursor.moveToNext())
+                cursor.close()
+            }
+
+            return listFood
+
         } catch (e: SQLiteException) {
             e.printStackTrace()
             Log.e("LOAD", "Couldn't load data : ${e.message.toString()}")
         }
 
-        var food: Food
 
-        val listFood : MutableList<Food> = mutableListOf()
 
-        if (cursor != null && cursor.moveToFirst()) {
-            do {
-                food = Food(cursor, Screen.House)
+        return emptyList()
+    }
 
-                listFood.add(food)
+    fun getAmountOf(){
 
-            } while (cursor.moveToNext())
-            cursor.close()
-        }
-
-        onDataTaken(listFood)
     }
 
     fun selectShoppingCartInRange(
@@ -316,6 +323,7 @@ class DbManager
         val query = """
             SELECT 
             menu.id,
+            inventory.id as idInventory, 
             inventory.name, 
             inventory.amount as amountInventory,
             CASE 
