@@ -1,4 +1,4 @@
-package com.example.testapp.body
+package com.example.grocery.body
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

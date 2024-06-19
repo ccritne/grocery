@@ -1,4 +1,4 @@
-package com.example.testapp
+package com.example.grocery
 
 import android.content.ContentValues
 import android.content.Context
@@ -7,10 +7,10 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import com.example.testapp.utilities.Food
-import com.example.testapp.utilities.Screen
-import com.example.testapp.utilities.Units
-import com.example.testapp.utilities.fromGoogleToApp
+import com.example.grocery.utilities.Food
+import com.example.grocery.utilities.Screen
+import com.example.grocery.utilities.Units
+import com.example.grocery.utilities.fromGoogleToApp
 
 
 class DbHelper(context: Context?) :

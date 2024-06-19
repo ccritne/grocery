@@ -1,4 +1,4 @@
-package com.example.testapp.body.menu
+package com.example.grocery.body.menu
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -22,8 +22,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.grocery.App
 import com.example.grocery.body.ButtonAdd
-import com.example.testapp.utilities.Food
-import com.example.testapp.utilities.Screen
+import com.example.grocery.utilities.Food
+import com.example.grocery.utilities.Screen
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

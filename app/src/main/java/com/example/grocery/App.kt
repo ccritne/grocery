@@ -38,10 +38,10 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.testapp.DbManager
-import com.example.testapp.NavigationGraph
-import com.example.testapp.utilities.Food
-import com.example.testapp.utilities.Screen
+import com.example.grocery.DbManager
+import com.example.grocery.NavigationGraph
+import com.example.grocery.utilities.Food
+import com.example.grocery.utilities.Screen
 import kotlinx.coroutines.launch
 
 @RequiresApi(Build.VERSION_CODES.O)

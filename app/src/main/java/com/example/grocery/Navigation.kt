@@ -1,4 +1,4 @@
-package com.example.testapp
+package com.example.grocery
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -9,8 +9,8 @@ import com.example.grocery.App
 import com.example.grocery.body.UpdateItem
 import com.example.grocery.body.House
 import com.example.grocery.body.ShoppingCart
-import com.example.testapp.body.menu.Menu
-import com.example.testapp.utilities.Screen
+import com.example.grocery.body.menu.Menu
+import com.example.grocery.utilities.Screen
 
 
 @RequiresApi(Build.VERSION_CODES.O)

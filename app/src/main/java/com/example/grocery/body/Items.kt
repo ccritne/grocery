@@ -53,11 +53,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.grocery.App
-import com.example.testapp.body.menu.Date
-import com.example.testapp.body.menu.Moments
-import com.example.testapp.utilities.Food
-import com.example.testapp.utilities.Screen
-import com.example.testapp.utilities.Units
+import com.example.grocery.body.menu.Date
+import com.example.grocery.body.menu.Moments
+import com.example.grocery.utilities.Food
+import com.example.grocery.utilities.Screen
+import com.example.grocery.utilities.Units
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 

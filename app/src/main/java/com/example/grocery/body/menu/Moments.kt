@@ -1,4 +1,4 @@
-package com.example.testapp.body.menu
+package com.example.grocery.body.menu
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
 import com.example.grocery.body.Item
-import com.example.testapp.utilities.Food
+import com.example.grocery.utilities.Food
 
 
 @RequiresApi(Build.VERSION_CODES.O)
