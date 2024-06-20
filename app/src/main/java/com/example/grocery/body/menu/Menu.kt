@@ -57,8 +57,8 @@ fun Menu(app: App) {
     app.screen = Screen.Menu
     val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
 
-    val date: MutableState<LocalDate> = remember {
-        mutableStateOf(LocalDate.now())
+    val date = remember {
+        mutableStateOf(LocalDate.parse(app.dateOperation, formatterSql))
     }
 
     val formattedDateSQL = date.value.format(formatterSql)

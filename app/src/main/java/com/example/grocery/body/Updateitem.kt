@@ -125,11 +125,10 @@ fun UpdateItem(
 
 
     val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
-    val date: MutableState<LocalDate> = remember {
+
+    val date = remember {
         mutableStateOf(LocalDate.parse(app.dateOperation, formatterSql))
     }
-
-
 
     Column(
         modifier = Modifier
@@ -219,7 +218,6 @@ fun UpdateItem(
                 }
 
                 if (app.screen == Screen.ShoppingCart){
-                    println("IDINVENTORY:"+app.food.idInventory)
                     app.dbManager.updateCart(app.food.idInventory, amount.value.toInt()+app.food.amountInventory)
                 }
 

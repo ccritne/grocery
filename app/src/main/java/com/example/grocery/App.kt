@@ -1,6 +1,7 @@
 package com.example.grocery
 
 import android.content.Context
+import android.icu.util.LocaleData
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -28,7 +29,6 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDrawerState
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -36,13 +36,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.grocery.DbManager
-import com.example.grocery.NavigationGraph
+import com.example.grocery.database.DbManager
 import com.example.grocery.utilities.Food
 import com.example.grocery.utilities.Screen
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 class App: ComponentActivity() {
@@ -50,7 +50,10 @@ class App: ComponentActivity() {
     lateinit var dbManager : DbManager
         private set
 
-    var dateOperation: String? = null
+    private val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
+
+
+    var dateOperation: String = LocalDate.now().format(formatterSql)
 
     var food : Food = Food()
         private set
@@ -105,7 +108,7 @@ class App: ComponentActivity() {
                                 scope.launch {
                                     drawerState.close()
                                 }
-                                finish()
+                                recreate()
                             }
                         )
                     }

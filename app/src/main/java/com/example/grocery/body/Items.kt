@@ -151,8 +151,6 @@ fun ButtonAdd(
     FloatingActionButton(
         shape = CircleShape,
         onClick = {
-            val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
-            app.dateOperation = LocalDate.now().format(formatterSql)
             app.isNewFood.value = true
             app.setFood(Food())
             app.navController.navigate(Screen.UpdateItem.name)
