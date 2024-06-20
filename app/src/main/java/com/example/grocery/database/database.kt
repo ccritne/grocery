@@ -229,22 +229,17 @@ class DbManager
         return emptyList<String>()
     }
 
-    fun updateFood(food: Food){
-        try {
-            val db = dbHelper.writableDatabase
-            var cv = ContentValues()
+    fun updateFood(food: Food) : Int{
 
-            cv.put("amount", food.amount)
-            cv.put("momentSelector", food.momentSelector)
-            cv.put("date", food.date)
+        val db = dbHelper.writableDatabase
+        val cv = ContentValues()
 
-            db.update("menu", cv, "id = ?", arrayOf(food.id.toString()))
+        cv.put("amount", food.amount)
+        cv.put("idInventory", food.idInventory)
+        cv.put("momentSelector", food.momentSelector)
+        cv.put("date", food.date)
 
-
-        }catch (e: SQLiteException){
-            e.printStackTrace()
-            Log.i("UPDATE", "Couldn't update: ${e.message.toString()}")
-        }
+        return db.update("menu", cv, "id = ?", arrayOf(food.id.toString()))
     }
 
     fun updateEaten(id: Int, newState: Boolean){

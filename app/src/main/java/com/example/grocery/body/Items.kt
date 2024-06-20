@@ -206,10 +206,12 @@ fun Item(
             .pointerInput(Unit) {
                 detectTapGestures(
                     onLongPress = {
+                        app.isNewFood.value = false
                         app.setFood(food)
                         isDeleting = true
                     },
                     onTap = {
+                        app.isNewFood.value = false
                         app.setFood(food)
                         app.navController.navigate(Screen.UpdateItem.name)
                     }
