@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -30,7 +32,7 @@ fun Moment(
     foodOfMoments: List<Food> = listOf()
 ){
 
-    val subMenuShow = remember { mutableStateOf(false) }
+    var subMenuShow : Boolean by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier
@@ -40,7 +42,7 @@ fun Moment(
 
         Column(
             modifier = Modifier.fillMaxWidth().clickable(onClick = {
-                subMenuShow.value = !subMenuShow.value
+                subMenuShow = !subMenuShow
             }),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceAround
@@ -53,7 +55,7 @@ fun Moment(
                 fontWeight = FontWeight.ExtraBold,
             )
 
-            if(subMenuShow.value){
+            if(subMenuShow){
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
