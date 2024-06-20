@@ -36,13 +36,13 @@ enum class Moments(){
     ThirdSnack
 }
 
-fun fromListFoodToMapBySelector(list: ArrayList<Food>) : MutableMap<Int, ArrayList<Food>>{
+fun fromListFoodToMapBySelector(list: MutableList<Food>) : MutableMap<Int, MutableList<Food>>{
 
-    val returnedMap : MutableMap<Int, ArrayList<Food>> = mutableMapOf()
+    val returnedMap : MutableMap<Int, MutableList<Food>> = mutableMapOf()
 
     for (i in list){
         if(!returnedMap.containsKey(i.momentSelector))
-            returnedMap[i.momentSelector] = arrayListOf()
+            returnedMap[i.momentSelector] = mutableListOf()
 
         returnedMap[i.momentSelector]!!.add(i)
     }
@@ -57,17 +57,10 @@ fun Menu(app: App) {
     app.screen = Screen.Menu
     val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
 
-    val date = remember {
-        mutableStateOf(LocalDate.parse(app.dateOperation, formatterSql))
-    }
 
-    val formattedDateSQL = date.value.format(formatterSql)
+    var momentFood : Map<Int, MutableList<Food>> = mapOf()
 
-    app.dateOperation = formattedDateSQL
-
-    var momentFood : Map<Int, ArrayList<Food>> = mapOf()
-
-    app.dbManager.selectMenuForDay(formattedDateSQL) { listFood ->
+    app.dbManager.selectMenuForDay(app.dateOperation.value.format(formatterSql)) { listFood ->
         momentFood = fromListFoodToMapBySelector(listFood)
     }
 
@@ -84,7 +77,7 @@ fun Menu(app: App) {
         ) {
 
             Date(
-                date = date,
+                date = app.dateOperation,
                 enableLeft = true,
                 enableRight = true,
                 modifierIcons = Modifier.size(25.dp),

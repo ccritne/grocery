@@ -53,7 +53,7 @@ class App: ComponentActivity() {
     private val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
 
 
-    var dateOperation: String = LocalDate.now().format(formatterSql)
+    var dateOperation: MutableState<LocalDate> = mutableStateOf(LocalDate.now())
 
     var food : Food = Food()
         private set

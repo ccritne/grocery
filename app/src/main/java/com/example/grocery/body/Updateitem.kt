@@ -127,7 +127,13 @@ fun UpdateItem(
     val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
 
     val date = remember {
-        mutableStateOf(LocalDate.parse(app.dateOperation, formatterSql))
+        mutableStateOf(
+            if (app.isNewFood.value)
+                app.dateOperation.value
+            else
+                LocalDate.parse(app.food.date, formatterSql)
+
+        )
     }
 
     Column(
