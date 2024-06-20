@@ -35,7 +35,7 @@ fun Date(
 ){
 
 
-    val formatterDesign = DateTimeFormatter.ofPattern("dd/MM")
+    val formatterDesign = DateTimeFormatter.ofPattern("E dd/MM")
     val formattedDateDesign = date.value.format(formatterDesign)
 
 
