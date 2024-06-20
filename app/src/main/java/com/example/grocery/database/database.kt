@@ -1,4 +1,4 @@
-package com.example.grocery
+package com.example.grocery.database
 
 import android.content.ContentValues
 import android.content.Context
@@ -74,25 +74,21 @@ class DbManager
     fun recreateDb(){
         drop()
         val db = dbHelper.writableDatabase
-        dbHelper.createMenuIfNotExists(db)
         dbHelper.createInventoryIfNotExists(db)
+        dbHelper.createMenuIfNotExists(db)
     }
 
-    fun insertItemInventory(food: Food){
-        try {
-            val db = dbHelper.writableDatabase
-            val cv = ContentValues()
+    fun insertItemInventory(food: Food) : Long{
 
-            cv.put("name", food.name)
-            cv.put("amount", 0)
-            cv.put("unit", food.unit.name)
+        val db = dbHelper.writableDatabase
+        val cv = ContentValues()
 
+        cv.put("name", food.name)
+        cv.put("amount", 0)
+        cv.put("unit", food.unit.name)
 
-            db.insertOrThrow("inventory", null, cv)
-        } catch (e: SQLiteException) {
-            e.printStackTrace()
-            Log.e("INSERT", "Couldn't insert data : ${e.message.toString()}")
-        }
+        return db.insert("inventory", null, cv)
+
     }
 
     fun getUnitOf(name: String) : Units?{
@@ -139,6 +135,7 @@ class DbManager
     private fun drop() {
         val db = dbHelper.writableDatabase
         db.execSQL("DROP TABLE IF EXISTS menu")
+        db.execSQL("DROP TABLE IF EXISTS inventory")
     }
 
     fun itemExists(name: String) : Pair<Int, Boolean> {
