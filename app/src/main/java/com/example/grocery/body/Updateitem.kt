@@ -214,6 +214,9 @@ fun UpdateItem(
                     else
                         app.dbManager.updateFood(updatedFood)
 
+                    if (date.value != app.dateOperation.value)
+                        app.dateOperation.value = date.value
+
                 }
 
                 if (app.screen == Screen.House) {
