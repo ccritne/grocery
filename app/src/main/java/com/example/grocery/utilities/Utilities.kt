@@ -96,12 +96,6 @@ enum class Screen(){
     UpdateItem
 }
 
-enum class AppActions{
-    Change,
-    Delete,
-    Add
-}
-
 class Food() {
 
     constructor(cursor: Cursor? = null, screen: Screen) : this() {
@@ -136,33 +130,32 @@ class Food() {
         private set
     var idParent: Int = -1
         private set
-
     var idInventory: Int = -1
         private set
+
     var name: String = ""
         private set
+
     var amount: Int = 0
         private set
-
     var amountInventory : Int = -1
         private set
+
     var unit: Units = Units.Grams
         private set
+
     var date: String = ""
         private set
+
     var momentSelector: Int = 0
         private set
+
     var price: Float = -1.0f
         private set
+
     var eaten : Boolean = false
         private set
 
-    var mode: AppActions = AppActions.Add
-        private set
-
-    fun setMode(actions: AppActions){
-        mode = actions
-    }
 
     fun setUnit(unit: Units){
         this.unit = unit
@@ -202,6 +195,24 @@ class Food() {
         idParent = -1
         eaten = false
         amountInventory = -1
+    }
+
+    override fun toString(): String {
+        return """
+            {
+                "id":$id,
+                "idInventory": $idInventory,
+                "idParent": $idInventory,
+                "name": "$name",
+                "amount": $amount,
+                "amountInventory": $amountInventory,
+                "unit": "${unit.symbol}",
+                "date": "$date",
+                "momentSelector": $momentSelector,
+                "price": $price,
+                "eaten": $eaten
+            }
+        """.trimIndent()
     }
 
 
