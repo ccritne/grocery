@@ -20,6 +20,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun <T> DropdownMenuSelection(
@@ -41,7 +42,7 @@ fun <T> DropdownMenuSelection(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = selectedText.toString())
+                Text(text = selectedText.toString(), fontSize = 35.sp)
                 if (enabled.value) {
                     Icon(
                         imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown,
@@ -63,14 +64,13 @@ fun <T> DropdownMenuSelection(
                         Text(
                             text = item.toString(),
                             modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
+                            fontSize = 25.sp
                         )
                     },
                     onClick = {
                         selectedText = item
                         expanded = false
                         onChange(item)
-                        println("item: "+item)
                     }
                 )
             }

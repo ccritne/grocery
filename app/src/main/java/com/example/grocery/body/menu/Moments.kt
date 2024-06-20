@@ -20,8 +20,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
-import com.example.grocery.body.Item
-import com.example.grocery.utilities.Food
+import com.example.grocery.body.ItemUI
+import com.example.grocery.utilities.Item
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -29,7 +29,7 @@ import com.example.grocery.utilities.Food
 fun Moment(
     app: App,
     momentName: String,
-    foodOfMoments: List<Food> = listOf()
+    itemOfMoments: List<Item> = listOf()
 ){
 
     var subMenuShow : Boolean by remember { mutableStateOf(false) }
@@ -63,10 +63,10 @@ fun Moment(
                     horizontalAlignment = Alignment.Start,
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
-                    foodOfMoments.forEach { food ->
-                        Item(
+                    itemOfMoments.forEach { item ->
+                        ItemUI(
                             app = app,
-                            food = food
+                            item = item
                         )
 
                     }

@@ -1,7 +1,6 @@
 package com.example.grocery
 
 import android.content.Context
-import android.icu.util.LocaleData
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -38,7 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.grocery.database.DbManager
-import com.example.grocery.utilities.Food
+import com.example.grocery.utilities.Item
 import com.example.grocery.utilities.Screen
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -50,24 +49,21 @@ class App: ComponentActivity() {
     lateinit var dbManager : DbManager
         private set
 
-    private val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
-
-
     var dateOperation: MutableState<LocalDate> = mutableStateOf(LocalDate.now())
 
-    var food : Food = Food()
+    var item : Item = Item()
         private set
 
-    var isNewFood: MutableState<Boolean> = mutableStateOf(false)
+    var isNewItem: MutableState<Boolean> = mutableStateOf(false)
 
-    var screen : Screen = Screen.Menu
+    var screen : Screen = Screen.Plan
 
 
     lateinit var navController: NavHostController
         private set
 
-    fun setFood(food: Food){
-        this.food = food
+    fun setItem(item: Item){
+        this.item = item
     }
 
     private fun setupValues(){
@@ -141,10 +137,10 @@ class App: ComponentActivity() {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceAround
                         ) {
-                            IconButton(onClick = { navController.navigate(Screen.House.name) }) {
+                            IconButton(onClick = { navController.navigate(Screen.Inventory.name) }) {
                                 Icon(imageVector = Icons.Default.Home, contentDescription = "House")
                             }
-                            IconButton(onClick = { navController.navigate(Screen.Menu.name) }) {
+                            IconButton(onClick = { navController.navigate(Screen.Plan.name) }) {
                                 Icon(
                                     imageVector = Icons.Default.DateRange,
                                     contentDescription = "Calendar"

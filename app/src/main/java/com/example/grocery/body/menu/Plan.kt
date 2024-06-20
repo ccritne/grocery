@@ -14,31 +14,20 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.grocery.App
 import com.example.grocery.body.ButtonAdd
-import com.example.grocery.utilities.Food
+import com.example.grocery.utilities.Item
+import com.example.grocery.utilities.Moments
 import com.example.grocery.utilities.Screen
-import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-enum class Moments(){
-    Breakfast,
-    FirstSnack,
-    Lunch,
-    SecondSnack,
-    Dinner,
-    ThirdSnack
-}
 
-fun fromListFoodToMapBySelector(list: MutableList<Food>) : MutableMap<Int, MutableList<Food>>{
+fun fromListItemToMapBySelector(list: MutableList<Item>) : MutableMap<Int, MutableList<Item>>{
 
-    val returnedMap : MutableMap<Int, MutableList<Food>> = mutableMapOf()
+    val returnedMap : MutableMap<Int, MutableList<Item>> = mutableMapOf()
 
     for (i in list){
         if(!returnedMap.containsKey(i.momentSelector))
@@ -52,16 +41,16 @@ fun fromListFoodToMapBySelector(list: MutableList<Food>) : MutableMap<Int, Mutab
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun Menu(app: App) {
+fun Plan(app: App) {
 
-    app.screen = Screen.Menu
+    app.screen = Screen.Plan
     val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
 
 
-    var momentFood : Map<Int, MutableList<Food>> = mapOf()
+    var momentItem : Map<Int, MutableList<Item>> = mapOf()
 
-    app.dbManager.selectMenuForDay(app.dateOperation.value.format(formatterSql)) { listFood ->
-        momentFood = fromListFoodToMapBySelector(listFood)
+    app.dbManager.selectPlanForDay(app.dateOperation.value.format(formatterSql)) { listItem ->
+        momentItem = fromListItemToMapBySelector(listItem)
     }
 
     Scaffold(
@@ -94,12 +83,12 @@ fun Menu(app: App) {
                 verticalArrangement = Arrangement.Top,
             ) {
 
-                if (momentFood.isNotEmpty()) {
-                    momentFood.forEach { moment ->
+                if (momentItem.isNotEmpty()) {
+                    momentItem.forEach { moment ->
                         Moment(
                             app = app,
                             momentName = Moments.entries[moment.key].name,
-                            foodOfMoments = moment.value
+                            itemOfMoments = moment.value
                         )
                     }
                 } else

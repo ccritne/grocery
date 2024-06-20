@@ -24,7 +24,6 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -39,13 +38,10 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.grocery.App
 import com.example.grocery.body.menu.Date
-import com.example.grocery.utilities.Food
+import com.example.grocery.utilities.Item
 import com.example.grocery.utilities.Screen
-import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAdjusters
-
 
 
 @Composable
@@ -102,7 +98,7 @@ fun DialogShopping(
 fun ShoppingCart(app: App) {
 
     app.screen = Screen.ShoppingCart
-    app.isNewFood.value = false
+    app.isNewItem.value = false
 
     val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
 
@@ -116,10 +112,10 @@ fun ShoppingCart(app: App) {
     val formattedStartDateSQL: String = startDate.value.format(formatterSql)
     val formattedEndDateSQL: String = endDate.value.format(formatterSql)
 
-    var foods : MutableList<Food> = mutableListOf()
+    var items : MutableList<Item> = mutableListOf()
     
     app.dbManager.selectShoppingCartInRange(formattedStartDateSQL, formattedEndDateSQL){
-        foods = it
+        items = it
     }
 
     Column(
@@ -151,7 +147,7 @@ fun ShoppingCart(app: App) {
             )
         }
 
-        if (foods.isNotEmpty()) {
+        if (items.isNotEmpty()) {
 
             Column(
                 modifier = Modifier
@@ -161,8 +157,8 @@ fun ShoppingCart(app: App) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                foods.forEach {
-                    Item(app = app, food = it)
+                items.forEach {
+                    ItemUI(app = app, item = it)
                 }
             }
         } else {

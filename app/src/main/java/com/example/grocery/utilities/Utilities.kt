@@ -4,11 +4,12 @@ import android.database.Cursor
 import android.util.Log
 import com.example.grocery.database.DbManager
 
+
 fun fromGoogleToApp(dbManager: DbManager){
     val string = "SD2024/06/17;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;Pasta125g;Pumpkin200g;Banana;SM3;SM4;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/18;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;SM2;Pasta50g;Peas80g;JobLunch;Apple;SM3;SM4;Bread100g;Chickpeas125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/19;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;BroadBeans100g;Spinach400g;Bread150g;Apple;SM3;SM4;PizzaTeglia300g;SD2024/06/20;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;SM2;Pasta50g;Beans125g;JobLunch;Banana;SM3;SM4;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/21;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;Pasta80g;Soia130g;Tomatoes160g;Zucchini100g;Carrots100g;Banana;SM3;SM4;Flatbreads250g;PestoSauce95g;Mozzarella125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/22;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;SM2;Pasta125g;Eggs150g;Parmisan25g;Apple;SM3;SM4;Pizza250g;Mozzarella125g;SD2024/06/23;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;Pasta125g;TomatoSauce80g;JobLunch;Banana;SM3;SM4;Bread250g;Chickpeas125g;Zucchini100g;Iceberg/Batavia50g;Tomatoes100g"
     val filterByDay = string.split("SD").toMutableList()
 
-    val foods: MutableList<Food> = mutableListOf()
+    val items: MutableList<Item> = mutableListOf()
 
     filterByDay.forEach{ listDay->
         if (listDay.isNotEmpty()){
@@ -39,17 +40,17 @@ fun fromGoogleToApp(dbManager: DbManager){
 
                             val amountInt = if(amount.isNotEmpty()) amount.toInt() else 1
 
-                            val food = Food()
+                            val item = Item()
 
-                            food.setUnit(unit)
-                            food.update(
+                            item.setUnit(unit)
+                            item.update(
                                 newDate = date,
                                 newMomentSelector = momentSelector,
                                 newName = name,
                                 newAmount = amountInt
                             )
 
-                            foods.add(food)
+                            items.add(item)
                         }
 
                     }
@@ -63,23 +64,31 @@ fun fromGoogleToApp(dbManager: DbManager){
 
     }
 
-    foods.forEach {
-        food ->
+    items.forEach {
+        item ->
 
 
 
-        val pair = dbManager.itemExists(food.name)
+        val pair = dbManager.itemExists(item.name)
         if(!pair.second) {
-            val id = dbManager.insertItemInventory(food)
-            food.setIdInventory(id.toInt())
+            val id = dbManager.insertItemInventory(item)
+            item.setIdInventory(id.toInt())
         }
         else
-            food.setIdInventory(pair.first)
+            item.setIdInventory(pair.first)
 
-        dbManager.insertFood(food)
+        dbManager.insertItem(item)
     }
 }
 
+enum class Moments{
+    Breakfast,
+    FirstSnack,
+    Lunch,
+    SecondSnack,
+    Dinner,
+    ThirdSnack
+}
 
 enum class Units(val symbol: String){
     Grams("g"),
@@ -89,14 +98,21 @@ enum class Units(val symbol: String){
         return symbol
     }
 }
+
+enum class Places{
+    Home,
+    Pantry
+}
+
 enum class Screen(){
-    House,
-    Menu,
+    Inventory,
+    Plan,
     ShoppingCart,
     UpdateItem
 }
 
-class Food() {
+
+class Item() {
 
     constructor(cursor: Cursor? = null, screen: Screen) : this() {
         if(cursor != null) {
@@ -108,10 +124,10 @@ class Food() {
 
 
             when (screen) {
-                Screen.Menu -> {
+                Screen.Plan -> {
                     date = cursor.getString(cursor.getColumnIndexOrThrow("date"))
                     momentSelector = cursor.getInt(cursor.getColumnIndexOrThrow("momentSelector"))
-                    eaten = cursor.getInt(cursor.getColumnIndexOrThrow("eaten")) == 1
+                    checked = cursor.getInt(cursor.getColumnIndexOrThrow("eaten")) == 1
                 }
                 Screen.ShoppingCart ->{
                     idInventory = cursor.getInt(cursor.getColumnIndexOrThrow("idInventory"))
@@ -153,7 +169,10 @@ class Food() {
     var price: Float = -1.0f
         private set
 
-    var eaten : Boolean = false
+    var checked : Boolean = false
+        private set
+
+    var place: Places = Places.Pantry
         private set
 
 
@@ -193,7 +212,7 @@ class Food() {
 
         id = 0
         idParent = -1
-        eaten = false
+        checked = false
         amountInventory = -1
     }
 
@@ -210,7 +229,8 @@ class Food() {
                 "date": "$date",
                 "momentSelector": $momentSelector,
                 "price": $price,
-                "eaten": $eaten
+                "checked": $checked,
+                "place": $place
             }
         """.trimIndent()
     }
@@ -221,10 +241,3 @@ class Food() {
 
 
 }
-
-data class ShoppingCartItem(
-    var id: Int = 0,
-    var name: String = "",
-    var total: Int = 0,
-    var checkedTotal: Int = 0,
-)

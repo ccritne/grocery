@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteException
 import android.database.sqlite.SQLiteOpenHelper
 import android.util.Log
-import com.example.grocery.utilities.Food
+import com.example.grocery.utilities.Item
 import com.example.grocery.utilities.Screen
 import com.example.grocery.utilities.Units
 import com.example.grocery.utilities.fromGoogleToApp
@@ -16,7 +16,7 @@ import com.example.grocery.utilities.fromGoogleToApp
 class DbHelper(context: Context?) :
     SQLiteOpenHelper(context, "menu", null, 1) {
 
-    fun createMenuIfNotExists(db: SQLiteDatabase){
+    fun createPlanIfNotExists(db: SQLiteDatabase){
         try {
 
             val query = """CREATE TABLE IF NOT EXISTS menu  (
@@ -45,7 +45,8 @@ class DbHelper(context: Context?) :
                                                    NOT NULL,
                         name           TEXT        UNIQUE NOT NULL,
                         amount         INTEGER     NOT NULL,
-                        unit           INTEGER     NOT NULL
+                        unit           INTEGER     NOT NULL,
+                        place          TEXT        NOT NULL
                     );"""
 
             db.execSQL(query)
@@ -57,7 +58,7 @@ class DbHelper(context: Context?) :
 
     override fun onCreate(db: SQLiteDatabase) {
 
-        createMenuIfNotExists(db)
+        createPlanIfNotExists(db)
         createInventoryIfNotExists(db)
     }
 
@@ -75,17 +76,18 @@ class DbManager
         drop()
         val db = dbHelper.writableDatabase
         dbHelper.createInventoryIfNotExists(db)
-        dbHelper.createMenuIfNotExists(db)
+        dbHelper.createPlanIfNotExists(db)
     }
 
-    fun insertItemInventory(food: Food) : Long{
+    fun insertItemInventory(item: Item) : Long{
 
         val db = dbHelper.writableDatabase
         val cv = ContentValues()
 
-        cv.put("name", food.name)
+        cv.put("name", item.name)
         cv.put("amount", 0)
-        cv.put("unit", food.unit.name)
+        cv.put("unit", item.unit.name)
+        cv.put("place", item.place.name)
 
         return db.insert("inventory", null, cv)
 
@@ -107,22 +109,23 @@ class DbManager
     }
 
 
-    fun insertFood(food: Food) {
+    fun insertItem(item: Item) {
 
 
         try {
             val db = dbHelper.writableDatabase
             val cv = ContentValues()
 
-            cv.put("idInventory", food.idInventory)
-            cv.put("amount", food.amount)
-            cv.put("momentSelector", food.momentSelector)
-            cv.put("date", food.date)
-            cv.put("eaten", false)
-            if (food.price != -1.0f)
-                cv.put("price", food.price)
-            if (food.idParent != -1)
-                cv.put("idParent", food.idParent)
+            cv.put("idInventory", item.idInventory)
+            cv.put("amount", item.amount)
+            cv.put("momentSelector", item.momentSelector)
+            cv.put("date", item.date)
+            cv.put("checked", false)
+            cv.put("place", item.place.name)
+            if (item.price != -1.0f)
+                cv.put("price", item.price)
+            if (item.idParent != -1)
+                cv.put("idParent", item.idParent)
 
 
             db.insertOrThrow("menu", null, cv)
@@ -164,16 +167,16 @@ class DbManager
     }
 
 
-    fun updateInventoryItem(food: Food){
+    fun updateInventoryItem(item: Item){
         try {
             val db = dbHelper.writableDatabase
             val cv = ContentValues()
 
-            cv.put("name", food.name)
-            cv.put("amount", food.amount)
-            cv.put("unit", food.unit.name)
+            cv.put("name", item.name)
+            cv.put("amount", item.amount)
+            cv.put("unit", item.unit.name)
 
-            db.update("inventory", cv, "id=?", arrayOf(food.id.toString()))
+            db.update("inventory", cv, "id=?", arrayOf(item.id.toString()))
         }catch (e: SQLiteException) {
             e.printStackTrace()
             Log.e("UPDATE", "Couldn't update data : ${e.message.toString()}")
@@ -205,7 +208,7 @@ class DbManager
         }
     }
 
-    fun getAllFood() : List<String> {
+    fun getAllItems() : List<String> {
 
         var cursor: Cursor? = null
 
@@ -220,7 +223,9 @@ class DbManager
         if(cursor != null && cursor.moveToFirst()){
             val list: MutableList<String> = mutableListOf()
             do {
-                list.add(cursor.getString(cursor.getColumnIndexOrThrow("name")))
+                val name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
+                if (name.isNotEmpty())
+                    list.add(name)
             }while (cursor.moveToNext())
             cursor.close()
             return list
@@ -229,24 +234,24 @@ class DbManager
         return emptyList<String>()
     }
 
-    fun updateFood(food: Food) : Int{
+    fun updatePlanItem(item: Item) : Int{
 
         val db = dbHelper.writableDatabase
         val cv = ContentValues()
 
-        cv.put("amount", food.amount)
-        cv.put("idInventory", food.idInventory)
-        cv.put("momentSelector", food.momentSelector)
-        cv.put("date", food.date)
+        cv.put("amount", item.amount)
+        cv.put("idInventory", item.idInventory)
+        cv.put("momentSelector", item.momentSelector)
+        cv.put("date", item.date)
 
-        return db.update("menu", cv, "id = ?", arrayOf(food.id.toString()))
+        return db.update("menu", cv, "id = ?", arrayOf(item.id.toString()))
     }
 
-    fun updateEaten(id: Int, newState: Boolean){
+    fun updatePlanChecked(id: Int, newState: Boolean){
         try {
             val db = dbHelper.writableDatabase
             val cv = ContentValues()
-            cv.put("eaten", newState)
+            cv.put("checked", newState)
 
             db.update("menu", cv, "id = ?", arrayOf(id.toString()))
         }catch (e: SQLiteException){
@@ -256,7 +261,7 @@ class DbManager
     }
 
     fun selectInventoryItems(
-    ) : List<Food>{
+    ) : List<Item>{
         var cursor : Cursor? = null
 
         try {
@@ -271,21 +276,21 @@ class DbManager
             """.trimIndent()
             cursor = db.rawQuery(query, null)
 
-            var food: Food
+            var item: Item
 
-            val listFood : MutableList<Food> = mutableListOf()
+            val listItem : MutableList<Item> = mutableListOf()
 
             if (cursor != null && cursor.moveToFirst()) {
                 do {
-                    food = Food(cursor, Screen.House)
+                    item = Item(cursor, Screen.Inventory)
 
-                    listFood.add(food)
+                    listItem.add(item)
 
                 } while (cursor.moveToNext())
                 cursor.close()
             }
 
-            return listFood
+            return listItem
 
         } catch (e: SQLiteException) {
             e.printStackTrace()
@@ -297,14 +302,10 @@ class DbManager
         return emptyList()
     }
 
-    fun getAmountOf(){
-
-    }
-
     fun selectShoppingCartInRange(
             startDate: String,
             endDate: String,
-            onDataTaken: (MutableList<Food>) -> Unit
+            onDataTaken: (MutableList<Item>) -> Unit
     )  {
 
     var cursor : Cursor? = null
@@ -333,28 +334,28 @@ class DbManager
         Log.e("LOAD", "Couldn't load data : ${e.message.toString()}")
     }
 
-    var food: Food
+    var item: Item
 
-    val listFood : MutableList<Food> = mutableListOf()
+    val listItem : MutableList<Item> = mutableListOf()
 
     if (cursor != null && cursor.moveToFirst()) {
         do {
-            food = Food(cursor, Screen.ShoppingCart)
+            item = Item(cursor, Screen.ShoppingCart)
 
-            listFood.add(food)
+            listItem.add(item)
 
         } while (cursor.moveToNext())
         cursor.close()
     }
-    onDataTaken(listFood)
+    onDataTaken(listItem)
 
 }
 
 
 
-    fun selectMenuForDay(
+    fun selectPlanForDay(
         date: String,
-        onDataTaken: (ArrayList<Food>) -> Unit) {
+        onDataTaken: (ArrayList<Item>) -> Unit) {
 
         var cursor: Cursor? = null
 
@@ -382,23 +383,23 @@ class DbManager
             Log.e("LOAD", "Couldn't load data : ${e.message.toString()}")
         }
 
-        var food : Food
+        var item : Item
 
-        val listFood : ArrayList<Food> = ArrayList()
+        val listItem : ArrayList<Item> = ArrayList()
 
         if (cursor != null && cursor.moveToFirst()) {
             do {
-                food = Food(cursor, Screen.Menu)
+                item = Item(cursor, Screen.Plan)
 
-                listFood.add(food)
+                listItem.add(item)
 
             } while (cursor.moveToNext())
             cursor.close()
         }
-        onDataTaken(listFood)
+        onDataTaken(listItem)
     }
 
-    fun deleteFood(id: Int, isMenu: Boolean){
+    fun deleteItem(id: Int, isMenu: Boolean){
 
         try {
             val db = dbHelper.writableDatabase

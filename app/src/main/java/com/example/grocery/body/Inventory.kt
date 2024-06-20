@@ -21,10 +21,10 @@ import com.example.grocery.utilities.Screen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun House(app: App){
-    app.screen = Screen.House
+fun Inventory(app: App){
+    app.screen = Screen.Inventory
 
-    val foodCollection = app.dbManager.selectInventoryItems()
+    val itemCollection = app.dbManager.selectInventoryItems()
 
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
@@ -39,7 +39,7 @@ fun House(app: App){
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            if (foodCollection.isNotEmpty()) {
+            if (itemCollection.isNotEmpty()) {
 
                 Column(
                     modifier = Modifier
@@ -49,10 +49,10 @@ fun House(app: App){
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
-                    foodCollection.forEach {food ->
-                        Item(
+                    itemCollection.forEach {item ->
+                        ItemUI(
                             app = app,
-                            food = food,
+                            item = item,
                         )
                     }
                 }

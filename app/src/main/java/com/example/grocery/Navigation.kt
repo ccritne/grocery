@@ -5,11 +5,10 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.grocery.App
-import com.example.grocery.body.UpdateItem
-import com.example.grocery.body.House
+import com.example.grocery.body.Inventory
 import com.example.grocery.body.ShoppingCart
-import com.example.grocery.body.menu.Menu
+import com.example.grocery.body.UpdateItem
+import com.example.grocery.body.menu.Plan
 import com.example.grocery.utilities.Screen
 
 
@@ -17,12 +16,12 @@ import com.example.grocery.utilities.Screen
 @Composable
 fun NavigationGraph(app: App){
 
-    NavHost(navController = app.navController, startDestination = Screen.Menu.name){
-        composable(route = Screen.House.name){
-            House(app)
+    NavHost(navController = app.navController, startDestination = Screen.Plan.name){
+        composable(route = Screen.Inventory.name){
+            Inventory(app)
         }
-        composable(route = Screen.Menu.name){
-            Menu(app)
+        composable(route = Screen.Plan.name){
+            Plan(app)
         }
         composable(route = Screen.ShoppingCart.name){
             ShoppingCart(app)

@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
 import com.example.grocery.body.menu.Date
-import com.example.grocery.body.menu.Moments
+import com.example.grocery.utilities.Moments
 import com.example.grocery.utilities.Screen
 import com.example.grocery.utilities.Units
 import java.time.LocalDate
@@ -107,20 +107,32 @@ fun AmountField(amount: MutableState<String>, amountInventory: Int?=null, unitEn
 fun UpdateItem(
     app: App
 ) {
+    val listItems = app.dbManager.getAllItems()
+
     val nameField = remember {
-        mutableStateOf(app.food.name)
+        mutableStateOf(
+            app.item.name.ifEmpty { listItems[0] }
+        )
     }
 
+    println("NAME "+nameField.value)
+
     val amount = remember {
-        mutableStateOf(app.food.amount.toString())
+        mutableStateOf(app.item.amount.toString())
     }
 
     val unit = remember {
-        mutableStateOf(app.food.unit)
+        mutableStateOf(app.item.unit)
     }
 
     val momentSelector = remember {
-        mutableStateOf(Moments.valueOf(Moments.entries[app.food.momentSelector].name))
+        mutableStateOf(Moments.valueOf(Moments.entries[app.item.momentSelector].name))
+    }
+
+    val unitSelector : MutableState<Boolean> = remember {
+        mutableStateOf(
+            app.isNewItem.value && app.screen == Screen.Inventory
+        )
     }
 
 
@@ -128,10 +140,10 @@ fun UpdateItem(
 
     val date = remember {
         mutableStateOf(
-            if (app.isNewFood.value)
+            if (app.isNewItem.value)
                 app.dateOperation.value
             else
-                LocalDate.parse(app.food.date, formatterSql)
+                LocalDate.parse(app.item.date, formatterSql)
 
         )
     }
@@ -144,30 +156,30 @@ fun UpdateItem(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        if (app.screen != Screen.House) {
+        if (app.screen != Screen.Inventory) {
             DropdownMenuSelection(
-                list = app.dbManager.getAllFood(),
+                list = listItems,
                 starter = nameField
             ) {
                 nameField.value = it
                 if (nameField.value.isNotEmpty())
                     unit.value = app.dbManager.getUnitOf(nameField.value)!!
                 else
-                    unit.value = app.food.unit
+                    unit.value = app.item.unit
             }
         } else {
             TextField(
                 value = nameField.value,
                 onValueChange = { nameField.value = it },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = TextStyle(textAlign = TextAlign.Center)
+                textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 35.sp)
             )
         }
 
 
-        AmountField(amount = amount, amountInventory = if (app.screen == Screen.ShoppingCart) app.food.amountInventory else null, app.isNewFood, unit = unit)
+        AmountField(amount = amount, amountInventory = if (app.screen == Screen.ShoppingCart) app.item.amountInventory else null, unitSelector, unit = unit)
 
-        if (app.screen == Screen.Menu) {
+        if (app.screen == Screen.Plan) {
             ChoiceMoment(momentSelector = momentSelector)
             Date(
                 date = date,
@@ -189,48 +201,48 @@ fun UpdateItem(
                 Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
             }
             IconButton(onClick = {
-                val updatedFood = app.food
+                val updatedItem = app.item
 
-                updatedFood.setUnit(unit.value)
+                updatedItem.setUnit(unit.value)
 
                 val exists = app.dbManager.itemExists(nameField.value)
 
-                updatedFood.update(
+                updatedItem.update(
                     newName = nameField.value,
                     newAmount = amount.value.toInt(),
                 )
 
-                if (app.screen == Screen.Menu) {
+                if (app.screen == Screen.Plan) {
 
-                    updatedFood.update(
+                    updatedItem.update(
                         newDate = date.value.format(formatterSql),
                         newMomentSelector = momentSelector.value.ordinal
                     )
 
-                    updatedFood.setIdInventory(exists.first)
+                    updatedItem.setIdInventory(exists.first)
 
-                    if (app.isNewFood.value)
-                        app.dbManager.insertFood(updatedFood)
+                    if (app.isNewItem.value)
+                        app.dbManager.insertItem(updatedItem)
                     else
-                        app.dbManager.updateFood(updatedFood)
+                        app.dbManager.updatePlanItem(updatedItem)
 
                     if (date.value != app.dateOperation.value)
                         app.dateOperation.value = date.value
 
                 }
 
-                if (app.screen == Screen.House) {
-                    if (app.isNewFood.value && !exists.second)
-                        app.dbManager.insertItemInventory(updatedFood)
+                if (app.screen == Screen.Inventory) {
+                    if (app.isNewItem.value && !exists.second)
+                        app.dbManager.insertItemInventory(updatedItem)
                     else
-                        app.dbManager.updateInventoryItem(updatedFood)
+                        app.dbManager.updateInventoryItem(updatedItem)
                 }
 
                 if (app.screen == Screen.ShoppingCart){
-                    app.dbManager.updateCart(app.food.idInventory, amount.value.toInt()+app.food.amountInventory)
+                    app.dbManager.updateCart(app.item.idInventory, amount.value.toInt()+app.item.amountInventory)
                 }
 
-                app.isNewFood.value = false
+                app.isNewItem.value = false
 
                 app.navController.navigateUp()
             }) {
