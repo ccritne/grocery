@@ -1,7 +1,5 @@
 package com.example.grocery.body.menu
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.Icons
@@ -14,29 +12,34 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.example.grocery.utilities.getUpdateDate
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
 fun Date(
-    date: MutableState<LocalDate>,
+    date: MutableState<Date>,
     enableLeft: Boolean,
     enableRight: Boolean,
     fontSizeText: Int,
     modifier: Modifier = Modifier,
     modifierIcons: Modifier = Modifier,
+    onChange: (Date) -> Unit
 ){
 
+    val usageDate by date
 
-    val formatterDesign = DateTimeFormatter.ofPattern("E dd/MM")
-    val formattedDateDesign = date.value.format(formatterDesign)
+    val formatterDesign = SimpleDateFormat("E dd/MM", Locale.getDefault())
+    val formattedDateDesign = formatterDesign.format(usageDate)
 
 
     Row(
@@ -47,7 +50,7 @@ fun Date(
         IconButton(
             enabled = enableLeft,
             onClick = {
-                date.value = date.value.minusDays(1)
+                onChange(getUpdateDate(usageDate, -1))
             }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -69,7 +72,7 @@ fun Date(
         IconButton(
             enabled = enableRight,
             onClick = {
-                date.value = date.value.plusDays(1)
+                onChange(getUpdateDate(usageDate, 1))
             }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,

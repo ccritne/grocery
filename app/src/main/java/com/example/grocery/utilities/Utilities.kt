@@ -3,13 +3,69 @@ package com.example.grocery.utilities
 import android.database.Cursor
 import android.util.Log
 import com.example.grocery.database.DbManager
+import com.example.grocery.database.insertItemIntoInventory
+import com.example.grocery.database.insertItemIntoList
+import com.example.grocery.database.insertMoment
+import com.example.grocery.database.insertPlace
+import com.example.grocery.database.insertPlanItem
+import com.example.grocery.database.insertUnit
+import com.example.grocery.database.itemExists
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
 
+fun <T, R> fromPairToMapEntry(pair : Pair<T, R>) : Map.Entry<T, R> {
+    return object : Map.Entry<T, R> {
+        override val key: T
+            get() = pair.first
+        override val value: R
+            get() = pair.second
+    }
+}
+
+fun getInstance(): Calendar{
+    return Calendar.getInstance()
+}
+
+fun getDateNow() : Date{
+    return getInstance().time
+}
+
+fun getUpdateDate(date: Date, days: Int) : Date{
+    val instance = Calendar.getInstance()
+    instance.time = date
+    instance.add(Calendar.DATE, days)
+    return instance.time
+}
+
+fun getDateTime(simpleDateFormat: SimpleDateFormat) : String {
+
+    val calendarTime = getDateNow()
+    val formattedTime = simpleDateFormat.format(calendarTime)
+
+    return formattedTime.toString()
+
+}
 
 fun fromGoogleToApp(dbManager: DbManager){
-    val string = "SD2024/06/17;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;Pasta125g;Pumpkin200g;Banana;SM3;SM4;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/18;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;SM2;Pasta50g;Peas80g;JobLunch;Apple;SM3;SM4;Bread100g;Chickpeas125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/19;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;BroadBeans100g;Spinach400g;Bread150g;Apple;SM3;SM4;PizzaTeglia300g;SD2024/06/20;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;SM2;Pasta50g;Beans125g;JobLunch;Banana;SM3;SM4;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/21;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;Pasta80g;Soia130g;Tomatoes160g;Zucchini100g;Carrots100g;Banana;SM3;SM4;Flatbreads250g;PestoSauce95g;Mozzarella125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/22;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;SM2;Pasta125g;Eggs150g;Parmisan25g;Apple;SM3;SM4;Pizza250g;Mozzarella125g;SD2024/06/23;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;SM2;Pasta125g;TomatoSauce80g;JobLunch;Banana;SM3;SM4;Bread250g;Chickpeas125g;Zucchini100g;Iceberg/Batavia50g;Tomatoes100g"
+    val string = "SD2024/06/17;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta125g;Pumpkin200g;Banana;SM2;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/18;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta50g;Peas80g;JobLunch;Apple;SM2;Bread100g;Chickpeas125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/19;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;BroadBeans100g;Spinach400g;Bread150g;Apple;SM2;PizzaTeglia300g;SD2024/06/20;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta50g;Beans125g;JobLunch;Banana;SM2;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/21;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta80g;Soia130g;Tomatoes160g;Zucchini100g;Carrots100g;Banana;SM2;Flatbreads250g;PestoSauce95g;Mozzarella125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/22;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta125g;Eggs150g;Parmisan25g;Apple;SM2;Pizza250g;Mozzarella125g;SD2024/06/23;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta125g;TomatoSauce80g;JobLunch;Banana;SM2;Bread250g;Chickpeas125g;Zucchini100g;Iceberg/Batavia50g;Tomatoes100g"
     val filterByDay = string.split("SD").toMutableList()
 
     val items: MutableList<Item> = mutableListOf()
+
+    dbManager.recreateDb()
+
+    val idGrams = 1L
+    val idPieces = 2L
+
+    val idSideboard = 1L
+    val idHome = 2L
+
+    val idBreakfast = 1L
+    val idLunch = 2L
+    val idDinner = 3L
+
+    val idWasher = dbManager.insertMoment("Washer", idHome.toInt())
 
     filterByDay.forEach{ listDay->
         if (listDay.isNotEmpty()){
@@ -19,8 +75,13 @@ fun fromGoogleToApp(dbManager: DbManager){
             moments.forEach{ moment ->
                 if(moment.isNotEmpty()){
                     val ingredients = moment.split(";")
-                    val momentSelector = ingredients[0].toInt()
-                    val ingredientsPop= ingredients.subList(1, ingredients.size-1)
+                    val momentChoice = when(ingredients[0].toInt()){
+                        idBreakfast.toInt() - 1 -> idBreakfast
+                        idLunch.toInt() - 1 -> idLunch
+                        idDinner.toInt() - 1 -> idDinner
+                        else -> -1
+                    }
+                    val ingredientsPop = ingredients.subList(1, ingredients.size-1)
 
                     ingredientsPop.forEach{
                             ingredient ->
@@ -28,9 +89,9 @@ fun fromGoogleToApp(dbManager: DbManager){
                         if (ingredient.isNotEmpty()) {
                             var changeIngredient = ingredient
 
-                            var unit = Units.Pieces
+                            var unit = idPieces
                             if(ingredient.last() == 'g' && ingredient[ingredient.length-2].isDigit()) {
-                                unit = Units.Grams
+                                unit = idGrams
                                 changeIngredient =
                                     ingredient.subSequence(0, ingredient.length - 1).toString()
                             }
@@ -42,12 +103,13 @@ fun fromGoogleToApp(dbManager: DbManager){
 
                             val item = Item()
 
-                            item.setUnit(unit)
                             item.update(
-                                newDate = date,
-                                newMomentSelector = momentSelector,
-                                newName = name,
-                                newAmount = amountInt
+                                name = name,
+                                amount = amountInt,
+                                date = date,
+                                idMoment = momentChoice,
+                                idUnit = unit,
+                                idPlace = idSideboard
                             )
 
                             items.add(item)
@@ -64,77 +126,97 @@ fun fromGoogleToApp(dbManager: DbManager){
 
     }
 
+    val clothItem = Item()
+    clothItem.update(
+        name = "White T-shirt",
+        amount = 1,
+        date = string.substring(2, 12),
+        idMoment = idWasher,
+        idPlace = idHome,
+        idUnit = idPieces
+    )
+
+    items.add(clothItem)
+
     items.forEach {
         item ->
 
-
-
         val pair = dbManager.itemExists(item.name)
-        if(!pair.second) {
-            val id = dbManager.insertItemInventory(item)
-            item.setIdInventory(id.toInt())
-        }
-        else
-            item.setIdInventory(pair.first)
 
-        dbManager.insertItem(item)
+        val idItem = if(!pair.second)
+                dbManager.insertItemIntoList(item)
+            else
+                pair.first
+
+
+        item.update(idItem = idItem, amountInventory = 0)
+
+        dbManager.insertPlanItem(item)
+
+        if(!pair.second)
+            dbManager.insertItemIntoInventory(item)
     }
-}
-
-enum class Moments{
-    Breakfast,
-    FirstSnack,
-    Lunch,
-    SecondSnack,
-    Dinner,
-    ThirdSnack
-}
-
-enum class Units(val symbol: String){
-    Grams("g"),
-    Pieces("pz");
-
-    override fun toString(): String {
-        return symbol
-    }
-}
-
-enum class Places{
-    Home,
-    Pantry
 }
 
 enum class Screen(){
     Inventory,
     Plan,
     ShoppingCart,
-    UpdateItem
+    Items,
+    UpdateItem,
+    Profile
 }
 
 
 class Item() {
 
-    constructor(cursor: Cursor? = null, screen: Screen) : this() {
+    constructor(cursor: Cursor? = null) : this() {
         if(cursor != null) {
-            id = cursor.getInt(cursor.getColumnIndexOrThrow("id"))
+            val idColumnIndex = cursor.getColumnIndex("id")
+            if (idColumnIndex != -1)
+                id = cursor.getLong(idColumnIndex)
 
-            name = cursor.getString(cursor.getColumnIndexOrThrow("name"))
-            unit = Units.valueOf(cursor.getString(cursor.getColumnIndexOrThrow("unit")))
-            amount = cursor.getInt(cursor.getColumnIndexOrThrow("amount"))
+            val idItemColumnIndex = cursor.getColumnIndex("idItem")
+            if (idItemColumnIndex != -1)
+                idItem = cursor.getLong(idItemColumnIndex)
 
+            val nameColumnIndex = cursor.getColumnIndex("name")
+            if (nameColumnIndex != -1)
+                name = cursor.getString(nameColumnIndex)
 
-            when (screen) {
-                Screen.Plan -> {
-                    date = cursor.getString(cursor.getColumnIndexOrThrow("date"))
-                    momentSelector = cursor.getInt(cursor.getColumnIndexOrThrow("momentSelector"))
-                    checked = cursor.getInt(cursor.getColumnIndexOrThrow("eaten")) == 1
-                }
-                Screen.ShoppingCart ->{
-                    idInventory = cursor.getInt(cursor.getColumnIndexOrThrow("idInventory"))
-                    amountInventory = cursor.getInt(cursor.getColumnIndexOrThrow("amountInventory"))
-                }
-                else -> { }
-            }
+            val amountColumnIndex = cursor.getColumnIndex("amount")
+            if (amountColumnIndex != -1)
+                amount = cursor.getInt(amountColumnIndex)
+
+            val amountInventoryColumnIndex = cursor.getColumnIndex("amountInventory")
+            if (amountInventoryColumnIndex != -1)
+                amountInventory = cursor.getInt(amountInventoryColumnIndex)
+
+            val dateColumnIndex = cursor.getColumnIndex("date")
+            if (dateColumnIndex != -1)
+                date = cursor.getString(dateColumnIndex)
+
+            val priceColumnIndex = cursor.getColumnIndex("price")
+            if (priceColumnIndex != -1)
+                price = cursor.getFloat(priceColumnIndex)
+
+            val checkedColumnIndex = cursor.getColumnIndex("checked")
+            if (dateColumnIndex != -1)
+                checked = cursor.getInt(checkedColumnIndex) == 1
+
+            val idParentColumnIndex = cursor.getColumnIndex("idParent")
+            if (idParentColumnIndex != -1)
+                idParent = cursor.getLong(cursor.getColumnIndexOrThrow("idParent"))
+            val idUnitColumnIndex = cursor.getColumnIndex("idUnit")
+            if (idUnitColumnIndex != -1)
+                idUnit = cursor.getLong(cursor.getColumnIndexOrThrow("idUnit"))
+            val idMomentColumnIndex = cursor.getColumnIndex("idMoment")
+            if (idMomentColumnIndex != -1)
+                idMoment = cursor.getLong(cursor.getColumnIndexOrThrow("idMoment"))
+            val idPlaceColumnIndex = cursor.getColumnIndex("idPlace")
+            if (idPlaceColumnIndex != -1)
+                idPlace = cursor.getLong(cursor.getColumnIndexOrThrow("idPlace"))
+
 
 
         }else{
@@ -142,11 +224,9 @@ class Item() {
         }
     }
 
-    var id: Int = 0
+    var id: Long = -1
         private set
-    var idParent: Int = -1
-        private set
-    var idInventory: Int = -1
+    var idItem: Long = -1
         private set
 
     var name: String = ""
@@ -157,13 +237,7 @@ class Item() {
     var amountInventory : Int = -1
         private set
 
-    var unit: Units = Units.Grams
-        private set
-
     var date: String = ""
-        private set
-
-    var momentSelector: Int = 0
         private set
 
     var price: Float = -1.0f
@@ -172,65 +246,99 @@ class Item() {
     var checked : Boolean = false
         private set
 
-    var place: Places = Places.Pantry
+    var idParent: Long = -1
         private set
-
-
-    fun setUnit(unit: Units){
-        this.unit = unit
-    }
-
-    fun setIdInventory(id: Int){
-        this.idInventory = id
-    }
+    var idUnit: Long = -1
+        private set
+    var idMoment: Long = -1
+        private set
+    var idPlace: Long = -1
+        private set
+    
 
     fun update(
-        newName: String? = null,
-        newAmount: Int? = null,
-        newDate: String? = null,
-        newMomentSelector: Int? = null,
-        newPrice: Float? = null
+        id: Long? = null,
+        idItem: Long? = null,
+        name: String? = null,
+        amount: Int? = null,
+        amountInventory: Int?=null,
+        date: String? = null,
+        price: Float? = null,
+        checked: Boolean? = null,
+        idParent: Long? = null,
+        idUnit: Long? = null,
+        idMoment: Long? = null,
+        idPlace: Long? = null
     ){
-        if(newName != null)
-            name = newName
-        if(newAmount != null)
-            amount = newAmount
-        if(newDate != null)
-            date = newDate
-        if(newMomentSelector != null)
-            momentSelector = newMomentSelector
-        if(newPrice != null)
-            price = newPrice
+        if(id != null)
+            this.id = id
+        if(idItem != null)
+            this.idItem = idItem
+
+        if(name != null)
+            this.name = name
+        
+        if(amount != null)
+            this.amount = amount
+        if(amountInventory != null)
+            this.amountInventory = amountInventory
+        
+        if(date != null)
+            this.date = date
+        
+        if(price != null)
+            this.price = price
+        
+        if(checked != null)
+            this.checked = checked
+
+        if(idParent != null)
+            this.idParent = idParent
+        if(idUnit != null)
+            this.idUnit = idUnit
+        if(idMoment != null)
+            this.idMoment = idMoment
+        if(idPlace != null)
+            this.idPlace = idPlace
+
     }
 
     fun reset(){
+        id  = -1
+
         name = ""
-        amount = 0
+
+        amount  = 0
+        amountInventory   = -1
+
         date = ""
-        momentSelector = 0
+
         price = -1.0f
 
-        id = 0
-        idParent = -1
         checked = false
-        amountInventory = -1
+
+        idParent  = -1
+        idMoment  = -1
+        idUnit  = -1
+        idPlace = -1
+
     }
 
     override fun toString(): String {
         return """
             {
                 "id":$id,
-                "idInventory": $idInventory,
-                "idParent": $idInventory,
                 "name": "$name",
                 "amount": $amount,
                 "amountInventory": $amountInventory,
-                "unit": "${unit.symbol}",
                 "date": "$date",
-                "momentSelector": $momentSelector,
                 "price": $price,
                 "checked": $checked,
-                "place": $place
+                "idParent": $idParent,
+                "idItem": $idItem,
+                "idUnit": $idUnit,
+                "idMoment": $idMoment,
+                "idPlace": $idPlace
             }
         """.trimIndent()
     }

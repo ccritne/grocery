@@ -13,18 +13,19 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.grocery.App
+import com.example.grocery.database.selectInventoryItems
 import com.example.grocery.utilities.Screen
 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Inventory(app: App){
     app.screen = Screen.Inventory
-
-    val itemCollection = app.dbManager.selectInventoryItems()
 
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
@@ -34,27 +35,19 @@ fun Inventory(app: App){
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxHeight(1f)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            if (itemCollection.isNotEmpty()) {
+            if (app.inventoryMap.value.isNotEmpty()) {
+                app.inventoryMap.value.forEach { item ->
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxHeight(1f)
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState()),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.SpaceEvenly
-                ) {
-                    itemCollection.forEach {item ->
-                        ItemUI(
-                            app = app,
-                            item = item,
-                        )
-                    }
+                    ItemUI(
+                        app = app,
+                        item = item,
+                    )
                 }
             } else {
                 Text(text = "No items found!")

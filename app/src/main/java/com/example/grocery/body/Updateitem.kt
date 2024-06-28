@@ -1,8 +1,5 @@
 package com.example.grocery.body
 
-import android.os.Build
-import androidx.annotation.RequiresApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,23 +9,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.LocalPizza
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -38,158 +35,196 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
 import com.example.grocery.body.menu.Date
-import com.example.grocery.utilities.Moments
+import com.example.grocery.database.insertItemIntoInventory
+import com.example.grocery.database.insertItemIntoList
+import com.example.grocery.database.insertPlanItem
+import com.example.grocery.database.updateInventoryItem
+import com.example.grocery.database.updateItemOfList
+import com.example.grocery.database.updatePlanItem
 import com.example.grocery.utilities.Screen
-import com.example.grocery.utilities.Units
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.example.grocery.utilities.getDateNow
 
 
-@Composable
-fun AmountField(amount: MutableState<String>, amountInventory: Int?=null, unitEnable: MutableState<Boolean>, unit: MutableState<Units>){
-
-    var amountField by remember {
-        mutableStateOf(
-            if (amountInventory != null)
-                "0"
-            else
-                amount.value
-        )
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxHeight(0.1f)
-            .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceEvenly
-    ) {
-        Row (
-            modifier = Modifier.fillMaxWidth(0.5f),
-            verticalAlignment = Alignment.CenterVertically
-        ){
-            if (amountInventory != null) {
-                Text(text = amountInventory.toString(), fontSize = 35.sp)
-                Icon(imageVector = Icons.Default.Add, contentDescription = "Add", modifier = Modifier.size(35.dp))
-            }
-            OutlinedTextField(
-                maxLines = 1,
-                shape = RectangleShape,
-                value = amountField,
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Done
-                ),
-                placeholder = {
-                    Text(
-                        text = "Amount",
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center
-                    )
-                },
-                textStyle = TextStyle(textAlign = TextAlign.Center),
-                onValueChange = {
-                    amount.value = it
-                    amountField = it
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-        }
-        DropdownMenuSelection(list = Units.entries, enabled = unitEnable, starter = unit){
-            unit.value = it
-        }
-    }
-}
-
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun UpdateItem(
     app: App
 ) {
-    val listItems = app.dbManager.getAllItems()
 
-    val nameField = remember {
+    var nameSelector by remember(app.item) {
         mutableStateOf(
-            app.item.name.ifEmpty { listItems[0] }
+                Pair(app.item.key, app.item.value.name)
         )
     }
 
-    println("NAME "+nameField.value)
-
-    val amount = remember {
-        mutableStateOf(app.item.amount.toString())
+    var nameField by remember {
+        mutableStateOf(
+            if(app.isNewItem.value)
+                ""
+            else
+                app.item.value.name
+        )
     }
 
-    val unit = remember {
-        mutableStateOf(app.item.unit)
+
+    val amount = remember {
+        mutableIntStateOf(app.item.value.amount)
     }
 
     val momentSelector = remember {
-        mutableStateOf(Moments.valueOf(Moments.entries[app.item.momentSelector].name))
-    }
-
-    val unitSelector : MutableState<Boolean> = remember {
-        mutableStateOf(
-            app.isNewItem.value && app.screen == Screen.Inventory
+        mutableLongStateOf(
+            if(app.isNewItem.value)
+                app.momentsMap.value.entries.first().key
+            else
+                app.item.value.idMoment
         )
     }
 
 
-    val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
-
-    val date = remember {
+    var unitSymbolSelector by remember {
         mutableStateOf(
-            if (app.isNewItem.value)
+            if (app.screen != Screen.Items || (app.screen == Screen.Items && !app.isNewItem.value))
+                app.unitsMap.value[app.item.value.idUnit]?.let {
+                    Pair(
+                        app.item.value.idUnit,
+                        it.second
+                    )
+                }
+            else
+                Pair(
+                    app.unitsMap.value.entries.first().key,
+                    app.unitsMap.value.entries.first().value.second
+                )
+        )
+    }
+
+
+
+    val date = remember{
+        mutableStateOf(
+            if (app.screen == Screen.Plan)
                 app.dateOperation.value
             else
-                LocalDate.parse(app.item.date, formatterSql)
-
+                getDateNow()
         )
     }
 
     Column(
         modifier = Modifier
-            .background(color = Color.White)
-            .fillMaxWidth(),
-        verticalArrangement = Arrangement.SpaceAround,
+            .fillMaxWidth()
+            .fillMaxHeight(),
+        verticalArrangement = if(app.screen != Screen.Items) Arrangement.SpaceEvenly else Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
-        if (app.screen != Screen.Inventory) {
-            DropdownMenuSelection(
-                list = listItems,
-                starter = nameField
-            ) {
-                nameField.value = it
-                if (nameField.value.isNotEmpty())
-                    unit.value = app.dbManager.getUnitOf(nameField.value)!!
-                else
-                    unit.value = app.item.unit
-            }
-        } else {
-            TextField(
-                value = nameField.value,
-                onValueChange = { nameField.value = it },
-                modifier = Modifier.fillMaxWidth(),
+        
+        if (app.screen == Screen.Items) {
+            OutlinedTextField(
+                shape = RectangleShape,
+                placeholder = { Text(text = "Name", fontSize = 35.sp) },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.LocalPizza,
+                        contentDescription = "icon"
+                    )
+                },
+                value = nameField,
+                onValueChange = { nameField = it },
+                modifier = Modifier
+                    .fillMaxWidth(0.90f)
+                    .padding(15.dp),
                 textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 35.sp)
             )
+        }else {
+            DropdownMenuSelection(
+                list = app.itemsMap.value.map { item -> Pair(item.key, item.value.name) },
+                starter = nameSelector
+            ) {
+                nameSelector = it
+
+                val idUnit = app.itemsMap.value[it.first]?.idUnit
+                val symbolUnit = app.unitsMap.value[idUnit]?.second
+
+                if (idUnit != null && symbolUnit != null) {
+                    unitSymbolSelector = Pair(
+                        idUnit,
+                        symbolUnit
+                    )
+                }
+            }
+
+            if (app.screen == Screen.Plan) {
+                ChoiceMoment(app = app, momentState = momentSelector){
+                    momentSelector.longValue = it
+                }
+                Date(
+                    date = date,
+                    enableLeft = true,
+                    enableRight = true,
+                    modifierIcons = Modifier.size(25.dp),
+                    fontSizeText = 35
+                ){
+                    app.dateOperation.value = it
+                    date.value = it
+                }
+            }
         }
 
+        Row(
+            modifier = Modifier
+                .fillMaxHeight(0.1f)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            if (app.screen != Screen.Items) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(0.5f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    if (app.screen == Screen.ShoppingCart) {
+                        Text(text = app.item.value.amountInventory.toString(), fontSize = 35.sp)
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add",
+                            modifier = Modifier.size(35.dp)
+                        )
+                    }
+                    OutlinedTextField(
+                        maxLines = 1,
+                        shape = RectangleShape,
+                        value = if (amount.intValue != 0) amount.intValue.toString() else "",
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.NumberPassword,
+                            imeAction = ImeAction.Done
+                        ),
+                        placeholder = {
+                            Text(
+                                text = "Amount",
+                                modifier = Modifier.fillMaxWidth(),
+                                textAlign = TextAlign.Center
+                            )
+                        },
+                        textStyle = TextStyle(textAlign = TextAlign.Center),
+                        onValueChange = {
+                            if (it.isNotEmpty()) {
+                                amount.intValue = it.toInt()
+                            } else
+                                amount.intValue = 0
 
-        AmountField(amount = amount, amountInventory = if (app.screen == Screen.ShoppingCart) app.item.amountInventory else null, unitSelector, unit = unit)
-
-        if (app.screen == Screen.Plan) {
-            ChoiceMoment(momentSelector = momentSelector)
-            Date(
-                date = date,
-                enableLeft = true,
-                enableRight = true,
-                modifierIcons = Modifier.size(25.dp),
-                fontSizeText = 35
-            )
+                        },
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+            unitSymbolSelector?.let {
+                DropdownMenuSelection(
+                    list = app.unitsMap.value.map { unit -> Pair(unit.key, unit.value.second) },
+                    enabled = app.screen == Screen.Items,
+                    starter = it
+                ) {
+                    unitSymbolSelector = it
+                }
+            }
         }
-
 
         Row(
             modifier = Modifier
@@ -198,51 +233,75 @@ fun UpdateItem(
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             IconButton(onClick = { app.navController.navigateUp() }) {
-                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
             }
             IconButton(onClick = {
-                val updatedItem = app.item
-
-                updatedItem.setUnit(unit.value)
-
-                val exists = app.dbManager.itemExists(nameField.value)
+                val updatedItem = app.item.value
 
                 updatedItem.update(
-                    newName = nameField.value,
-                    newAmount = amount.value.toInt(),
+                    name = if(app.screen != Screen.Items) nameSelector.second else nameField,
+                    amount = amount.intValue,
+                    idUnit = unitSymbolSelector?.first
                 )
 
                 if (app.screen == Screen.Plan) {
 
+                    val oldMoment = updatedItem.idMoment
+
                     updatedItem.update(
-                        newDate = date.value.format(formatterSql),
-                        newMomentSelector = momentSelector.value.ordinal
+                        date = app.formatterSql.format(app.dateOperation.value),
+                        idMoment = momentSelector.longValue
                     )
 
-                    updatedItem.setIdInventory(exists.first)
 
-                    if (app.isNewItem.value)
-                        app.dbManager.insertItem(updatedItem)
+                    if (app.isNewItem.value) {
+                        val id = app.dbManager.insertPlanItem(updatedItem)
+                        updatedItem.update(id = id)
+                    }
                     else
                         app.dbManager.updatePlanItem(updatedItem)
 
-                    if (date.value != app.dateOperation.value)
-                        app.dateOperation.value = date.value
+                    if (updatedItem.id != -1L)
+                        app.addOrUpdateItemInPlan(updatedItem, oldMoment)
 
                 }
 
                 if (app.screen == Screen.Inventory) {
-                    if (app.isNewItem.value && !exists.second)
-                        app.dbManager.insertItemInventory(updatedItem)
+
+                    if (app.isNewItem.value) {
+                        val id = app.dbManager.insertItemIntoInventory(updatedItem)
+                        updatedItem.update(id=id)
+                    }
                     else
-                        app.dbManager.updateInventoryItem(updatedItem)
+                        app.dbManager.updateInventoryItem(updatedItem.idItem, amount.intValue)
+
+
+                    if (updatedItem.id != -1L)
+                        app.addOrUpdateItemInInventory(updatedItem)
                 }
 
                 if (app.screen == Screen.ShoppingCart){
-                    app.dbManager.updateCart(app.item.idInventory, amount.value.toInt()+app.item.amountInventory)
+                    app.dbManager.updateInventoryItem(updatedItem.idItem, amount.intValue+updatedItem.amountInventory)
+                }
+
+                if (app.screen == Screen.Items){
+
+                    updatedItem.update(idUnit = unitSymbolSelector?.first)
+
+                    if (app.isNewItem.value) {
+                        val id = app.dbManager.insertItemIntoList(item = updatedItem)
+                        updatedItem.update(id = id)
+                    }
+                    else
+                        app.dbManager.updateItemOfList(item = updatedItem)
+
+                    if (updatedItem.id != -1L)
+                        app.addOrUpdateItemInList(updatedItem)
                 }
 
                 app.isNewItem.value = false
+
+                app.setItem(app.voidMapEntry)
 
                 app.navController.navigateUp()
             }) {

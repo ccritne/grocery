@@ -9,8 +9,8 @@ android {
 
     defaultConfig {
         applicationId = "com.example.grocery"
-        minSdk = 24
-        targetSdk = 34
+        minSdk = 23
+        targetSdk = 33
         versionCode = 1
         versionName = "1.0"
 
@@ -58,7 +58,7 @@ dependencies {
     implementation(libs.androidx.material3.android)
 
     // Navigation
-    implementation("androidx.navigation:navigation-compose:2.7.7")
+    implementation(libs.androidx.navigation.compose)
 
     //Icons
     implementation("androidx.compose.material:material-icons-extended:$2.7.7")

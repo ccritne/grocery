@@ -2,128 +2,108 @@ package com.example.grocery.body
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DismissValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxState
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableLongState
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.grocery.App
-import com.example.grocery.utilities.Moments
-import com.example.grocery.utilities.Screen
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.example.grocery.database.deleteItem
+import com.example.grocery.database.updatePlanChecked
 import com.example.grocery.utilities.Item
-
-@Composable
-fun Moment(
-    momentSelector: MutableState<Moments>,
-    moment: Moments
-){
-    Row(
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        RadioButton(
-            selected = momentSelector.value == moment,
-            onClick = { momentSelector.value = moment })
-
-        Text(text = moment.name)
-    }
-}
+import com.example.grocery.utilities.Screen
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue.EndToStart
+import androidx.compose.material3.SwipeToDismissBoxValue.Settled
+import androidx.compose.material3.SwipeToDismissBoxValue.StartToEnd
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleCoroutineScope
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun ChoiceMoment(
-    momentSelector: MutableState<Moments>
+    app: App,
+    momentState: MutableLongState,
+    onChange: (Long) -> Unit
 ){
 
-    Column(
+    val momentCheckedStates = remember(app.momentsMap) {
+        app.momentsMap.value.map { item -> mutableLongStateOf(item.key) }
+    }
+
+    LazyVerticalGrid(
+        columns = GridCells.Fixed(2),
         modifier = Modifier
             .fillMaxWidth()
             .padding(15.dp),
     ) {
-        Moments.entries.chunked(1).forEach{ moments ->
-            Row (
+        items(app.momentsMap.value.size) { index ->
+            Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
 
-                moments.forEach {
-                    Moment(momentSelector = momentSelector, moment = it)
-                }
+                RadioButton(
+                    selected = momentState.longValue == momentCheckedStates[index].longValue,
+                    onClick = { onChange(momentCheckedStates[index].longValue) })
+
+                app.momentsMap.value[momentCheckedStates[index].longValue]?.let { Text(text = it) }
             }
         }
-    }
+}
 }
 
-@Composable
-fun DeleteItem(
-    title: String,
-    message: String,
-    onDelete: (Boolean) -> Unit = {}
-){
-    Dialog(
-        onDismissRequest = { onDelete(false) },
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(0.95f)
-                .background(color = Color.White),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceAround
-        ) {
-            Text(text = title, modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp), fontSize = 35.sp, textAlign = TextAlign.Center)
-            Text(text = message, modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp), fontSize = 25.sp, textAlign = TextAlign.Center)
-
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .padding(15.dp), horizontalArrangement = Arrangement.SpaceAround) {
-                TextButton(onClick = {
-                    onDelete(false)
-                }) {
-                    Text("No")
-                }
-                TextButton(onClick = {
-                    onDelete(true)
-                }) {
-                    Text("Yes")
-                }
-            }
-        }
-    }
-}
-
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ButtonAdd(
     app: App
@@ -132,106 +112,175 @@ fun ButtonAdd(
         shape = CircleShape,
         onClick = {
             app.isNewItem.value = true
-            app.setItem(Item())
+
+            if (app.itemsMap.value.isNotEmpty())
+                app.setItem(app.itemsMap.value.entries.first())
+            else
+                app.setItem(app.voidMapEntry)
+
             app.navController.navigate(Screen.UpdateItem.name)
         }) {
         Icon(imageVector = Icons.Default.Add, contentDescription = "Add item")
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ItemUI(
-    app: App,
-    item: Item
-){
-
-    var checked by remember {
-        mutableStateOf(item.checked)
-    }
-
-    val screen = app.navController.currentDestination?.route
-
-    var isDeleting by remember {
+fun SwipeToDeleteContainer(
+    stayWhenStartEnd: Boolean,
+    onStartEnd: () -> Unit,
+    stayWhenEndStart: Boolean,
+    onEndStart: () -> Unit,
+    animationDuration: Int = 500,
+    content: @Composable () -> Unit
+) {
+    var isRemoved by remember {
         mutableStateOf(false)
     }
 
-    val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
-    val formatterDesign: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM")
+    val scope = rememberCoroutineScope()
 
-    if(isDeleting) {
-        val currentCaller = app.navController.currentDestination?.route
-        DeleteItem(
-            title = "Deleting item",
-            message = """Do you want to delete ${app.item.name} from ${
-                if (currentCaller == Screen.Plan.name) Moments.entries[app.item.momentSelector].name.lowercase() + " of " + LocalDate.parse(
-                    app.item.date,
-                    formatterSql
-                ).format(formatterDesign) else "inventory"
-            }?"""
-        ) {
-            if (it)
-                app.dbManager.deleteItem(app.item.id, currentCaller == Screen.Plan.name)
-            isDeleting = false
+    val state = rememberSwipeToDismissBoxState(
+        confirmValueChange = { value ->
+            when (value){
+                StartToEnd -> {
+                    if (!stayWhenStartEnd) {
+                        isRemoved = true
+                        return@rememberSwipeToDismissBoxState true
+                    }
+                }
+
+                EndToStart -> {
+                    if (!stayWhenEndStart) {
+                        isRemoved = true
+                        return@rememberSwipeToDismissBoxState true
+                    }
+                }
+                Settled -> return@rememberSwipeToDismissBoxState false
+            }
+            false
         }
+    )
+
+    LaunchedEffect(key1 = isRemoved) {
+        if(isRemoved) {
+            scope.launch {
+                delay(animationDuration.toLong())
+            }
+        }
+
+        if (state.dismissDirection == StartToEnd)
+            onStartEnd()
+        if (state.dismissDirection == EndToStart)
+            onEndStart()
     }
+
+    AnimatedVisibility(
+        visible = !isRemoved,
+        enter = fadeIn(),
+        exit = shrinkVertically(
+            animationSpec = tween(durationMillis = animationDuration),
+            shrinkTowards = Alignment.Top
+        ) + fadeOut()
+    ) {
+        SwipeToDismissBox(
+            state = state,
+            backgroundContent = {
+                DeleteBackground(swipeDismissState = state)
+            },
+            content = { content() }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeleteBackground(
+    swipeDismissState: SwipeToDismissBoxState
+) {
+    val color = when (swipeDismissState.dismissDirection){
+        StartToEnd -> Color.Red
+        EndToStart -> Color.Green
+        else -> Color.White
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color)
+            .padding(16.dp),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = null,
+            tint = Color.White
+        )
+        Spacer(modifier = Modifier.fillMaxWidth())
+        Icon(
+            imageVector = Icons.Default.Check,
+            contentDescription = null,
+            tint = Color.White
+        )
+
+    }
+}
+
+
+@Composable
+fun ItemUI(
+    app: App,
+    item: Map.Entry<Long, Item>
+){
+
+    val itemObject = item.value
+
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .fillMaxHeight(0.1f)
             .clickable {
-
-            }
-            .pointerInput(Unit) {
-                detectTapGestures(
-                    onLongPress = {
-                        app.isNewItem.value = false
-                        app.setItem(item)
-                        isDeleting = true
-                    },
-                    onTap = {
-                        app.isNewItem.value = false
-                        app.setItem(item)
-                        app.navController.navigate(Screen.UpdateItem.name)
-                    }
-                )
+                app.setItem(item = item)
+                app.navController.navigate(Screen.UpdateItem.name)
             }
             .background(
-                color = if (screen == Screen.ShoppingCart.name && item.amountInventory >= item.amount)
+                color = if (app.screen == Screen.ShoppingCart && itemObject.amountInventory >= itemObject.amount)
                     Color.Green
                 else
-                    Color.Transparent
+                    Color.White
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
+        
         Text(
-            text = item.name,
-            fontSize = 30.sp
+            text = itemObject.name,
+            fontSize = 30.sp,
+            modifier = Modifier.padding(start = 15.dp)
         )
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = (if (screen == Screen.ShoppingCart.name)
-                    item.amountInventory.toString()+"/"
-                else "")
-                        +
-                        item.amount.toString()
-                        +
-                        item.unit.symbol,
-                fontSize = 30.sp
-            )
-            if (screen == Screen.Plan.name)
-                Checkbox(
-                    checked = checked,
-                    onCheckedChange = {
-                        checked = it
-                        app.dbManager.updatePlanChecked(item.id, it)
-                    }
+        if (app.screen != Screen.Items) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = (if (app.screen == Screen.ShoppingCart)
+                        itemObject.amountInventory.toString()+"/"
+                    else "")
+                            +
+                            itemObject.amount.toString()
+                            +
+                            app.unitsMap.value[itemObject.idUnit]?.second,
+                    fontSize = 30.sp
                 )
+                if(itemObject.checked)
+                    Icon(imageVector = Icons.Default.Check, contentDescription = "Check")
+            }
         }
+        
     }
+
+
 }

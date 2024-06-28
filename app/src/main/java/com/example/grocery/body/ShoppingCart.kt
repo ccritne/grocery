@@ -1,7 +1,5 @@
 package com.example.grocery.body
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +20,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,10 +36,9 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.grocery.App
 import com.example.grocery.body.menu.Date
-import com.example.grocery.utilities.Item
+import com.example.grocery.database.selectShoppingCartInRange
 import com.example.grocery.utilities.Screen
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
+import com.example.grocery.utilities.getDateNow
 
 
 @Composable
@@ -93,30 +90,25 @@ fun DialogShopping(
 }
 
 
-@RequiresApi(Build.VERSION_CODES.O)
+
 @Composable
 fun ShoppingCart(app: App) {
 
     app.screen = Screen.ShoppingCart
+
     app.isNewItem.value = false
 
-    val formatterSql: DateTimeFormatter = DateTimeFormatter.ofPattern("y/MM/dd")
-
-    val startDate: MutableState<LocalDate> = remember {
-        mutableStateOf(LocalDate.now())
+    val shoppingCart by remember(app.startDateOperation, app.endDateOperation, app.placeSelector) {
+        derivedStateOf {
+            app.dbManager.selectShoppingCartInRange(
+                startDate = app.formatterSql.format(app.startDateOperation.value),
+                endDate = app.formatterSql.format(app.endDateOperation.value),
+                idPlace = app.placeSelector.first
+            )
+        }
     }
 
-    val endDate: MutableState<LocalDate> = remember {
-        mutableStateOf(startDate.value.plusDays(6))
-    }
-    val formattedStartDateSQL: String = startDate.value.format(formatterSql)
-    val formattedEndDateSQL: String = endDate.value.format(formatterSql)
 
-    var items : MutableList<Item> = mutableListOf()
-    
-    app.dbManager.selectShoppingCartInRange(formattedStartDateSQL, formattedEndDateSQL){
-        items = it
-    }
 
     Column(
         modifier = Modifier
@@ -126,28 +118,35 @@ fun ShoppingCart(app: App) {
     ) {
 
         Row(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.1f),
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             Date(
                 modifier = Modifier.fillMaxWidth(0.5f),
-                date = startDate,
-                enableLeft = startDate.value.isAfter(LocalDate.now()),
-                enableRight = startDate.value.isBefore(endDate.value),
-                modifierIcons = Modifier.size(20.dp),
-                fontSizeText = 25
-            )
+                date = app.startDateOperation,
+                enableLeft = app.startDateOperation.value.after(getDateNow()),
+                enableRight = app.startDateOperation.value.before(app.endDateOperation.value),
+                modifierIcons = Modifier.size(15.dp),
+                fontSizeText = 20
+            ){
+                app.startDateOperation.value = it
+            }
+
             Date(
                 modifier = Modifier.fillMaxWidth(),
-                date = endDate,
-                enableLeft = endDate.value.isAfter(startDate.value),
+                date = app.endDateOperation,
+                enableLeft = app.endDateOperation.value.after(app.startDateOperation.value),
                 enableRight = true,
-                modifierIcons = Modifier.size(20.dp),
-                fontSizeText = 25
-            )
+                modifierIcons = Modifier.size(15.dp),
+                fontSizeText = 20
+            ){
+                app.endDateOperation.value = it
+            }
         }
 
-        if (items.isNotEmpty()) {
+        if (shoppingCart.isNotEmpty()) {
 
             Column(
                 modifier = Modifier
@@ -157,7 +156,7 @@ fun ShoppingCart(app: App) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                items.forEach {
+                shoppingCart.forEach {
                     ItemUI(app = app, item = it)
                 }
             }

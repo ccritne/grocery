@@ -23,27 +23,26 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun <T> DropdownMenuSelection(
-    enabled: MutableState<Boolean> = mutableStateOf(true),
-    list: List<T>,
-    starter: MutableState<T>,
-    onChange: (T) -> Unit
+fun DropdownMenuSelection(
+    enabled: Boolean = true,
+    list: List<Pair<Long, String>>,
+    starter: Pair<Long, String>,
+    onChange: (Pair<Long, String>) -> Unit
 ){
     var expanded by remember { mutableStateOf(false) }
-    var selectedText by starter
 
     Column(
         modifier = Modifier.fillMaxWidth(0.5f)
     ) {
         IconButton(
             modifier = Modifier.fillMaxWidth(),
-            onClick =  { if (enabled.value) expanded = true }
+            onClick =  { if (enabled) expanded = true }
         ){
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = selectedText.toString(), fontSize = 35.sp)
-                if (enabled.value) {
+                Text(text = starter.second, fontSize = 35.sp)
+                if (enabled) {
                     Icon(
                         imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown,
                         contentDescription = null
@@ -59,16 +58,15 @@ fun <T> DropdownMenuSelection(
         ) {
             list.forEach { item ->
                 DropdownMenuItem(
-                    enabled = enabled.value,
+                    enabled = enabled,
                     text = {
                         Text(
-                            text = item.toString(),
+                            text = item.second,
                             modifier = Modifier.fillMaxWidth(),
                             fontSize = 25.sp
                         )
                     },
                     onClick = {
-                        selectedText = item
                         expanded = false
                         onChange(item)
                     }
