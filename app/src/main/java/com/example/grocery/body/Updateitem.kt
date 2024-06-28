@@ -162,7 +162,7 @@ fun UpdateItem(
                     modifierIcons = Modifier.size(25.dp),
                     fontSizeText = 35
                 ){
-                    app.dateOperation.value = it
+                    app.changeDateOperation(it)
                     date.value = it
                 }
             }
