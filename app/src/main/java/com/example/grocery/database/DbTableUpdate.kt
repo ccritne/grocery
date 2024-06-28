@@ -25,10 +25,10 @@ fun DbManager.updatePlanItem(item: Item) : Int {
     return this.update("planning", cv, "id = ?", arrayOf(item.id.toString()))
 }
 
-fun DbManager.updatePlanChecked(id: Long) : Int{
+fun DbManager.updatePlanChecked(id: Long, check: Boolean) : Int{
 
     val cv = ContentValues()
-    cv.put("checked", true)
+    cv.put("checked",  check)
 
     return this.update("planning", cv, "id = ?", arrayOf(id.toString()))
 

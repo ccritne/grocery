@@ -140,6 +140,10 @@ fun SwipeToDeleteContainer(
         mutableStateOf(false)
     }
 
+    var changeState by remember {
+        mutableStateOf(false)
+    }
+
     val scope = rememberCoroutineScope()
 
     val state = rememberSwipeToDismissBoxState(
@@ -160,11 +164,12 @@ fun SwipeToDeleteContainer(
                 }
                 Settled -> return@rememberSwipeToDismissBoxState false
             }
+            changeState = !changeState
             false
         }
     )
 
-    LaunchedEffect(key1 = isRemoved) {
+    LaunchedEffect(key1 = changeState) {
         if(isRemoved) {
             scope.launch {
                 delay(animationDuration.toLong())
@@ -232,7 +237,8 @@ fun DeleteBackground(
 @Composable
 fun ItemUI(
     app: App,
-    item: Map.Entry<Long, Item>
+    item: Map.Entry<Long, Item>,
+    checkedState : Boolean = false
 ){
 
     val itemObject = item.value
@@ -254,12 +260,19 @@ fun ItemUI(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        
-        Text(
-            text = itemObject.name,
-            fontSize = 30.sp,
-            modifier = Modifier.padding(start = 15.dp)
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if(checkedState)
+                Icon(imageVector = Icons.Default.Check, contentDescription = "Check",
+                        modifier = Modifier.padding(start = 15.dp))
+
+            Text(
+                text = itemObject.name,
+                fontSize = 30.sp,
+                modifier = Modifier.padding(start = 15.dp)
+            )
+        }
 
         if (app.screen != Screen.Items) {
             Row(
@@ -273,10 +286,10 @@ fun ItemUI(
                             itemObject.amount.toString()
                             +
                             app.unitsMap.value[itemObject.idUnit]?.second,
-                    fontSize = 30.sp
+                    fontSize = 30.sp,
+                    modifier = Modifier.padding(end = 15.dp)
                 )
-                if(itemObject.checked)
-                    Icon(imageVector = Icons.Default.Check, contentDescription = "Check")
+
             }
         }
         

@@ -1,6 +1,7 @@
 package com.example.grocery.body
 
 import android.os.Build
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,8 @@ import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -59,6 +62,7 @@ fun Plan(
             }
 
                 if (app.dailyPlanMap.value.isNotEmpty()) {
+
                     LazyColumn(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top,
@@ -75,6 +79,10 @@ fun Plan(
                                     }
                                 }
                                 items(moment.value.toList()) { item ->
+                                        val checkedState = remember {
+                                            mutableStateOf(item.second.checked)
+                                        }
+
                                         SwipeToDeleteContainer(
                                             stayWhenStartEnd = false,
                                             onStartEnd = {
@@ -88,11 +96,16 @@ fun Plan(
                                             },
                                             stayWhenEndStart = true,
                                             onEndStart = {
-                                                app.dbManager.updatePlanChecked(item.first)
-                                                item.second.update(checked = true)
+
+                                                val newValue = !item.second.checked
+
+                                                checkedState.value = newValue
+                                                app.dbManager.updatePlanChecked(item.first, newValue)
+                                                item.second.update(checked = newValue)
+
                                                 app.addOrUpdateItemInPlan(item.second)
                                             },
-                                        ) { ItemUI(app = app, item = fromPairToMapEntry(item)) }
+                                        ) { ItemUI(app = app, item = fromPairToMapEntry(item), checkedState = checkedState.value) }
                                     }
 
                             }

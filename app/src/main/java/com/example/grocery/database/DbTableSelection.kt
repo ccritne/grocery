@@ -62,7 +62,7 @@ fun DbManager.selectInventoryItems(idPlace: Long) : MutableMap<Long, Item>{
                 inventory.amount as amountInventory
             FROM inventory
                 INNER JOIN items ON inventory.idItem = items.id
-            WHERE items.idPlace = ?
+            WHERE items.idPlace = ? AND inventory.amount > 0
         """.trimIndent()
 
     val cursor = this.rawQuery(query, arrayOf(idPlace.toString()))
