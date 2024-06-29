@@ -79,6 +79,8 @@ fun Plan(
                                     }
                                 }
                                 items(moment.value.toList()) { item ->
+
+
                                         val checkedState = remember {
                                             mutableStateOf(item.second.checked)
                                         }

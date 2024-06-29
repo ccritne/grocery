@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,14 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
 import com.example.grocery.body.menu.Date
-import com.example.grocery.database.insertItemIntoInventory
-import com.example.grocery.database.insertItemIntoList
-import com.example.grocery.database.insertPlanItem
-import com.example.grocery.database.updateInventoryItem
-import com.example.grocery.database.updateItemOfList
-import com.example.grocery.database.updatePlanItem
 import com.example.grocery.utilities.Screen
 import com.example.grocery.utilities.getDateNow
+import com.example.grocery.manageitems.updateItem
 
 
 @Composable
@@ -50,13 +46,13 @@ fun UpdateItem(
     app: App
 ) {
 
-    var nameSelector by remember(app.item) {
+    var nameSelector by remember(app.placeSelector) {
         mutableStateOf(
                 Pair(app.item.key, app.item.value.name)
         )
     }
 
-    var nameField by remember {
+    var nameField by remember(app.placeSelector) {
         mutableStateOf(
             if(app.isNewItem.value)
                 ""
@@ -70,7 +66,7 @@ fun UpdateItem(
         mutableIntStateOf(app.item.value.amount)
     }
 
-    val momentSelector = remember {
+    val momentSelector = remember(app.placeSelector) {
         mutableLongStateOf(
             if(app.isNewItem.value)
                 app.momentsMap.value.entries.first().key
@@ -80,7 +76,7 @@ fun UpdateItem(
     }
 
 
-    var unitSymbolSelector by remember {
+    var unitSymbolSelector by remember(app.placeSelector) {
         mutableStateOf(
             if (app.screen != Screen.Items || (app.screen == Screen.Items && !app.isNewItem.value))
                 app.unitsMap.value[app.item.value.idUnit]?.let {
@@ -211,7 +207,7 @@ fun UpdateItem(
                                 amount.intValue = 0
 
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth().height(60.dp)
                     )
                 }
             }
@@ -236,70 +232,18 @@ fun UpdateItem(
                 Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
             }
             IconButton(onClick = {
-                val updatedItem = app.item.value
-
-                updatedItem.update(
-                    name = if(app.screen != Screen.Items) nameSelector.second else nameField,
+                updateItem(
+                    app = app,
+                    screen = app.screen,
+                    item = app.item.value,
                     amount = amount.intValue,
-                    idUnit = unitSymbolSelector?.first
+                    idUnit = unitSymbolSelector?.first,
+                    idMoment = momentSelector.longValue,
+                    date = app.dateOperation.value,
+                    isNewItem = app.isNewItem.value,
+                    nameField = nameField,
+                    nameSelector = nameSelector
                 )
-
-                if (app.screen == Screen.Plan) {
-
-                    val oldMoment = updatedItem.idMoment
-
-                    updatedItem.update(
-                        date = app.formatterSql.format(app.dateOperation.value),
-                        idMoment = momentSelector.longValue
-                    )
-
-
-                    if (app.isNewItem.value) {
-                        val id = app.dbManager.insertPlanItem(updatedItem)
-                        updatedItem.update(id = id)
-                    }
-                    else
-                        app.dbManager.updatePlanItem(updatedItem)
-
-                    if (updatedItem.id != -1L)
-                        app.addOrUpdateItemInPlan(updatedItem, oldMoment)
-
-                }
-
-                if (app.screen == Screen.Inventory) {
-
-                    if (app.isNewItem.value) {
-                        val id = app.dbManager.insertItemIntoInventory(updatedItem)
-                        updatedItem.update(id=id)
-                    }
-                    else
-                        app.dbManager.updateInventoryItem(updatedItem.idItem, amount.intValue)
-
-
-                    if (updatedItem.id != -1L)
-                        app.addOrUpdateItemInInventory(updatedItem)
-                }
-
-                if (app.screen == Screen.ShoppingCart){
-                    app.dbManager.updateInventoryItem(updatedItem.idItem, amount.intValue+updatedItem.amountInventory)
-                }
-
-                if (app.screen == Screen.Items){
-
-                    updatedItem.update(idUnit = unitSymbolSelector?.first)
-
-                    if (app.isNewItem.value) {
-                        val id = app.dbManager.insertItemIntoList(item = updatedItem)
-                        updatedItem.update(id = id)
-                    }
-                    else
-                        app.dbManager.updateItemOfList(item = updatedItem)
-
-                    if (updatedItem.id != -1L)
-                        app.addOrUpdateItemInList(updatedItem)
-                }
-
-                app.isNewItem.value = false
 
                 app.setItem(app.voidMapEntry)
 

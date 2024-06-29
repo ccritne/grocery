@@ -249,6 +249,7 @@ fun ItemUI(
             .fillMaxWidth()
             .clickable {
                 app.setItem(item = item)
+                app.isNewItem.value = false
                 app.navController.navigate(Screen.UpdateItem.name)
             }
             .background(
