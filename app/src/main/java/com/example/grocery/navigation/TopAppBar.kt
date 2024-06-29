@@ -6,17 +6,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.DrawerState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.TopAppBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.grocery.App
-import com.example.grocery.body.DropdownMenuSelection
+import com.example.grocery.dropdownmenu.DropdownMenuSelection
 import com.example.grocery.drawer.DrawerValues
 import com.example.grocery.utilities.Screen
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
