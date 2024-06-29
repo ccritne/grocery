@@ -1,6 +1,8 @@
 package com.example.grocery
 
+import android.Manifest
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -35,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.grocery.body.DropdownMenuSelection
@@ -295,7 +298,6 @@ class App: ComponentActivity() {
 
     private fun setupValues(){
         dbManager = DbManager(this as Context)
-        dbManager.fillDataWeek()
 
         unitsMutableMap = dbManager.getAllUnits()
         updateUnitsMap()
@@ -308,6 +310,14 @@ class App: ComponentActivity() {
         updatePlaceSelector(Pair(defaultIdPlace, placesMutableMap[defaultIdPlace]?: ""))
 
         updateMaps()
+
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                Manifest.permission.CAMERA
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA), 1)
+        }
 
 
     }
