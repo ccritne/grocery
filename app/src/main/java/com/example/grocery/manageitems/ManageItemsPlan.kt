@@ -21,8 +21,6 @@ fun updateItemsPlan(
     else
         app.dbManager.updatePlanItem(item)
 
-    Log.i("NEWITEM ID", item.toString()+" "+item.id.toString())
-
     if (item.id != -1L)
         app.addOrUpdateItemInPlan(item, oldMoment)
 }
