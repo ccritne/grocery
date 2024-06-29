@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.MutableState
@@ -302,6 +303,8 @@ class App: ComponentActivity() {
 
 
         setContent {
+
+            Log.i("items", dailyPlanMap.value.toString())
             navController = rememberNavController()
 
             ContentView(app = this)

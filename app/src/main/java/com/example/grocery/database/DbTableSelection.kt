@@ -31,10 +31,8 @@ fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
             items.name,
             items.price,
             items.idUnit,
-            items.idPlace,
-            inventory.amount as amountInventory
+            items.idPlace
         FROM items
-            INNER JOIN inventory ON inventory.idItem = items.id  
         WHERE idPlace = ?
     """.trimIndent()
 
@@ -136,7 +134,6 @@ fun DbManager.dailyPlan(date: String, idPlace: Long) : MutableMap<Long, MutableM
                 items.id as idItem,
                 items.name,
                 planning.amount,
-                inventory.amount as amountInventory,
                 planning.checked,
                 items.idUnit,
                 planning.idMoment,
@@ -144,8 +141,7 @@ fun DbManager.dailyPlan(date: String, idPlace: Long) : MutableMap<Long, MutableM
                 items.idPlace
             FROM planning
                 INNER JOIN items ON planning.idItem = items.id
-                INNER JOIN inventory ON items.id = inventory.id
-            WHERE planning.date = ? AND items.idPlace = ? 
+            WHERE date=? and idPlace=?
         """.trimIndent()
 
     val cursor = this.rawQuery(query, arrayOf(date, idPlace.toString()))
