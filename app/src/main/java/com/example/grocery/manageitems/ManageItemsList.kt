@@ -21,8 +21,6 @@ fun updateItemsList(
     else
         app.dbManager.updateItemOfList(item)
 
-    Log.i("item list", item.toString())
-
     if (item.id != -1L)
         app.addOrUpdateItemInList(item)
 }
