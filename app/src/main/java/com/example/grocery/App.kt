@@ -24,8 +24,8 @@ import com.example.grocery.database.getDefaultIdPlace
 import com.example.grocery.database.selectInventoryItems
 import com.example.grocery.items.Item
 import com.example.grocery.utilities.Screen
-import com.example.grocery.date.getDateNow
-import com.example.grocery.date.getUpdateDate
+import com.example.grocery.uielements.date.getDateNow
+import com.example.grocery.uielements.date.getUpdateDate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

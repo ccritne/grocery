@@ -1,4 +1,4 @@
-package com.example.grocery.date
+package com.example.grocery.uielements.date
 
 import java.text.SimpleDateFormat
 import java.util.Calendar

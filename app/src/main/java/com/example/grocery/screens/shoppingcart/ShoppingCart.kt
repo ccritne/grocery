@@ -18,10 +18,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.grocery.App
-import com.example.grocery.date.Date
+import com.example.grocery.uielements.date.Date
 import com.example.grocery.database.selectShoppingCartInRange
 import com.example.grocery.utilities.Screen
-import com.example.grocery.date.getDateNow
+import com.example.grocery.uielements.date.getDateNow
 import com.example.grocery.items.ItemUI
 
 @Composable

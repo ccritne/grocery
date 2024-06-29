@@ -1,4 +1,4 @@
-package com.example.grocery.date
+package com.example.grocery.uielements.date
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

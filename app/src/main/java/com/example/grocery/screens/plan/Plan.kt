@@ -20,7 +20,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
-import com.example.grocery.date.Date
+import com.example.grocery.uielements.date.Date
 import com.example.grocery.database.deleteItem
 import com.example.grocery.database.updatePlanChecked
 import com.example.grocery.uielements.floatingbuttons.ButtonAdd
