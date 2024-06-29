@@ -1,4 +1,4 @@
-package com.example.grocery.body.menu
+package com.example.grocery.date
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -19,7 +19,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
-import com.example.grocery.date.getUpdateDate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
