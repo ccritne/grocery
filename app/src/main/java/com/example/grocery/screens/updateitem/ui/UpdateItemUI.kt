@@ -1,5 +1,6 @@
 package com.example.grocery.screens.updateitem.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,7 +26,7 @@ fun UpdateItem(
     app: App
 ) {
 
-    val updateItem by remember(app.screen){
+    val updateItem by remember{
         mutableStateOf(
             UpdateItem(
                 forSetup = app.screen == Screen.Items,
@@ -38,13 +39,14 @@ fun UpdateItem(
                 amountInventory = if (app.screen == Screen.ShoppingCart)
                     app.item.value.amountInventory
                 else
-                    0,
-                idItem = if (!app.isNewItem.value || app.screen != Screen.Items)
-                    app.itemsMap.value.entries.first().key
-                else
-                    -1
+                    0
             )
         )
+    }
+
+    if (!app.isNewItem.value) {
+        Log.i("item modified", app.item.value.toString())
+        updateItem.setDefaultValues(app.item.key)
     }
 
     Column(

@@ -17,10 +17,12 @@ class UpdateItem(
     val unitsMap: Map<Long, Pair<String, String>>,
     val areThereMomentsDate: Boolean,
     val momentsMap: Map<Long, String>,
-    val isNewItem: Boolean,
-    val idItem: Long
+    val isNewItem: Boolean
 ) {
     var id : Long by mutableLongStateOf(-1)
+        private set
+
+    var idItem : Long by mutableLongStateOf(-1)
         private set
 
     var name : String by mutableStateOf(
@@ -52,6 +54,7 @@ class UpdateItem(
     ){
         val item = itemsMap[idItem]!!
 
+        this.idItem = idItem
         this.name = item.name
         this.unit = Pair(item.idUnit, unitsMap[item.idUnit]!!.second)
     }
@@ -62,6 +65,7 @@ class UpdateItem(
         val item = itemsMap[idItem]!!
 
         this.id = item.id
+        this.idItem = idItem
         this.name = item.name
         this.unit = Pair(item.idUnit, unitsMap[item.idUnit]!!.second)
         if(areThereMomentsDate) {
@@ -113,11 +117,12 @@ class UpdateItem(
         item.update(
             amount = amount,
             idUnit = unit.first,
-            idPlace = idPlace
+            idPlace = idPlace,
+            idItem = idItem
         )
 
         if(!isNewItem || !forSetup)
-            item.update(name = itemsMap[idItem]!!.name, idItem = idItem)
+            item.update(name = itemsMap[idItem]!!.name)
         else
             item.update(name = name)
 

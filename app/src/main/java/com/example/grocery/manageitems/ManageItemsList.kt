@@ -16,10 +16,12 @@ fun updateItemsList(
 
     if (updateItem.isNewItem) {
         val id = app.dbManager.insertItemIntoList(item)
-        item.update(id = id)
+        item.update(id = id, idItem = id)
     }
     else
         app.dbManager.updateItemOfList(item)
+
+    Log.i("item list", item.toString())
 
     if (item.id != -1L)
         app.addOrUpdateItemInList(item)
