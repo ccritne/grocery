@@ -8,7 +8,7 @@ import com.example.grocery.inventory.Inventory
 import com.example.grocery.listitems.ListItems
 import com.example.grocery.plan.Plan
 import com.example.grocery.userprofile.Profile
-import com.example.grocery.body.ShoppingCart
+import com.example.grocery.shoppingcart.ShoppingCart
 import com.example.grocery.updateitem.UpdateItem
 import com.example.grocery.utilities.Screen
 
