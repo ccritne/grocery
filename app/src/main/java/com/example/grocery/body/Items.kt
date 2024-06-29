@@ -1,17 +1,7 @@
 package com.example.grocery.body
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -19,38 +9,19 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.SwipeToDismissBox
-import androidx.compose.material3.SwipeToDismissBoxState
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableLongState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.grocery.App
-import com.example.grocery.items.Item
 import com.example.grocery.utilities.Screen
-import androidx.compose.material3.SwipeToDismissBoxValue.EndToStart
-import androidx.compose.material3.SwipeToDismissBoxValue.Settled
-import androidx.compose.material3.SwipeToDismissBoxValue.StartToEnd
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import androidx.compose.runtime.LaunchedEffect
 
 @Composable
 fun ChoiceMoment(
@@ -107,176 +78,3 @@ fun ButtonAdd(
 }
 
 
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SwipeToDeleteContainer(
-    stayWhenStartEnd: Boolean,
-    onStartEnd: () -> Unit,
-    stayWhenEndStart: Boolean,
-    onEndStart: () -> Unit,
-    animationDuration: Int = 500,
-    content: @Composable () -> Unit
-) {
-    var isRemoved by remember {
-        mutableStateOf(false)
-    }
-
-    var changeState by remember {
-        mutableStateOf(false)
-    }
-
-    val scope = rememberCoroutineScope()
-
-    val state = rememberSwipeToDismissBoxState(
-        confirmValueChange = { value ->
-            when (value){
-                StartToEnd -> {
-                    if (!stayWhenStartEnd) {
-                        isRemoved = true
-                        return@rememberSwipeToDismissBoxState true
-                    }
-                }
-
-                EndToStart -> {
-                    if (!stayWhenEndStart) {
-                        isRemoved = true
-                        return@rememberSwipeToDismissBoxState true
-                    }
-                }
-                Settled -> return@rememberSwipeToDismissBoxState false
-            }
-            changeState = !changeState
-            false
-        }
-    )
-
-    LaunchedEffect(key1 = changeState) {
-        if(isRemoved) {
-            scope.launch {
-                delay(animationDuration.toLong())
-            }
-        }
-
-        if (state.dismissDirection == StartToEnd)
-            onStartEnd()
-        if (state.dismissDirection == EndToStart)
-            onEndStart()
-    }
-
-    AnimatedVisibility(
-        visible = !isRemoved,
-        enter = fadeIn(),
-        exit = shrinkVertically(
-            animationSpec = tween(durationMillis = animationDuration),
-            shrinkTowards = Alignment.Top
-        ) + fadeOut()
-    ) {
-        SwipeToDismissBox(
-            state = state,
-            backgroundContent = {
-                DeleteBackground(swipeDismissState = state)
-            },
-            content = { content() }
-        )
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DeleteBackground(
-    swipeDismissState: SwipeToDismissBoxState
-) {
-    val color = when (swipeDismissState.dismissDirection){
-        StartToEnd -> Color.Red
-        EndToStart -> Color.Green
-        else -> Color.Transparent
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color)
-            .padding(16.dp),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        Icon(
-            imageVector = Icons.Default.Delete,
-            contentDescription = null,
-            tint = Color.White
-        )
-        Spacer(modifier = Modifier.fillMaxWidth())
-        Icon(
-            imageVector = Icons.Default.Check,
-            contentDescription = null,
-            tint = Color.White
-        )
-
-    }
-}
-
-
-@Composable
-fun ItemUI(
-    app: App,
-    item: Map.Entry<Long, Item>,
-    checkedState : Boolean = false
-){
-
-    val itemObject = item.value
-
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                app.setItem(item = item)
-                app.isNewItem.value = false
-                app.navController.navigate(Screen.UpdateItem.name)
-            }
-            .background(
-                color = if (app.screen == Screen.ShoppingCart && itemObject.amountInventory >= itemObject.amount)
-                    Color.Green
-                else
-                    Color.Transparent
-            ),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if(checkedState)
-                Icon(imageVector = Icons.Default.Check, contentDescription = "Check",
-                        modifier = Modifier.padding(start = 15.dp))
-
-            Text(
-                text = itemObject.name,
-                fontSize = 30.sp,
-                modifier = Modifier.padding(start = 15.dp)
-            )
-        }
-
-        if (app.screen != Screen.Items) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = (if (app.screen == Screen.ShoppingCart)
-                        itemObject.amountInventory.toString()+"/"
-                    else "")
-                            +
-                            itemObject.amount.toString()
-                            +
-                            app.unitsMap.value[itemObject.idUnit]?.second,
-                    fontSize = 30.sp,
-                    modifier = Modifier.padding(end = 15.dp)
-                )
-
-            }
-        }
-        
-    }
-
-
-}

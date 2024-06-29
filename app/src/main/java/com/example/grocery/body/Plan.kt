@@ -20,9 +20,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
-import com.example.grocery.body.menu.Date
+import com.example.grocery.date.Date
 import com.example.grocery.database.deleteItem
 import com.example.grocery.database.updatePlanChecked
+import com.example.grocery.items.ItemUI
+import com.example.grocery.items.swipeable.SwipeToDeleteContainer
 import com.example.grocery.utilities.Screen
 import com.example.grocery.utilities.fromPairToMapEntry
 
