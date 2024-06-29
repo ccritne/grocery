@@ -114,22 +114,13 @@ fun UpdateItem(
     ) {
         
         if (app.screen == Screen.Items) {
-            OutlinedTextField(
-                shape = RectangleShape,
-                placeholder = { Text(text = "Name", fontSize = 35.sp) },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Default.LocalPizza,
-                        contentDescription = "icon"
-                    )
-                },
-                value = nameField,
-                onValueChange = { nameField = it },
-                modifier = Modifier
-                    .fillMaxWidth(0.90f)
-                    .padding(15.dp),
-                textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 35.sp)
-            )
+            NoLineWidthTextField(
+                initialValue = nameField,
+                labelText = "Name",
+                fontSize = 25.sp
+            ) {
+                nameField = it
+            }
         }else {
             DropdownMenuSelection(
                 list = app.itemsMap.value.map { item -> Pair(item.key, item.value.name) },
