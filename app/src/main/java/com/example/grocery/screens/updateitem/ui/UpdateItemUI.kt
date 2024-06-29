@@ -19,6 +19,7 @@ import com.example.grocery.screens.updateitem.ui.referenceSetup.moments.UiMoment
 import com.example.grocery.screens.updateitem.ui.referenceSetup.name.UiNameReference
 import com.example.grocery.screens.updateitem.ui.setup.name.UiNameList
 import com.example.grocery.screens.updateitem.UpdateItem
+import com.example.grocery.utilities.getFormatterDateSql
 
 
 @Composable
@@ -45,8 +46,14 @@ fun UpdateItem(
     }
 
     if (!app.isNewItem.value) {
-        Log.i("item modified", app.item.value.toString())
-        updateItem.setDefaultValues(app.item.key)
+        updateItem.setValues(
+            id = app.item.value.id,
+            name = app.itemsMap.value[app.item.value.idItem]?.name,
+            amount = app.item.value.amount,
+            idUnit = app.item.value.idUnit,
+            idMoment = app.item.value.idMoment,
+            date = getFormatterDateSql().parse(app.item.value.date),
+        )
     }
 
     Column(
