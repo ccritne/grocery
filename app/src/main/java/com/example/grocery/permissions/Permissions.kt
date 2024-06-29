@@ -1,4 +1,4 @@
-package com.example.grocery.body.permissions
+package com.example.grocery.permissions
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
