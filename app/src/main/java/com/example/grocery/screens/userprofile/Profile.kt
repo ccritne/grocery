@@ -1,4 +1,4 @@
-package com.example.grocery.userprofile
+package com.example.grocery.screens.userprofile
 
 import androidx.compose.runtime.Composable
 import com.example.grocery.App
