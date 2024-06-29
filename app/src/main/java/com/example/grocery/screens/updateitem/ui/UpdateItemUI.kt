@@ -17,6 +17,7 @@ import com.example.grocery.screens.updateitem.ui.referenceSetup.amount.UiAmountR
 import com.example.grocery.screens.updateitem.ui.referenceSetup.moments.UiMomentsDateReference
 import com.example.grocery.screens.updateitem.ui.referenceSetup.name.UiNameReference
 import com.example.grocery.screens.updateitem.ui.setup.name.UiNameList
+import com.example.grocery.screens.updateitem.UpdateItem
 
 
 @Composable
@@ -26,7 +27,7 @@ fun UpdateItem(
 
     val updateItem by remember(app.screen){
         mutableStateOf(
-            com.example.grocery.screens.updateitem.UpdateItem(
+            UpdateItem(
                 forSetup = app.screen == Screen.Items,
                 itemsMap = app.itemsMap.value,
                 unitsMap = app.unitsMap.value,

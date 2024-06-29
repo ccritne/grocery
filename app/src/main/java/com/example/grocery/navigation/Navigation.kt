@@ -9,7 +9,7 @@ import com.example.grocery.screens.listitems.ListItems
 import com.example.grocery.screens.plan.Plan
 import com.example.grocery.screens.userprofile.Profile
 import com.example.grocery.screens.shoppingcart.ShoppingCart
-import com.example.grocery.screens.updateitem.UpdateItem
+import com.example.grocery.screens.updateitem.ui.UpdateItem
 import com.example.grocery.screens.Screen
 
 

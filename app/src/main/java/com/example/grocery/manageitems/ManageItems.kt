@@ -17,6 +17,13 @@ fun updateItem(
         )
     }
 
+    if (app.screen == Screen.Items){
+        updateItemsList(
+            app = app,
+            updateItem = updateItem
+        )
+    }
+
 //    if (screen == Screen.Inventory) {
 //
 //        if (isNewItem) {

@@ -23,7 +23,13 @@ class UpdateItem(
     var id : Long by mutableLongStateOf(-1)
         private set
 
-    var name : String by mutableStateOf("")
+    var name : String by mutableStateOf(
+        if(!isNewItem || !forSetup)
+            itemsMap.entries.first().value.name
+        else
+            ""
+
+    )
         private set
 
     var amount : Int by mutableIntStateOf(0)
@@ -71,8 +77,7 @@ class UpdateItem(
         amount: Int? = null,
         idUnit: Long? = null,
         idMoment: Long? = null,
-        date: Date? = null,
-        isNewItem: Boolean? = null
+        date: Date? = null
     ){
         if(id != null)
             this.id = id
@@ -113,6 +118,8 @@ class UpdateItem(
 
         if(!isNewItem || !forSetup)
             item.update(name = itemsMap[idItem]!!.name, idItem = idItem)
+        else
+            item.update(name = name)
 
         if (areThereMomentsDate)
             item.update(
