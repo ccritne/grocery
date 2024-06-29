@@ -36,7 +36,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SwipeToDeleteContainer(
+fun SwipeableItems(
     stayWhenStartEnd: Boolean,
     onStartEnd: () -> Unit,
     stayWhenEndStart: Boolean,

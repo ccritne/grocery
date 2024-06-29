@@ -14,7 +14,7 @@ import com.example.grocery.App
 import com.example.grocery.database.deleteItem
 import com.example.grocery.uielements.floatingbuttons.ButtonAdd
 import com.example.grocery.items.ItemUI
-import com.example.grocery.items.swipeable.SwipeToDeleteContainer
+import com.example.grocery.items.swipeable.SwipeableItems
 import com.example.grocery.screens.Screen
 import com.example.grocery.utilities.fromPairToMapEntry
 
@@ -39,7 +39,7 @@ fun ListItems(
                     .fillMaxWidth()
             ) {
                 items(itemsList.toList()) { item ->
-                        SwipeToDeleteContainer(
+                        SwipeableItems(
                             stayWhenStartEnd = true,
                             onStartEnd = {
                                 app.dbManager.deleteItem("items", item.first)
