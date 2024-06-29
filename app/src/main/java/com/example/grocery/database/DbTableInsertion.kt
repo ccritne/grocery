@@ -1,7 +1,7 @@
 package com.example.grocery.database
 
 import android.content.ContentValues
-import com.example.grocery.utilities.Item
+import com.example.grocery.items.Item
 
 
 fun DbManager.insertPlace(name: String) : Long{

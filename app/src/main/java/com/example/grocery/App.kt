@@ -22,10 +22,10 @@ import com.example.grocery.database.getAllPlaces
 import com.example.grocery.database.getAllUnits
 import com.example.grocery.database.getDefaultIdPlace
 import com.example.grocery.database.selectInventoryItems
-import com.example.grocery.utilities.Item
+import com.example.grocery.items.Item
 import com.example.grocery.utilities.Screen
-import com.example.grocery.utilities.getDateNow
-import com.example.grocery.utilities.getUpdateDate
+import com.example.grocery.date.getDateNow
+import com.example.grocery.date.getUpdateDate
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -65,7 +65,7 @@ class App: ComponentActivity() {
 
     var dailyPlanMap : MutableState<Map<Long, Map<Long, Item>>> = mutableStateOf(mapOf())
         private set
-    private var dailyPlanMutableMap = mutableMapOf<Long, MutableMap<Long,Item>>()
+    private var dailyPlanMutableMap = mutableMapOf<Long, MutableMap<Long, Item>>()
 
     var inventoryMap : MutableState<Map<Long, Item>> = mutableStateOf(mapOf())
         private set

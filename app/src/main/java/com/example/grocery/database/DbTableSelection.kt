@@ -1,7 +1,6 @@
 package com.example.grocery.database
 
-import com.example.grocery.utilities.Item
-import com.example.grocery.utilities.Screen
+import com.example.grocery.items.Item
 
 fun DbManager.itemExists(name: String) : Pair<Long, Boolean> {
 

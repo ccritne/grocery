@@ -1,9 +1,7 @@
 package com.example.grocery.database
 
 import android.content.ContentValues
-import android.database.sqlite.SQLiteException
-import android.util.Log
-import com.example.grocery.utilities.Item
+import com.example.grocery.items.Item
 
 fun DbManager.updateInventoryItem(idItem: Long, amount: Int) : Int{
     val cv = ContentValues()

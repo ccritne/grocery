@@ -1,18 +1,9 @@
 package com.example.grocery.manageitems
 
 import com.example.grocery.App
-import com.example.grocery.database.DbManager
-import com.example.grocery.database.insertItemIntoInventory
-import com.example.grocery.database.insertItemIntoList
-import com.example.grocery.database.insertPlanItem
-import com.example.grocery.database.updateInventoryItem
-import com.example.grocery.database.updateItemOfList
-import com.example.grocery.database.updatePlanItem
-import com.example.grocery.utilities.Item
+import com.example.grocery.items.Item
 import com.example.grocery.utilities.Screen
-import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
 fun updateItem(
     app: App,
