@@ -6,7 +6,7 @@ import androidx.navigation.compose.composable
 import com.example.grocery.App
 import com.example.grocery.inventory.Inventory
 import com.example.grocery.listitems.ListItems
-import com.example.grocery.body.Plan
+import com.example.grocery.plan.Plan
 import com.example.grocery.userprofile.Profile
 import com.example.grocery.body.ShoppingCart
 import com.example.grocery.updateitem.UpdateItem
