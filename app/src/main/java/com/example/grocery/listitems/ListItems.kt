@@ -1,4 +1,4 @@
-package com.example.grocery.body
+package com.example.grocery.listitems
 
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
