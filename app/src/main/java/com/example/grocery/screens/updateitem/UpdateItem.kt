@@ -76,6 +76,17 @@ class UpdateItem(
     }
 
     fun setValues(
+        item: Item
+    ){
+        this.id = item.id
+        this.name = itemsMap[item.idItem]!!.name
+        this.amount = item.amount
+        this.unit = Pair(item.idUnit, unitsMap[item.idUnit]!!.second)
+        this.moment = Pair(item.idMoment, momentsMap[item.idItem]!!)
+        this.date = getFormatterDateSql().parse(item.date)!!
+    }
+
+    fun setValues(
         id: Long? = null,
         name : String? = null,
         amount: Int? = null,
