@@ -36,7 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
 import com.example.grocery.uielements.date.Date
-import com.example.grocery.utilities.Screen
+import com.example.grocery.screens.Screen
 import com.example.grocery.uielements.date.getDateNow
 import com.example.grocery.uielements.dropdownmenu.DropdownMenuSelection
 import com.example.grocery.manageitems.updateItem

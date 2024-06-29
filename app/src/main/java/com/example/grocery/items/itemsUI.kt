@@ -17,7 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
-import com.example.grocery.utilities.Screen
+import com.example.grocery.screens.Screen
 
 @Composable
 fun ItemUI(

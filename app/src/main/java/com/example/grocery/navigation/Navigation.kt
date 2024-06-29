@@ -10,7 +10,7 @@ import com.example.grocery.screens.plan.Plan
 import com.example.grocery.screens.userprofile.Profile
 import com.example.grocery.screens.shoppingcart.ShoppingCart
 import com.example.grocery.screens.updateitem.UpdateItem
-import com.example.grocery.utilities.Screen
+import com.example.grocery.screens.Screen
 
 
 @Composable

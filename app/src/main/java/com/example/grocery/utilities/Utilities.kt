@@ -128,13 +128,4 @@ fun fromGoogleToApp(dbManager: DbManager){
     }
 }
 
-enum class Screen(){
-    Inventory,
-    Plan,
-    ShoppingCart,
-    Items,
-    UpdateItem,
-    Profile
-}
-
 

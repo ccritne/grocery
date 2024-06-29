@@ -26,7 +26,7 @@ import com.example.grocery.database.updatePlanChecked
 import com.example.grocery.uielements.floatingbuttons.ButtonAdd
 import com.example.grocery.items.ItemUI
 import com.example.grocery.items.swipeable.SwipeToDeleteContainer
-import com.example.grocery.utilities.Screen
+import com.example.grocery.screens.Screen
 import com.example.grocery.utilities.fromPairToMapEntry
 
 

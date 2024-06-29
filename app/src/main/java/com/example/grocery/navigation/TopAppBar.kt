@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import com.example.grocery.App
 import com.example.grocery.uielements.dropdownmenu.DropdownMenuSelection
 import com.example.grocery.uielements.drawer.DrawerValues
-import com.example.grocery.utilities.Screen
+import com.example.grocery.screens.Screen
 import kotlinx.coroutines.launch
 
 @Composable

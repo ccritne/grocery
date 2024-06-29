@@ -7,7 +7,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import com.example.grocery.App
-import com.example.grocery.utilities.Screen
+import com.example.grocery.screens.Screen
 
 @Composable
 fun ButtonAdd(

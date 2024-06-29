@@ -5,8 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.sp
-import com.example.grocery.App
-import com.example.grocery.utilities.Screen
+import com.example.grocery.screens.Screen
 import kotlinx.coroutines.launch
 
 @Composable

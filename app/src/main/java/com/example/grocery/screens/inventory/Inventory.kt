@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import com.example.grocery.App
 import com.example.grocery.uielements.floatingbuttons.ButtonAdd
 import com.example.grocery.items.ItemUI
-import com.example.grocery.utilities.Screen
+import com.example.grocery.screens.Screen
 
 
 @Composable
