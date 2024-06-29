@@ -6,11 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.grocery.App
-import com.example.grocery.utilities.Screen
 
 @Composable
 fun ChoiceMoment(
@@ -55,26 +49,6 @@ fun ChoiceMoment(
             }
         }
 }
-}
-
-@Composable
-fun ButtonAdd(
-    app: App
-){
-    FloatingActionButton(
-        shape = CircleShape,
-        onClick = {
-            app.isNewItem.value = true
-
-            if (app.itemsMap.value.isNotEmpty())
-                app.setItem(app.itemsMap.value.entries.first())
-            else
-                app.setItem(app.voidMapEntry)
-
-            app.navController.navigate(Screen.UpdateItem.name)
-        }) {
-        Icon(imageVector = Icons.Default.Add, contentDescription = "Add item")
-    }
 }
 
 
