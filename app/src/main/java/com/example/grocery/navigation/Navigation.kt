@@ -5,8 +5,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.grocery.App
-import com.example.grocery.body.Inventory
-import com.example.grocery.body.ListItems
+import com.example.grocery.inventory.Inventory
+import com.example.grocery.listitems.ListItems
 import com.example.grocery.body.Plan
 import com.example.grocery.body.Profile
 import com.example.grocery.body.ShoppingCart
