@@ -1,4 +1,4 @@
-package com.example.grocery.listitems
+package com.example.grocery.screens.listitems
 
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth

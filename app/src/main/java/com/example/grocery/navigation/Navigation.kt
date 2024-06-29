@@ -4,12 +4,12 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.grocery.App
-import com.example.grocery.inventory.Inventory
-import com.example.grocery.listitems.ListItems
-import com.example.grocery.plan.Plan
+import com.example.grocery.screens.inventory.Inventory
+import com.example.grocery.screens.listitems.ListItems
+import com.example.grocery.screens.plan.Plan
 import com.example.grocery.userprofile.Profile
-import com.example.grocery.shoppingcart.ShoppingCart
-import com.example.grocery.updateitem.UpdateItem
+import com.example.grocery.screens.shoppingcart.ShoppingCart
+import com.example.grocery.screens.updateitem.UpdateItem
 import com.example.grocery.utilities.Screen
 
 

@@ -1,4 +1,4 @@
-package com.example.grocery.shoppingcart
+package com.example.grocery.screens.shoppingcart
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

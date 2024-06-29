@@ -1,4 +1,4 @@
-package com.example.grocery.plan
+package com.example.grocery.screens.plan
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.example.grocery.updateitem
+package com.example.grocery.screens.updateitem
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

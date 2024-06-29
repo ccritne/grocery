@@ -1,4 +1,4 @@
-package com.example.grocery.inventory
+package com.example.grocery.screens.inventory
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
