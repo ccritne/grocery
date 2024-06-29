@@ -38,7 +38,7 @@ import com.example.grocery.App
 import com.example.grocery.date.Date
 import com.example.grocery.utilities.Screen
 import com.example.grocery.date.getDateNow
-import com.example.grocery.dropdownmenu.DropdownMenuSelection
+import com.example.grocery.uielements.dropdownmenu.DropdownMenuSelection
 import com.example.grocery.manageitems.updateItem
 
 

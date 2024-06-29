@@ -1,4 +1,4 @@
-package com.example.grocery.drawer
+package com.example.grocery.uielements.drawer
 
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.Text

@@ -1,4 +1,4 @@
-package com.example.grocery.dropdownmenu
+package com.example.grocery.uielements.dropdownmenu
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row

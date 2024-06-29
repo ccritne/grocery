@@ -1,4 +1,4 @@
-package com.example.grocery.drawer
+package com.example.grocery.uielements.drawer
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

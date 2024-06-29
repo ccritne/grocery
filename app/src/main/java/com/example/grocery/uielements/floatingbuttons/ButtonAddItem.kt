@@ -1,4 +1,4 @@
-package com.example.grocery.floatingbuttons
+package com.example.grocery.uielements.floatingbuttons
 
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons

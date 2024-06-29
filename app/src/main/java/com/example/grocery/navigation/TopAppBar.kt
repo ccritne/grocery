@@ -11,8 +11,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.grocery.App
-import com.example.grocery.dropdownmenu.DropdownMenuSelection
-import com.example.grocery.drawer.DrawerValues
+import com.example.grocery.uielements.dropdownmenu.DropdownMenuSelection
+import com.example.grocery.uielements.drawer.DrawerValues
 import com.example.grocery.utilities.Screen
 import kotlinx.coroutines.launch
 
