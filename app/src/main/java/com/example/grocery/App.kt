@@ -304,7 +304,6 @@ class App: ComponentActivity() {
 
         setContent {
 
-            Log.i("items", dailyPlanMap.value.toString())
             navController = rememberNavController()
 
             ContentView(app = this)

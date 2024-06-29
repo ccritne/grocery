@@ -1,11 +1,13 @@
 package com.example.grocery.screens.updateitem
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.grocery.items.Item
+import com.example.grocery.uielements.date.getDateNow
 import com.example.grocery.utilities.getFormatterDateSql
 import java.util.Date
 
@@ -76,18 +78,8 @@ class UpdateItem(
     }
 
     fun setValues(
-        item: Item
-    ){
-        this.id = item.id
-        this.name = itemsMap[item.idItem]!!.name
-        this.amount = item.amount
-        this.unit = Pair(item.idUnit, unitsMap[item.idUnit]!!.second)
-        this.moment = Pair(item.idMoment, momentsMap[item.idItem]!!)
-        this.date = getFormatterDateSql().parse(item.date)!!
-    }
-
-    fun setValues(
         id: Long? = null,
+        idItem: Long? = null,
         name : String? = null,
         amount: Int? = null,
         idUnit: Long? = null,
@@ -96,6 +88,9 @@ class UpdateItem(
     ){
         if(id != null)
             this.id = id
+
+        if(idItem != null)
+            this.idItem = idItem
 
         if(name != null) {
             this.name = name
@@ -132,16 +127,18 @@ class UpdateItem(
             idItem = idItem
         )
 
-        if(!isNewItem || !forSetup)
-            item.update(name = itemsMap[idItem]!!.name)
-        else
-            item.update(name = name)
-
         if (areThereMomentsDate)
             item.update(
                 idMoment = moment.first,
                 date = getFormatterDateSql().format(date)
             )
+
+        if(!isNewItem || !forSetup)
+            item.update(name = itemsMap[idItem]!!.name)
+        else
+            item.update(name = name)
+
+
 
         return item
     }

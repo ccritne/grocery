@@ -33,7 +33,7 @@ fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
             items.idUnit,
             items.idPlace
         FROM items
-        WHERE idPlace = ?
+            WHERE idPlace = ?
     """.trimIndent()
 
     val cursor = this.rawQuery(query, arrayOf(idPlace.toString()))

@@ -20,8 +20,6 @@ fun SaveUpdate(
             updateItem = updateItem
         )
 
-        app.setItem(app.voidMapEntry)
-
         app.navController.navigateUp()
     }) {
         Icon(imageVector = Icons.Default.Check, contentDescription = "Add item")
