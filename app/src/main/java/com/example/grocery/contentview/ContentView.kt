@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import com.example.grocery.App
 import com.example.grocery.drawer.Drawer
+import com.example.grocery.drawer.DrawerValues
 import com.example.grocery.navigation.BottomAppBar
 import com.example.grocery.navigation.ContentScreen
 import com.example.grocery.navigation.TopAppBar
@@ -15,16 +16,18 @@ import com.example.grocery.navigation.TopAppBar
 @Composable
 fun ContentView(app: App){
 
-    val scope = rememberCoroutineScope()
-    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-
+    val drawerValues = DrawerValues(
+        scope = rememberCoroutineScope(),
+        drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
+        navController = app.navController
+    )
 
     ModalNavigationDrawer(
-        drawerState = drawerState,
-        drawerContent = { Drawer( app = app, drawerState) },
+        drawerState = drawerValues.drawerState,
+        drawerContent = { Drawer( app = app, drawerValues = drawerValues) },
     ) {
         Scaffold(
-            topBar = { TopAppBar(app = app, scope = scope, drawerState = drawerState) },
+            topBar = { TopAppBar(app = app, drawerValues = drawerValues) },
             bottomBar = { BottomAppBar(app = app) },
             content = { paddingValues -> ContentScreen(app = app, paddingValues = paddingValues) }
         )

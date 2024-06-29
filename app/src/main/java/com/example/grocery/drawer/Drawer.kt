@@ -21,13 +21,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun Drawer(
     app: App,
+    drawerValues: DrawerValues
 ){
-
-    val drawerValues = DrawerValues(
-        scope = rememberCoroutineScope(),
-        drawerState = rememberDrawerState(initialValue = DrawerValue.Closed),
-        navController = app.navController
-    )
 
     ModalDrawerSheet(
         modifier = Modifier.fillMaxWidth(0.5f),
