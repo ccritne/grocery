@@ -9,8 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.grocery.App
-import com.example.grocery.screens.updateitem.ui.UpdateItem
+import com.example.grocery.screens.updateitem.UpdateItem
 import com.example.grocery.uielements.date.Date
 import java.util.Date
 

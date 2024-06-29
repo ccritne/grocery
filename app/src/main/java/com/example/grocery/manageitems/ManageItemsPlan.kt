@@ -4,11 +4,7 @@ import android.util.Log
 import com.example.grocery.App
 import com.example.grocery.database.insertPlanItem
 import com.example.grocery.database.updatePlanItem
-import com.example.grocery.items.Item
-import com.example.grocery.screens.updateitem.ui.UpdateItem
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.example.grocery.screens.updateitem.UpdateItem
 
 fun updateItemsPlan(
     app: App,

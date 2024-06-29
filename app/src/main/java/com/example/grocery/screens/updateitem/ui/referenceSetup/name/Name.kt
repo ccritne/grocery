@@ -1,7 +1,7 @@
 package com.example.grocery.screens.updateitem.ui.referenceSetup.name
 
 import androidx.compose.runtime.Composable
-import com.example.grocery.screens.updateitem.ui.UpdateItem
+import com.example.grocery.screens.updateitem.UpdateItem
 import com.example.grocery.uielements.dropdownmenu.DropdownMenuSelection
 
 @Composable

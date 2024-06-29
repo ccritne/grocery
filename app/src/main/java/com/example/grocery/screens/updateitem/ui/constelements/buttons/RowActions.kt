@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.example.grocery.App
-import com.example.grocery.screens.updateitem.ui.UpdateItem
+import com.example.grocery.screens.updateitem.UpdateItem
 import com.example.grocery.screens.updateitem.ui.constelements.buttons.delete.DeleteItem
 import com.example.grocery.screens.updateitem.ui.constelements.buttons.save.SaveUpdate
 

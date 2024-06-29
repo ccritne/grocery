@@ -1,10 +1,8 @@
-package com.example.grocery.screens.updateitem
+package com.example.grocery.screens.updateitem.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -13,7 +11,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.grocery.App
 import com.example.grocery.screens.Screen
-import com.example.grocery.screens.updateitem.ui.UpdateItem
 import com.example.grocery.screens.updateitem.ui.constelements.buttons.RowActions
 import com.example.grocery.screens.updateitem.ui.constelements.unit.UnitSelectorUpdateItem
 import com.example.grocery.screens.updateitem.ui.referenceSetup.amount.UiAmountReference
@@ -29,7 +26,7 @@ fun UpdateItem(
 
     val updateItem by remember(app.screen){
         mutableStateOf(
-            UpdateItem(
+            com.example.grocery.screens.updateitem.UpdateItem(
                 forSetup = app.screen == Screen.Items,
                 itemsMap = app.itemsMap.value,
                 unitsMap = app.unitsMap.value,

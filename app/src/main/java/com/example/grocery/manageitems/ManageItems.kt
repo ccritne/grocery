@@ -1,10 +1,8 @@
 package com.example.grocery.manageitems
 
 import com.example.grocery.App
-import com.example.grocery.items.Item
 import com.example.grocery.screens.Screen
-import com.example.grocery.screens.updateitem.ui.UpdateItem
-import java.util.Date
+import com.example.grocery.screens.updateitem.UpdateItem
 
 fun updateItem(
     app: App,

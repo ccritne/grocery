@@ -1,4 +1,4 @@
-package com.example.grocery.screens.updateitem.ui
+package com.example.grocery.screens.updateitem
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
