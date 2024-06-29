@@ -208,7 +208,7 @@ fun DeleteBackground(
     val color = when (swipeDismissState.dismissDirection){
         StartToEnd -> Color.Red
         EndToStart -> Color.Green
-        else -> Color.White
+        else -> Color.Transparent
     }
 
     Box(
@@ -256,7 +256,7 @@ fun ItemUI(
                 color = if (app.screen == Screen.ShoppingCart && itemObject.amountInventory >= itemObject.amount)
                     Color.Green
                 else
-                    Color.White
+                    Color.Transparent
             ),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically

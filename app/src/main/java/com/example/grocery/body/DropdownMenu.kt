@@ -41,7 +41,7 @@ fun DropdownMenuSelection(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = starter.second, fontSize = 35.sp)
+                Text(text = starter.second, fontSize = 25.sp)
                 if (enabled) {
                     Icon(
                         imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown,
@@ -63,7 +63,7 @@ fun DropdownMenuSelection(
                         Text(
                             text = item.second,
                             modifier = Modifier.fillMaxWidth(),
-                            fontSize = 25.sp
+                            fontSize = 20.sp
                         )
                     },
                     onClick = {
