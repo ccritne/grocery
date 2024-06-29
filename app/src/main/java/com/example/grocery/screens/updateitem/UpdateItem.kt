@@ -121,6 +121,7 @@ class UpdateItem(
         val item = Item()
 
         item.update(
+            id = id,
             amount = amount,
             idUnit = unit.first,
             idPlace = idPlace,

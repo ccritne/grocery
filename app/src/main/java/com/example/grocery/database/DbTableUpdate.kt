@@ -1,6 +1,7 @@
 package com.example.grocery.database
 
 import android.content.ContentValues
+import android.util.Log
 import com.example.grocery.items.Item
 
 fun DbManager.updateInventoryItem(idItem: Long, amount: Int) : Int{
@@ -14,6 +15,7 @@ fun DbManager.updateInventoryItem(idItem: Long, amount: Int) : Int{
 fun DbManager.updatePlanItem(item: Item) : Int {
 
     val cv = ContentValues()
+
 
     cv.put("idItem", item.idItem)
     cv.put("amount", item.amount)

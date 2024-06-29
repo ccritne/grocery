@@ -45,9 +45,9 @@ fun UpdateItem(
         )
     }
 
-    if (!app.isNewItem.value)
+    if (!app.isNewItem.value) {
         updateItem.setValues(
-            id = app.item.value.id,
+            id = app.item.key,
             idItem = app.item.value.idItem,
             name = app.itemsMap.value[app.item.value.idItem]?.name,
             amount = app.item.value.amount,
@@ -55,6 +55,7 @@ fun UpdateItem(
             idMoment = app.item.value.idMoment,
             date = getFormatterDateSql().parse(app.item.value.date)
         )
+    }
 
     Column(
         modifier = Modifier
