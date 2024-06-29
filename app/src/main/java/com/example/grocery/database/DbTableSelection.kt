@@ -155,13 +155,12 @@ fun DbManager.dailyPlan(date: String, idPlace: Long) : MutableMap<Long, MutableM
 
     while (cursor.moveToNext()){
 
-            val item = Item(cursor)
+        val item = Item(cursor)
 
-            if (!listItems.containsKey(item.idMoment))
-                listItems[item.idMoment] = mutableMapOf()
+        if (!listItems.containsKey(item.idMoment))
+            listItems[item.idMoment] = mutableMapOf()
 
         listItems[item.idMoment]?.set(item.id, item)
-
     }
     cursor.close()
     return listItems
