@@ -37,6 +37,7 @@ fun NoLineWidthTextField(
         shape = RectangleShape,
         label = { Text(text = labelText, fontSize = fontSize) },
         value = textField,
+        singleLine = true,
         onValueChange = {
             textField = it
             onValueChange(it)

@@ -7,6 +7,8 @@ import com.example.grocery.database.insertMoment
 import com.example.grocery.database.insertPlanItem
 import com.example.grocery.database.itemExists
 import com.example.grocery.items.Item
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 fun <T, R> fromPairToMapEntry(pair : Pair<T, R>) : Map.Entry<T, R> {
     return object : Map.Entry<T, R> {
@@ -16,6 +18,11 @@ fun <T, R> fromPairToMapEntry(pair : Pair<T, R>) : Map.Entry<T, R> {
             get() = pair.second
     }
 }
+
+fun getFormatterDateSql() : SimpleDateFormat {
+    return SimpleDateFormat("y/MM/dd", Locale.getDefault())
+}
+
 
 fun fromGoogleToApp(dbManager: DbManager){
     val string = "SD2024/06/17;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta125g;Pumpkin200g;Banana;SM2;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/18;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta50g;Peas80g;JobLunch;Apple;SM2;Bread100g;Chickpeas125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/19;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;BroadBeans100g;Spinach400g;Bread150g;Apple;SM2;PizzaTeglia300g;SD2024/06/20;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta50g;Beans125g;JobLunch;Banana;SM2;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/21;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta80g;Soia130g;Tomatoes160g;Zucchini100g;Carrots100g;Banana;SM2;Flatbreads250g;PestoSauce95g;Mozzarella125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/22;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta125g;Eggs150g;Parmisan25g;Apple;SM2;Pizza250g;Mozzarella125g;SD2024/06/23;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta125g;TomatoSauce80g;JobLunch;Banana;SM2;Bread250g;Chickpeas125g;Zucchini100g;Iceberg/Batavia50g;Tomatoes100g"

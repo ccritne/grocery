@@ -1,4 +1,4 @@
-package com.example.grocery.screens.updateitem
+package com.example.grocery.screens.updateitem.ui.referenceSetup.moments
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -15,26 +15,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.grocery.App
 
 @Composable
 fun ChoiceMoment(
-    app: App,
+    momentsMap: Map<Long, String>,
     momentState: MutableLongState,
     onChange: (Long) -> Unit
 ){
 
-    val momentCheckedStates = remember(app.momentsMap) {
-        app.momentsMap.value.map { item -> mutableLongStateOf(item.key) }
+    val momentCheckedStates = remember {
+        momentsMap.map { item -> mutableLongStateOf(item.key) }
     }
 
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = GridCells.Fixed(3),
         modifier = Modifier
             .fillMaxWidth()
             .padding(15.dp),
     ) {
-        items(app.momentsMap.value.size) { index ->
+        items(momentsMap.size) { index ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Start,
@@ -45,7 +44,7 @@ fun ChoiceMoment(
                     selected = momentState.longValue == momentCheckedStates[index].longValue,
                     onClick = { onChange(momentCheckedStates[index].longValue) })
 
-                app.momentsMap.value[momentCheckedStates[index].longValue]?.let { Text(text = it) }
+                momentsMap[momentCheckedStates[index].longValue]?.let { Text(text = it) }
             }
         }
 }

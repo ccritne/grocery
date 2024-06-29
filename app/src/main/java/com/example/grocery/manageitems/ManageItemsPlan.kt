@@ -5,34 +5,27 @@ import com.example.grocery.App
 import com.example.grocery.database.insertPlanItem
 import com.example.grocery.database.updatePlanItem
 import com.example.grocery.items.Item
+import com.example.grocery.screens.updateitem.ui.UpdateItem
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 fun updateItemsPlan(
     app: App,
-    idMoment: Long,
-    date: Date,
-    item: Item,
-    isNewItem: Boolean
+    updateItem: UpdateItem
 ){
 
-    val formatterSql = SimpleDateFormat("y/MM/dd", Locale.getDefault())
-    val oldMoment = item.idMoment
+    val oldMoment = updateItem.moment.first
+    val item = updateItem.toItem(app.placeSelector.first)
 
-    item.update(
-        date = formatterSql.format(date),
-        idMoment = idMoment
-    )
-
-    if (isNewItem) {
+    if (updateItem.isNewItem) {
         val id = app.dbManager.insertPlanItem(item)
         item.update(id = id)
     }
     else
         app.dbManager.updatePlanItem(item)
 
-    Log.i("NEWITEM ID", isNewItem.toString()+" "+item.id.toString())
+    Log.i("NEWITEM ID", item.toString()+" "+item.id.toString())
 
     if (item.id != -1L)
         app.addOrUpdateItemInPlan(item, oldMoment)

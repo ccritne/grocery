@@ -3,36 +3,19 @@ package com.example.grocery.manageitems
 import com.example.grocery.App
 import com.example.grocery.items.Item
 import com.example.grocery.screens.Screen
+import com.example.grocery.screens.updateitem.ui.UpdateItem
 import java.util.Date
 
 fun updateItem(
     app: App,
-    screen: Screen,
-    item: Item,
-    isNewItem: Boolean,
-    nameSelector : Pair<Long, String>,
-    nameField: String,
-    amount: Int,
-    date: Date,
-    idUnit: Long?,
-    idMoment: Long,
+    updateItem: UpdateItem
 ){
 
-    item.update(
-        name = if(screen != Screen.Items) nameSelector.second else nameField,
-        amount = amount,
-        idUnit = idUnit,
-    )
-
-    if (screen == Screen.Plan) {
-        item.update(idItem = nameSelector.first)
+    if (app.screen == Screen.Plan) {
 
         updateItemsPlan(
             app = app,
-            item = item,
-            isNewItem = isNewItem,
-            date = date,
-            idMoment = idMoment
+            updateItem = updateItem
         )
     }
 
