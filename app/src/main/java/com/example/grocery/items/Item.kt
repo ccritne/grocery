@@ -41,16 +41,16 @@ class Item() {
 
             val idParentColumnIndex = cursor.getColumnIndex("idParent")
             if (idParentColumnIndex != -1)
-                idParent = cursor.getLong(cursor.getColumnIndexOrThrow("idParent"))
+                idParent = cursor.getLong(idParentColumnIndex)
             val idUnitColumnIndex = cursor.getColumnIndex("idUnit")
             if (idUnitColumnIndex != -1)
-                idUnit = cursor.getLong(cursor.getColumnIndexOrThrow("idUnit"))
+                idUnit = cursor.getLong(idUnitColumnIndex)
             val idMomentColumnIndex = cursor.getColumnIndex("idMoment")
             if (idMomentColumnIndex != -1)
-                idMoment = cursor.getLong(cursor.getColumnIndexOrThrow("idMoment"))
+                idMoment = cursor.getLong(idMomentColumnIndex)
             val idPlaceColumnIndex = cursor.getColumnIndex("idPlace")
             if (idPlaceColumnIndex != -1)
-                idPlace = cursor.getLong(cursor.getColumnIndexOrThrow("idPlace"))
+                idPlace = cursor.getLong(idPlaceColumnIndex)
 
 
 
