@@ -17,10 +17,8 @@ import com.example.grocery.utilities.Screen
 @Composable
 fun NavigationGraph(app: App){
 
-    val navController = rememberNavController()
 
-
-    NavHost(navController = navController, startDestination = Screen.Plan.name){
+    NavHost(navController = app.navController, startDestination = Screen.Plan.name){
         composable(route = Screen.Inventory.name){
             Inventory(app)
         }
