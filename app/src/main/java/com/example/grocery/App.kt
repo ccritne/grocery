@@ -150,6 +150,7 @@ class App: ComponentActivity() {
         if (oldMoment != -1L)
             dailyPlanMutableMap[oldMoment]?.remove(item.id)
 
+
         if (!dailyPlanMutableMap.containsKey(item.idMoment))
             dailyPlanMutableMap[item.idMoment] = mutableMapOf()
 

@@ -1,6 +1,5 @@
 package com.example.grocery.screens.plan
 
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,13 +20,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
-import com.example.grocery.uielements.date.Date
 import com.example.grocery.database.deleteItem
 import com.example.grocery.database.updatePlanChecked
-import com.example.grocery.uielements.floatingbuttons.ButtonAdd
 import com.example.grocery.items.ItemUI
 import com.example.grocery.items.swipeable.SwipeableItems
-import com.example.grocery.screens.Screen
+import com.example.grocery.uielements.date.Date
+import com.example.grocery.uielements.floatingbuttons.ButtonAdd
 import com.example.grocery.utilities.fromPairToMapEntry
 
 
@@ -66,17 +64,18 @@ fun Plan(
                         verticalArrangement = Arrangement.Top,
                     ) {
                             app.dailyPlanMap.value.forEach { moment ->
-                                stickyHeader {
-                                    app.momentsMap.value[moment.key]?.let { momentName ->
-                                        Text(
-                                            text = momentName,
-                                            modifier = Modifier.padding(10.dp),
-                                            fontSize = 35.sp,
-                                            fontWeight = FontWeight.ExtraBold,
-                                        )
+                                if (moment.value.isNotEmpty()) {
+                                    stickyHeader {
+                                        app.momentsMap.value[moment.key]?.let { momentName ->
+                                            Text(
+                                                text = momentName,
+                                                modifier = Modifier.padding(10.dp),
+                                                fontSize = 35.sp,
+                                                fontWeight = FontWeight.ExtraBold,
+                                            )
+                                        }
                                     }
-                                }
-                                items(moment.value.toList()) { item ->
+                                    items(moment.value.toList()) { item ->
 
 
                                         val checkedState = remember {
@@ -100,13 +99,23 @@ fun Plan(
                                                 val newValue = !item.second.checked
 
                                                 checkedState.value = newValue
-                                                app.dbManager.updatePlanChecked(item.first, newValue)
+                                                app.dbManager.updatePlanChecked(
+                                                    item.first,
+                                                    newValue
+                                                )
                                                 item.second.update(checked = newValue)
 
                                                 app.addOrUpdateItemInPlan(item.second)
                                             },
-                                        ) { ItemUI(app = app, item = fromPairToMapEntry(item), checkedState = checkedState.value) }
+                                        ) {
+                                            ItemUI(
+                                                app = app,
+                                                item = fromPairToMapEntry(item),
+                                                checkedState = checkedState.value
+                                            )
+                                        }
                                     }
+                                }
 
                             }
                         }

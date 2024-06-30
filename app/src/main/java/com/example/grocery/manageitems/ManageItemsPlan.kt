@@ -11,8 +11,10 @@ fun updateItemsPlan(
     updateItem: UpdateItem
 ){
 
-    val oldMoment = updateItem.idMoment
+    val oldMoment = updateItem.item.idMoment
     val item = updateItem.toItem(app.placeSelector.first)
+
+    Log.i("moments", "$oldMoment -> ${item.idMoment}")
 
     if (updateItem.isNewItem) {
         val id = app.dbManager.insertPlanItem(item)
@@ -21,7 +23,7 @@ fun updateItemsPlan(
     else
         app.dbManager.updatePlanItem(item)
 
-
     if (item.id != -1L)
         app.addOrUpdateItemInPlan(item, oldMoment)
+
 }
