@@ -39,13 +39,10 @@ class UpdateItem(
     var amount : Int by mutableIntStateOf(0)
         private set
 
-    // Units never empty
-    // TODO BETTER
-    var unit by mutableStateOf(Pair(unitsMap.entries.first().toPair().first, unitsMap.entries.first().toPair().second.second))
+    var idUnit by mutableLongStateOf(-1)
         private set
 
-    // Moments never empty
-    var moment by mutableStateOf(momentsMap.entries.first().toPair())
+    var idMoment by mutableLongStateOf(-1)
         private set
 
     var date : Date by mutableStateOf(Date())
@@ -58,23 +55,7 @@ class UpdateItem(
 
         this.idItem = idItem
         this.name = item.name
-        this.unit = Pair(item.idUnit, unitsMap[item.idUnit]!!.second)
-    }
-
-    fun setDefaultValues(
-        idItem: Long
-    ){
-        val item = itemsMap[idItem]!!
-
-        this.id = item.id
-        this.idItem = idItem
-        this.name = item.name
-        this.unit = Pair(item.idUnit, unitsMap[item.idUnit]!!.second)
-        if(areThereMomentsDate) {
-            this.moment = Pair(item.idMoment, momentsMap[item.idMoment]!!)
-            val formatter = getFormatterDateSql()
-            this.date = formatter.parse(item.date)!!
-        }
+        this.idUnit = item.idUnit
     }
 
     fun setValues(
@@ -100,21 +81,13 @@ class UpdateItem(
             this.amount = amount
 
         if(idUnit != null)
-            this.unit = Pair(idUnit, unitsMap[idUnit]!!.second)
+            this.idUnit = idUnit
 
-        if(idMoment != null && areThereMomentsDate)
-            this.moment = Pair(idMoment, momentsMap[idMoment]!!)
+        if(idMoment != null)
+            this.idMoment = idMoment
 
-        if(date != null && areThereMomentsDate)
+        if(date != null)
             this.date = date
-    }
-
-    fun reset(){
-        this.id = -1
-        this.name = ""
-        this.amount = 0
-        this.moment = momentsMap.entries.first().toPair()
-        this.unit = Pair(unitsMap.entries.first().toPair().first, unitsMap.entries.first().toPair().second.second)
     }
 
     fun toItem(idPlace: Long) : Item{
@@ -123,14 +96,14 @@ class UpdateItem(
         item.update(
             id = id,
             amount = amount,
-            idUnit = unit.first,
+            idUnit = idUnit,
             idPlace = idPlace,
             idItem = idItem
         )
 
         if (areThereMomentsDate)
             item.update(
-                idMoment = moment.first,
+                idMoment = idMoment,
                 date = getFormatterDateSql().format(date)
             )
 

@@ -88,7 +88,7 @@ fun UiAmountReference(
                 .fillMaxHeight(0.1f)
         )
 
-        Text(text = updateItem.unit.second, fontSize = 35.sp)
+        Text(text = updateItem.unitsMap[updateItem.idUnit]!!.second, fontSize = 35.sp)
 
         
     }

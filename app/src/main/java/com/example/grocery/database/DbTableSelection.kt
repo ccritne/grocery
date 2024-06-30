@@ -92,15 +92,14 @@ fun DbManager.selectShoppingCartInRange(
         SELECT 
             planning.id,
             planning.idItem, 
-            items.name, 
-            inventory.amount as amountInventory,
+            items.name,
+            IFNULL(inventory.amount, 0) as amountInventory,
             SUM(planning.amount) as amount,
             items.idUnit
         FROM planning 
-            INNER JOIN inventory ON planning.idItem = inventory.idItem
             INNER JOIN items ON planning.idItem = items.id
-            INNER JOIN units ON items.idUnit = units.id
-        WHERE planning.date>=? and planning.date <=? and items.idPlace = ?
+            LEFT JOIN inventory ON planning.idItem = inventory.idItem
+        WHERE planning.date>=? and planning.date <=? and idPlace=?
         GROUP BY items.name
     """.trimIndent()
 

@@ -19,7 +19,7 @@ fun UiMomentsDateReference(
     onChangeDate: (Date) -> Unit
 ){
     val momentSelector = remember {
-        mutableLongStateOf(updateItem.moment.first)
+        mutableLongStateOf(updateItem.idMoment)
     }
 
     val date = remember {

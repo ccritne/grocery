@@ -37,8 +37,6 @@ fun Plan(
     app: App
 ) {
 
-    app.screen = Screen.Plan
-
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = { ButtonAdd(app = app) }

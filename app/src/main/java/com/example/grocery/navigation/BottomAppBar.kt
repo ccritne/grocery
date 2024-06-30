@@ -23,22 +23,42 @@ fun BottomAppBar(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround
     ) {
-        IconButton(onClick = { app.navController.navigate(Screen.Inventory.name) }) {
+        IconButton(onClick = {
+            app.setItem(app.voidMapEntry)
+            app.isNewItem.value = false
+            app.screen = Screen.Inventory
+            app.navController.navigate(Screen.Inventory.name)
+        }) {
             Icon(imageVector = Icons.Default.Home, contentDescription = "House")
         }
-        IconButton(onClick = { app.navController.navigate(Screen.Plan.name) }) {
+        IconButton(onClick = {
+            app.setItem(app.voidMapEntry)
+            app.isNewItem.value = false
+            app.screen = Screen.Plan
+            app.navController.navigate(Screen.Plan.name)
+        }) {
             Icon(
                 imageVector = Icons.Default.DateRange,
                 contentDescription = "Calendar"
             )
         }
-        IconButton(onClick = { app.navController.navigate(Screen.ShoppingCart.name) }) {
+        IconButton(onClick = {
+            app.setItem(app.voidMapEntry)
+            app.isNewItem.value = false
+            app.screen = Screen.ShoppingCart
+            app.navController.navigate(Screen.ShoppingCart.name)
+        }) {
             Icon(
                 imageVector = Icons.Default.ShoppingCart,
                 contentDescription = "ShoppingCart"
             )
         }
-        IconButton(onClick = { app.navController.navigate(Screen.Items.name) }) {
+        IconButton(onClick = {
+            app.setItem(app.voidMapEntry)
+            app.isNewItem.value = false
+            app.screen = Screen.Items
+            app.navController.navigate(Screen.Items.name)
+        }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.List,
                 contentDescription = "ListItems"

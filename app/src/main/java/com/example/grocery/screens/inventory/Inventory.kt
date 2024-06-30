@@ -21,7 +21,6 @@ import com.example.grocery.screens.Screen
 
 @Composable
 fun Inventory(app: App){
-    app.screen = Screen.Inventory
 
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,

@@ -50,11 +50,20 @@ fun UpdateItem(
             id = app.item.key,
             idItem = app.item.value.idItem,
             name = app.itemsMap.value[app.item.value.idItem]?.name,
-            amount = app.item.value.amount,
             idUnit = app.item.value.idUnit,
-            idMoment = app.item.value.idMoment,
-            date = getFormatterDateSql().parse(app.item.value.date)
         )
+
+        if (app.screen != Screen.Items) {
+            updateItem.setValues(
+                amount = app.item.value.amount,
+            )
+
+            if (app.screen == Screen.Plan)
+                updateItem.setValues(
+                    idMoment = app.item.value.idMoment,
+                    date = getFormatterDateSql().parse(app.item.value.date)
+                )
+        }
     }
 
     Column(

@@ -11,7 +11,7 @@ fun updateItemsPlan(
     updateItem: UpdateItem
 ){
 
-    val oldMoment = updateItem.moment.first
+    val oldMoment = updateItem.idMoment
     val item = updateItem.toItem(app.placeSelector.first)
 
     if (updateItem.isNewItem) {

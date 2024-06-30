@@ -27,10 +27,6 @@ import com.example.grocery.items.ItemUI
 @Composable
 fun ShoppingCart(app: App) {
 
-    app.screen = Screen.ShoppingCart
-
-    app.isNewItem.value = false
-
     val shoppingCart by remember(app.startDateOperation, app.endDateOperation, app.placeSelector) {
         derivedStateOf {
             app.dbManager.selectShoppingCartInRange(

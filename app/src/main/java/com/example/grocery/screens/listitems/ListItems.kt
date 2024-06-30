@@ -24,8 +24,6 @@ fun ListItems(
     app: App
 ){
 
-    app.screen = Screen.Items
-
     val itemsList = app.itemsMap.value
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
