@@ -100,7 +100,7 @@ fun DbManager.selectShoppingCartInRange(
             INNER JOIN items ON planning.idItem = items.id
             LEFT JOIN inventory ON planning.idItem = inventory.idItem
         WHERE planning.date>=? and planning.date <=? and idPlace=?
-        GROUP BY items.name
+        GROUP BY items.id
     """.trimIndent()
 
     val cursor = this.rawQuery(query, arrayOf(startDate, endDate, idPlace.toString()))

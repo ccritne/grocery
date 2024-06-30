@@ -129,9 +129,6 @@ fun fromGoogleToApp(dbManager: DbManager){
         item.update(idItem = idItem, amountInventory = 0)
 
         dbManager.insertPlanItem(item)
-
-        if(!pair.second)
-            dbManager.insertItemIntoInventory(item)
     }
 }
 

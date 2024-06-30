@@ -27,15 +27,11 @@ import com.example.grocery.items.ItemUI
 @Composable
 fun ShoppingCart(app: App) {
 
-    val shoppingCart by remember(app.startDateOperation, app.endDateOperation, app.placeSelector) {
-        derivedStateOf {
-            app.dbManager.selectShoppingCartInRange(
+    val shoppingCart = app.dbManager.selectShoppingCartInRange(
                 startDate = app.formatterSql.format(app.startDateOperation.value),
                 endDate = app.formatterSql.format(app.endDateOperation.value),
                 idPlace = app.placeSelector.first
             )
-        }
-    }
 
 
 

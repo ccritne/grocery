@@ -1,5 +1,6 @@
 package com.example.grocery.items
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -34,6 +35,7 @@ fun ItemUI(
             .fillMaxWidth()
             .clickable {
                 app.setItem(item = item)
+                Log.i("item to modified", item.value.toString())
                 app.isNewItem.value = false
                 app.navController.navigate(Screen.UpdateItem.name)
             }

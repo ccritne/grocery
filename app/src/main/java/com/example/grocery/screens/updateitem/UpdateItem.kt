@@ -12,6 +12,7 @@ import com.example.grocery.utilities.getFormatterDateSql
 import java.util.Date
 
 class UpdateItem(
+    val item: Item,
     val forSetup: Boolean,
     val forShoppingCart: Boolean,
     val amountInventory: Int,
@@ -21,28 +22,29 @@ class UpdateItem(
     val momentsMap: Map<Long, String>,
     val isNewItem: Boolean
 ) {
-    var id : Long by mutableLongStateOf(-1)
+    var id : Long by mutableLongStateOf(item.id)
         private set
 
-    var idItem : Long by mutableLongStateOf(-1)
-        private set
-
-    var name : String by mutableStateOf(
-        if(!isNewItem || !forSetup)
-            itemsMap.entries.first().value.name
+    var idItem : Long by mutableLongStateOf(
+        if (!isNewItem)
+            item.idItem
         else
-            ""
-
+            itemsMap.entries.first().key
     )
         private set
 
-    var amount : Int by mutableIntStateOf(0)
+    var name : String by mutableStateOf(item.name)
         private set
 
-    var idUnit by mutableLongStateOf(-1)
+    var amount : Int by mutableIntStateOf(item.amount)
         private set
 
-    var idMoment by mutableLongStateOf(-1)
+    var idUnit by mutableLongStateOf(
+            item.idUnit
+        )
+        private set
+
+    var idMoment by mutableLongStateOf(item.idMoment)
         private set
 
     var date : Date by mutableStateOf(Date())
@@ -108,7 +110,7 @@ class UpdateItem(
             )
 
         if(!isNewItem || !forSetup)
-            item.update(name = itemsMap[idItem]!!.name)
+            item.update(name = itemsMap[idItem]?.name)
         else
             item.update(name = name)
 

@@ -24,6 +24,13 @@ fun updateItem(
         )
     }
 
+    if (app.screen == Screen.ShoppingCart){
+        updateItemsShoppingCart(
+            app = app,
+            updateItem = updateItem
+        )
+    }
+
 //    if (screen == Screen.Inventory) {
 //
 //        if (isNewItem) {

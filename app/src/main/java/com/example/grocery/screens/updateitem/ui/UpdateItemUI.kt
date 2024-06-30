@@ -30,6 +30,7 @@ fun UpdateItem(
     val updateItem by remember{
         mutableStateOf(
             UpdateItem(
+                item = app.item.value,
                 forSetup = app.screen == Screen.Items,
                 itemsMap = app.itemsMap.value,
                 unitsMap = app.unitsMap.value,
@@ -37,10 +38,7 @@ fun UpdateItem(
                 momentsMap = app.momentsMap.value,
                 forShoppingCart = app.screen == Screen.ShoppingCart,
                 isNewItem = app.isNewItem.value,
-                amountInventory = if (app.screen == Screen.ShoppingCart)
-                    app.item.value.amountInventory
-                else
-                    0
+                amountInventory = app.item.value.amountInventory
             )
         )
     }
@@ -64,6 +62,7 @@ fun UpdateItem(
                     date = getFormatterDateSql().parse(app.item.value.date)
                 )
         }
+
     }
 
     Column(

@@ -36,10 +36,16 @@ fun UiAmountReference(
 
     var amount by remember {
         mutableIntStateOf(
-            if(updateItem.isNewItem)
+            if(updateItem.isNewItem || updateItem.forShoppingCart)
                 0
             else
                 updateItem.amount
+        )
+    }
+
+    var amountInventory by remember(updateItem.amountInventory) {
+        mutableIntStateOf(
+            updateItem.amountInventory
         )
     }
 
@@ -48,8 +54,9 @@ fun UiAmountReference(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
+
         if (updateItem.forShoppingCart) {
-            Text(text = updateItem.amountInventory.toString(), fontSize = 35.sp)
+            Text(text = amountInventory.toString(), fontSize = 35.sp)
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = "Add",
@@ -88,7 +95,7 @@ fun UiAmountReference(
                 .fillMaxHeight(0.1f)
         )
 
-        Text(text = updateItem.unitsMap[updateItem.idUnit]!!.second, fontSize = 35.sp)
+        Text(text = updateItem.unitsMap[updateItem.idUnit]?.second.toString(), fontSize = 35.sp)
 
         
     }
