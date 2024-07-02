@@ -224,7 +224,6 @@ class App: ComponentActivity() {
         itemsMutableMap = dbManager.getAllItems(placeSelector.first)
         updateItemsMap()
 
-        Log.i("List items", itemsMap.value.toString())
 
         if (itemsMutableMap.isNotEmpty())
             setItem(itemsMutableMap.entries.first())

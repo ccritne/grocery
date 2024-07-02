@@ -34,7 +34,6 @@ fun ItemUI(
             .fillMaxWidth()
             .clickable {
                 app.setItem(item = item)
-                Log.i("item to modified", item.value.toString())
                 app.isNewItem.value = false
                 app.navController.navigate(Screen.UpdateItem.name)
             }
@@ -71,7 +70,7 @@ fun ItemUI(
                     itemObject.amountInventory.toString() + "/"
                 else "")
                         +
-                        if (app.screen == Screen.Plan) itemObject.amount.toString() else itemObject.amountInventory.toString()
+                        (if (app.screen == Screen.Plan) itemObject.amount.toString() else itemObject.amountInventory.toString())
                         +
                         app.unitsMap.value[itemObject.idUnit]?.second,
                 fontSize = 30.sp,

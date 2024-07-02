@@ -1,8 +1,8 @@
 package com.example.grocery.database
 
 import android.content.ContentValues
-import android.util.Log
 import com.example.grocery.items.Item
+import com.example.grocery.utilities.getFormatterDateSql
 
 fun DbManager.updateShoppingCart(item: Item, amount: Int): Int{
 
@@ -24,7 +24,7 @@ fun DbManager.updatePlanItem(item: Item) : Int {
     cv.put("idItem", item.idItem)
     cv.put("amount", item.amount)
     cv.put("idMoment", item.idMoment)
-    cv.put("date", item.date)
+    cv.put("date", getFormatterDateSql().format(item.date))
 
     return this.update("planning", cv, "id = ?", arrayOf(item.id.toString()))
 }

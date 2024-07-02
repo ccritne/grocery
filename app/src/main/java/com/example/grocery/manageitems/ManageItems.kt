@@ -3,7 +3,6 @@ package com.example.grocery.manageitems
 import com.example.grocery.App
 import com.example.grocery.items.Item
 import com.example.grocery.screens.Screen
-import java.util.Date
 
 fun updateItem(
     app: App,

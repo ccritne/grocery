@@ -11,18 +11,14 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.grocery.App
-import com.example.grocery.uielements.date.Date
 import com.example.grocery.database.selectShoppingCartInRange
-import com.example.grocery.screens.Screen
-import com.example.grocery.uielements.date.getDateNow
 import com.example.grocery.items.ItemUI
+import com.example.grocery.uielements.date.Date
+import com.example.grocery.uielements.date.getDateNow
 import com.example.grocery.utilities.fromPairToMapEntry
 
 @Composable
@@ -51,7 +47,7 @@ fun ShoppingCart(app: App) {
         ) {
             Date(
                 modifier = Modifier.fillMaxWidth(0.5f),
-                date = app.startDateOperation,
+                date = app.startDateOperation.value,
                 enableLeft = app.startDateOperation.value.after(getDateNow()),
                 enableRight = app.startDateOperation.value.before(app.endDateOperation.value),
                 modifierIcons = Modifier.size(15.dp),
@@ -62,7 +58,7 @@ fun ShoppingCart(app: App) {
 
             Date(
                 modifier = Modifier.fillMaxWidth(),
-                date = app.endDateOperation,
+                date = app.endDateOperation.value,
                 enableLeft = app.endDateOperation.value.after(app.startDateOperation.value),
                 enableRight = true,
                 modifierIcons = Modifier.size(15.dp),

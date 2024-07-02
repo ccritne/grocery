@@ -1,6 +1,6 @@
 package com.example.grocery.screens
 
-enum class Screen(){
+enum class Screen{
     Plan,
     ShoppingCart,
     Items,

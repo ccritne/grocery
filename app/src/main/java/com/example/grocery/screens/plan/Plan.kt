@@ -50,7 +50,7 @@ fun Plan(
         ) {
 
             Date(
-                date = app.dateOperation,
+                date = app.dateOperation.value,
                 enableLeft = true,
                 enableRight = true,
                 modifierIcons = Modifier.size(25.dp),

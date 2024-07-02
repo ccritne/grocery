@@ -82,7 +82,7 @@ fun fromGoogleToApp(dbManager: DbManager){
                             val copy = item.copy(
                                 name = name,
                                 amount = amountInt,
-                                date = date,
+                                date = getFormatterDateSql().parse(date),
                                 idMoment = momentChoice,
                                 idUnit = unit,
                                 idPlace = idSideboard
@@ -105,7 +105,7 @@ fun fromGoogleToApp(dbManager: DbManager){
     val clothItem = Item().copy(
         name = "White T-shirt",
         amount = 1,
-        date = string.substring(2, 12),
+        date = getFormatterDateSql().parse(string.substring(2, 12)),
         idMoment = idWasher,
         idPlace = idHome,
         idUnit = idPieces

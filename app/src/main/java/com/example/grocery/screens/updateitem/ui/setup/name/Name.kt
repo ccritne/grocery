@@ -7,14 +7,14 @@ import com.example.grocery.uielements.textfield.NoLineWidthTextField
 
 @Composable
 fun UiNameListItems(
-    name: MutableState<String>
+    starter: String,
+    onChange: (String) -> Unit
 ){
 
     NoLineWidthTextField(
-        initialValue = name.value,
+        initialValue = starter,
         labelText = "Name",
-        fontSize = 25.sp
-    ) {
-        name.value = it
-    }
+        fontSize = 25.sp,
+        onValueChange = onChange
+    )
 }

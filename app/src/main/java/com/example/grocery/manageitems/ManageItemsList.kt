@@ -1,11 +1,8 @@
 package com.example.grocery.manageitems
 
-import android.util.Log
 import com.example.grocery.App
 import com.example.grocery.database.insertItemIntoList
-import com.example.grocery.database.insertPlanItem
 import com.example.grocery.database.updateItemOfList
-import com.example.grocery.database.updatePlanItem
 import com.example.grocery.items.Item
 
 fun updateItemsList(

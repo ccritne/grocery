@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 fun DropdownMenuSelection(
     enabled: Boolean = true,
     list: List<Pair<Long, String>>,
-    starter: Pair<Long, String>,
+    starter: Pair<Long, String?>,
     onChange: (Pair<Long, String>) -> Unit
 ){
     var expanded by remember { mutableStateOf(false) }
@@ -39,7 +39,7 @@ fun DropdownMenuSelection(
             Row(
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = starter.second, fontSize = 25.sp)
+                starter.second?.let { Text(text = it, fontSize = 25.sp) }
                 if (enabled) {
                     Icon(
                         imageVector = if (expanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.ArrowDropDown,

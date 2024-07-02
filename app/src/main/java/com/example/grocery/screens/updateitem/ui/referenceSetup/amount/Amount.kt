@@ -15,6 +15,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -27,31 +32,21 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun UiAmountReference(
-    forShoppingCart: Boolean,
-    unit: MutableState<String>,
-    amount: MutableIntState,
-    amountInventory: MutableIntState
+    starter: Int,
+    modifier: Modifier = Modifier,
+    onChangeAmount: (Int) -> Unit
 ){
 
     Row(
-        modifier = Modifier.fillMaxWidth(1f),
+        modifier = modifier.fillMaxWidth(1f),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
 
-        if (forShoppingCart) {
-            Text(text = amountInventory.intValue.toString(), fontSize = 35.sp)
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Add",
-                modifier = Modifier.size(35.dp)
-            )
-        }
-
         OutlinedTextField(
             maxLines = 1,
             shape = RectangleShape,
-            value = if (amount.intValue != 0) amount.intValue.toString() else "",
+            value = if (starter != 0) starter.toString() else "",
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.NumberPassword,
                 imeAction = ImeAction.Done
@@ -65,20 +60,19 @@ fun UiAmountReference(
             },
             textStyle = TextStyle(textAlign = TextAlign.Center),
             onValueChange = {
-                if (it.isNotEmpty()) {
-                    amount.intValue = it.toInt()
-                } else {
-                    amount.intValue = 0
-                }
+
+
+                if (it.isNotEmpty())
+                    onChangeAmount(it.toInt())
+                else
+                    onChangeAmount(0)
+
             },
             modifier = Modifier
                 .fillMaxWidth(0.90f)
                 .padding(end = 15.dp)
                 .fillMaxHeight(0.1f)
         )
-
-        Text(text = unit.value, fontSize = 35.sp)
-
         
     }
 }

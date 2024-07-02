@@ -14,9 +14,9 @@ import java.util.Date
 @Composable
 fun UiMomentsDateReference(
     momentsMap: Map<Long, String>,
-    date: MutableState<Date>,
-    momentSelector: MutableLongState,
-    onChangeDate: (Date) -> Unit
+    date: Date,
+    momentSelector: Long,
+    onChangeDate: (Long, Date) -> Unit
 ){
 
     Column(
@@ -26,7 +26,7 @@ fun UiMomentsDateReference(
             momentsMap = momentsMap,
             momentState = momentSelector,
             onChange = {
-                momentSelector.longValue = it
+                onChangeDate(it, date)
             }
         )
 
@@ -38,8 +38,7 @@ fun UiMomentsDateReference(
             modifierIcons = Modifier.size(25.dp),
             fontSizeText = 35
         ) {
-            date.value = it
-            onChangeDate(it)
+            onChangeDate(momentSelector, it)
         }
     }
 

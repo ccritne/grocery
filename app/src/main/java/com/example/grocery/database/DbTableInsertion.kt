@@ -2,6 +2,7 @@ package com.example.grocery.database
 
 import android.content.ContentValues
 import com.example.grocery.items.Item
+import com.example.grocery.utilities.getFormatterDateSql
 
 
 fun DbManager.insertPlace(name: String) : Long{
@@ -38,7 +39,7 @@ fun DbManager.insertPlanItem(item: Item) : Long {
     cv.put("idItem", item.idItem)
     cv.put("amount", item.amount)
     cv.put("idMoment", item.idMoment)
-    cv.put("date", item.date)
+    cv.put("date", getFormatterDateSql().format(item.date))
     cv.put("checked", false)
 
 

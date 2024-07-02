@@ -41,7 +41,7 @@ class DbManager
         while (cursor.moveToNext()){
             val tableName = cursor.getString(0)
             if(tableName != "sqlite_sequence")
-                db.execSQL("DROP TABLE IF EXISTS ${tableName}")
+                db.execSQL("DROP TABLE IF EXISTS $tableName")
         }
 
         cursor.close()

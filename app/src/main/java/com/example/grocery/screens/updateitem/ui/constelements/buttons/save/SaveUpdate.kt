@@ -1,5 +1,6 @@
 package com.example.grocery.screens.updateitem.ui.constelements.buttons.save
 
+import android.util.Log
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Icon
@@ -24,6 +25,7 @@ fun SaveUpdate(
     newDate: MutableState<Date>,
     newAmount: MutableIntState,
     newIdUnit: MutableLongState,
+    item: MutableState<Item>
 ){
     IconButton(onClick = {
 
@@ -32,7 +34,7 @@ fun SaveUpdate(
             name = newName.value,
             amount = newAmount.intValue,
             amountInventory = app.item.value.amountInventory,
-            date = getFormatterDateSql().format(newDate.value),
+            date = newDate.value,
             price = -1.0f,
             checked = app.item.value.checked,
             idParent = -1L,
@@ -42,9 +44,11 @@ fun SaveUpdate(
             idPlace = app.placeSelector.first
         )
 
+        Log.i("ARRIVED TAG", item.value.toString())
+
         updateItem(
             app = app,
-            updatedItem = updatedItem
+            updatedItem = item.value
         )
 
         app.navController.navigateUp()

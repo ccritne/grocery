@@ -26,7 +26,7 @@ import java.util.Locale
 
 @Composable
 fun Date(
-    date: MutableState<Date>,
+    date: Date,
     enableLeft: Boolean,
     enableRight: Boolean,
     fontSizeText: Int,
@@ -35,10 +35,8 @@ fun Date(
     onChange: (Date) -> Unit
 ){
 
-    val usageDate by date
-
     val formatterDesign = SimpleDateFormat("E dd/MM", Locale.getDefault())
-    val formattedDateDesign = formatterDesign.format(usageDate)
+    val formattedDateDesign = formatterDesign.format(date)
 
 
     Row(
@@ -49,7 +47,7 @@ fun Date(
         IconButton(
             enabled = enableLeft,
             onClick = {
-                onChange(getUpdateDate(usageDate, -1))
+                onChange(getUpdateDate(date, -1))
             }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -71,7 +69,7 @@ fun Date(
         IconButton(
             enabled = enableRight,
             onClick = {
-                onChange(getUpdateDate(usageDate, 1))
+                onChange(getUpdateDate(date, 1))
             }) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowForward,

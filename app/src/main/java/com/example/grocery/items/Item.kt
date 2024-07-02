@@ -1,15 +1,17 @@
 package com.example.grocery.items
 
 import android.database.Cursor
-import android.util.Log
+import com.example.grocery.uielements.date.getDateNow
+import com.example.grocery.utilities.getFormatterDateSql
+import java.util.Date
 
 data class Item(
     val id: Long,
     val idItem: Long,
     val name: String,
     val amount: Int,
-    val amountInventory : Int,
-    val date: String,
+    var amountInventory : Int,
+    var date: Date,
     val price: Float,
     val checked : Boolean,
     val idParent: Long,
@@ -20,9 +22,9 @@ data class Item(
     constructor(): this(
         id = -1,
         name = "",
-        amount = -1,
-        amountInventory = -1,
-        date = "",
+        amount = 0,
+        amountInventory = 0,
+        date = getDateNow(),
         price = -1f,
         checked = false,
         idParent = -1,
@@ -56,10 +58,10 @@ fun fromCursorToItem(cursor: Cursor) : Item{
     var id: Long = -1
     var idItem: Long = -1
     var name: String = ""
-    var amount: Int = -1
-    var amountInventory : Int = -1
-    var date: String = ""
-    var price: Float = -1f
+    var amount: Int = 0
+    var amountInventory : Int = 0
+    var date: Date = Date()
+    var price: Float = 0f
     var checked : Boolean = false
     var idParent: Long = -1
     var idUnit: Long = -1
@@ -88,7 +90,7 @@ fun fromCursorToItem(cursor: Cursor) : Item{
 
     val dateColumnIndex = cursor.getColumnIndex("date")
     if (dateColumnIndex != -1)
-        date = cursor.getString(dateColumnIndex)
+        date = getFormatterDateSql().parse(cursor.getString(dateColumnIndex))
 
     val priceColumnIndex = cursor.getColumnIndex("price")
     if (priceColumnIndex != -1)

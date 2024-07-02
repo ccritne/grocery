@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ChoiceMoment(
     momentsMap: Map<Long, String>,
-    momentState: MutableLongState,
+    momentState: Long,
     onChange: (Long) -> Unit
 ){
 
@@ -41,7 +41,7 @@ fun ChoiceMoment(
             ) {
 
                 RadioButton(
-                    selected = momentState.longValue == momentCheckedStates[index].longValue,
+                    selected = momentState == momentCheckedStates[index].longValue,
                     onClick = { onChange(momentCheckedStates[index].longValue) })
 
                 momentsMap[momentCheckedStates[index].longValue]?.let { Text(text = it) }

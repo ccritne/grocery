@@ -1,8 +1,6 @@
 package com.example.grocery.database
 
 import android.content.ContentValues
-import android.database.sqlite.SQLiteException
-import android.util.Log
 
 
 fun DbManager.deleteItem(table: String, id: Long) : Int {

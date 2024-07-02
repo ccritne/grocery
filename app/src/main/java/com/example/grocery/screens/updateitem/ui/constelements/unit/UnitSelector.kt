@@ -1,8 +1,6 @@
 package com.example.grocery.screens.updateitem.ui.constelements.unit
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableLongState
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -11,22 +9,18 @@ import com.example.grocery.uielements.dropdownmenu.DropdownMenuSelection
 
 @Composable
 fun UnitSelectorUpdateItem(
+    starter: Pair<Long, String?>,
+    enabled: Boolean,
     unitsMap: Map<Long, Pair<String, String>>,
-    idUnit: MutableLongState,
-    unit: MutableState<String>
+    onChange: (Long) -> Unit
 ){
-    var starter by remember{
-        mutableStateOf(Pair(idUnit.longValue, unit.value))
-    }
 
     DropdownMenuSelection(
-        enabled = true,
+        enabled = enabled,
         list = unitsMap.map { item -> Pair(item.key, item.value.second) },
         starter = starter,
         onChange = {
-            idUnit.longValue = it.first
-            unit.value = it.second
-            starter = it
+            onChange(it.first)
         }
     )
 
