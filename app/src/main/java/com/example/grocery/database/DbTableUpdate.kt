@@ -3,43 +3,15 @@ package com.example.grocery.database
 import android.content.ContentValues
 import android.util.Log
 import com.example.grocery.items.Item
-import com.example.grocery.screens.updateitem.UpdateItem
 
-fun DbManager.updateShoppingCart(updatedItem: Item): Item{
+fun DbManager.updateShoppingCart(item: Item, amount: Int): Int{
 
-    // TODO REMAKE
+    val cv = ContentValues()
 
-    val cursorExist = this.rawQuery("SELECT EXISTS(SELECT 1 FROM  WHERE idItem=?) as exist", arrayOf(updatedItem.idItem.toString()))
+    cv.put("amount", item.amountInventory+amount)
 
+    return this.update("items", cv, "id=?", arrayOf(item.idItem.toString()))
 
-    if(cursorExist.moveToFirst()) {
-
-        val exist = cursorExist.getInt(cursorExist.getColumnIndexOrThrow("exist"))
-
-        var amountInventory = 0
-
-        if(exist == 0) {
-
-
-            cursorExist.close()
-
-            this.insertItemIntoInventory(updatedItem)
-        }else{
-            val cursorAmountInventory = this.rawQuery("SELECT IFNULL(amount, 0) as amountInventory FROM inventory WHERE idItem=?", arrayOf(updatedItem.idItem.toString()))
-            if(cursorAmountInventory.moveToFirst())
-                amountInventory = cursorAmountInventory.getInt(cursorAmountInventory.getColumnIndexOrThrow("amountInventory"))
-        }
-
-        updatedItem.update(amountInventory = updatedItem.amount + amountInventory)
-
-        val cv = ContentValues()
-
-        cv.put("amount", updatedItem.amountInventory)
-
-        this.update("items", cv, "id=?", arrayOf(updatedItem.idItem.toString()))
-    }
-
-    return updatedItem
 }
 
 

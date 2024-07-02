@@ -22,9 +22,7 @@ import com.example.grocery.database.getAllMoments
 import com.example.grocery.database.getAllPlaces
 import com.example.grocery.database.getAllUnits
 import com.example.grocery.database.getDefaultIdPlace
-import com.example.grocery.database.selectInventoryItems
 import com.example.grocery.items.Item
-import com.example.grocery.items.MutableItem
 import com.example.grocery.screens.Screen
 import com.example.grocery.uielements.date.getDateNow
 import com.example.grocery.uielements.date.getUpdateDate
@@ -66,7 +64,7 @@ class App: ComponentActivity() {
 
     var dailyPlanMap : MutableState<Map<Long, Map<Long, Item>>> = mutableStateOf(mapOf())
         private set
-    private var dailyPlanMutableMap = mutableMapOf<Long, MutableMap<Long, MutableItem>>()
+    private var dailyPlanMutableMap = mutableMapOf<Long, MutableMap<Long, Item>>()
 
     var itemsMap : MutableState<Map<Long, Item>> = mutableStateOf(mapOf())
         private set
@@ -75,13 +73,6 @@ class App: ComponentActivity() {
     var isNewItem: MutableState<Boolean> = mutableStateOf(false)
 
     var screen : Screen = Screen.Plan
-
-    val voidMapEntry = object : Map.Entry<Long, Item> {
-        override val key: Long
-            get() = -1L
-        override val value: Item
-            get() = Item()
-    }
 
     lateinit var navController: NavHostController
         private set
@@ -237,8 +228,6 @@ class App: ComponentActivity() {
 
         if (itemsMutableMap.isNotEmpty())
             setItem(itemsMutableMap.entries.first())
-        else
-            setItem(voidMapEntry)
 
     }
 

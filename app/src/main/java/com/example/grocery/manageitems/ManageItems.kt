@@ -1,11 +1,7 @@
 package com.example.grocery.manageitems
 
-import androidx.compose.runtime.MutableIntState
-import androidx.compose.runtime.MutableLongState
-import androidx.compose.runtime.MutableState
 import com.example.grocery.App
 import com.example.grocery.items.Item
-import com.example.grocery.items.MutableItem
 import com.example.grocery.screens.Screen
 import java.util.Date
 
@@ -33,7 +29,8 @@ fun updateItem(
     if (app.screen == Screen.ShoppingCart){
         updateItemsShoppingCart(
             app = app,
-            updatedItem = updatedItem
+            updatedItem = app.item.value,
+            amount = updatedItem.amount
         )
     }
 

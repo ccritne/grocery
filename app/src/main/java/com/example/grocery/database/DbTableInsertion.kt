@@ -2,7 +2,6 @@ package com.example.grocery.database
 
 import android.content.ContentValues
 import com.example.grocery.items.Item
-import com.example.grocery.items.MutableItem
 
 
 fun DbManager.insertPlace(name: String) : Long{
@@ -47,16 +46,6 @@ fun DbManager.insertPlanItem(item: Item) : Long {
 
 }
 
-fun DbManager.insertItemIntoInventory(item: Item) : Long{
-
-    val cv = ContentValues()
-
-    cv.put("idItem", item.idItem)
-    cv.put("amount", item.amountInventory)
-
-    return this.insert("inventory", null, cv)
-
-}
 
 fun DbManager.insertItemIntoList(item: Item) : Long{
     val cv = ContentValues()

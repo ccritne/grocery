@@ -7,22 +7,20 @@ import com.example.grocery.database.insertPlanItem
 import com.example.grocery.database.updateItemOfList
 import com.example.grocery.database.updatePlanItem
 import com.example.grocery.items.Item
-import com.example.grocery.screens.updateitem.UpdateItem
 
 fun updateItemsList(
     app: App,
     updatedItem: Item
 ){
 
-
+    var localCopy = updatedItem.copy()
     if (app.isNewItem.value) {
         val id = app.dbManager.insertItemIntoList(updatedItem)
-        updatedItem.update(id = id, idItem = id)
+        localCopy = updatedItem.copy(id = id, idItem = id)
     }
     else
-        app.dbManager.updateItemOfList(updatedItem)
-
+        app.dbManager.updateItemOfList(localCopy)
 
     if (updatedItem.id != -1L)
-        app.addOrUpdateItemInList(updatedItem)
+        app.addOrUpdateItemInList(localCopy)
 }

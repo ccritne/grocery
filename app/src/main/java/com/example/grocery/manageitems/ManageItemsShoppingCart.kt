@@ -3,13 +3,15 @@ package com.example.grocery.manageitems
 import com.example.grocery.App
 import com.example.grocery.database.updateShoppingCart
 import com.example.grocery.items.Item
-import com.example.grocery.screens.updateitem.UpdateItem
 
 fun updateItemsShoppingCart(
     app: App,
-    updatedItem: Item
+    updatedItem: Item,
+    amount: Int,
 ){
-    val item = app.dbManager.updateShoppingCart(updatedItem)
 
-    app.addOrUpdateItemInInventory(item)
+    val rows = app.dbManager.updateShoppingCart(updatedItem, amount)
+
+    if(rows != 0)
+        app.addOrUpdateItemInList(updatedItem)
 }

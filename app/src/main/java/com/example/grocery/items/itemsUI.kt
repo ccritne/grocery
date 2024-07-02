@@ -29,7 +29,6 @@ fun ItemUI(
 
     val itemObject = item.value
 
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -64,23 +63,21 @@ fun ItemUI(
             )
         }
 
-        if (app.screen != Screen.Items) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = (if (app.screen == Screen.ShoppingCart)
-                        itemObject.amountInventory.toString() + "/"
-                    else "")
-                            +
-                            itemObject.amount.toString()
-                            +
-                            app.unitsMap.value[itemObject.idUnit]?.second,
-                    fontSize = 30.sp,
-                    modifier = Modifier.padding(end = 15.dp)
-                )
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = (if (app.screen == Screen.ShoppingCart)
+                    itemObject.amountInventory.toString() + "/"
+                else "")
+                        +
+                        if (app.screen == Screen.Plan) itemObject.amount.toString() else itemObject.amountInventory.toString()
+                        +
+                        app.unitsMap.value[itemObject.idUnit]?.second,
+                fontSize = 30.sp,
+                modifier = Modifier.padding(end = 15.dp)
+            )
 
-            }
         }
 
     }

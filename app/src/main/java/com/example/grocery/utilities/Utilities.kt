@@ -79,7 +79,7 @@ fun fromGoogleToApp(dbManager: DbManager){
 
                             val item = Item()
 
-                            item.update(
+                            val copy = item.copy(
                                 name = name,
                                 amount = amountInt,
                                 date = date,
@@ -88,7 +88,7 @@ fun fromGoogleToApp(dbManager: DbManager){
                                 idPlace = idSideboard
                             )
 
-                            items.add(item)
+                            items.add(copy)
                         }
 
                     }
@@ -102,8 +102,7 @@ fun fromGoogleToApp(dbManager: DbManager){
 
     }
 
-    val clothItem = Item()
-    clothItem.update(
+    val clothItem = Item().copy(
         name = "White T-shirt",
         amount = 1,
         date = string.substring(2, 12),
@@ -125,7 +124,7 @@ fun fromGoogleToApp(dbManager: DbManager){
                 pair.first
 
 
-        item.update(idItem = idItem, amountInventory = 0)
+        val localCopy = item.copy(idItem = idItem, amountInventory = 0)
 
         dbManager.insertPlanItem(item)
     }

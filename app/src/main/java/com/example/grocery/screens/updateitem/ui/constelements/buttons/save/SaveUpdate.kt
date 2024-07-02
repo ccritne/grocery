@@ -10,7 +10,6 @@ import androidx.compose.runtime.MutableLongState
 import androidx.compose.runtime.MutableState
 import com.example.grocery.App
 import com.example.grocery.items.Item
-import com.example.grocery.items.MutableItem
 import com.example.grocery.manageitems.updateItem
 import com.example.grocery.utilities.getFormatterDateSql
 import java.util.Date
@@ -28,15 +27,17 @@ fun SaveUpdate(
 ){
     IconButton(onClick = {
 
-        val updatedItem = Item()
-
-        updatedItem.update(
+        val updatedItem = Item(
             id = newId.longValue,
             name = newName.value,
+            amount = newAmount.intValue,
+            amountInventory = app.item.value.amountInventory,
+            date = getFormatterDateSql().format(newDate.value),
+            price = -1.0f,
+            checked = app.item.value.checked,
+            idParent = -1L,
             idItem = newIdItem.longValue,
             idMoment = newIdMoment.longValue,
-            date = getFormatterDateSql().format(newDate.value),
-            amount = newAmount.intValue,
             idUnit = newIdUnit.longValue,
             idPlace = app.placeSelector.first
         )

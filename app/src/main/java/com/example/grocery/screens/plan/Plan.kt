@@ -105,9 +105,10 @@ fun Plan(
                                                     item.first,
                                                     newValue
                                                 )
-                                                item.second.update(checked = newValue)
 
-                                                app.addOrUpdateItemInPlan(item.second)
+                                                val localCopy = item.second.copy(checked = newValue)
+
+                                                app.addOrUpdateItemInPlan(localCopy)
                                             },
                                         ) {
                                             ItemUI(

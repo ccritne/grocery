@@ -1,8 +1,7 @@
 package com.example.grocery.database
 
 import com.example.grocery.items.Item
-import com.example.grocery.items.MutableItem
-import com.example.grocery.items.fromCursorToMutableItem
+import com.example.grocery.items.fromCursorToItem
 
 fun DbManager.itemExists(name: String) : Pair<Long, Boolean> {
 
@@ -22,18 +21,14 @@ fun DbManager.itemExists(name: String) : Pair<Long, Boolean> {
 
 }
 
-fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, MutableItem> {
+fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
 
 
-    val mapItems : MutableMap<Long, MutableItem> = mutableMapOf()
+    val listItems : MutableMap<Long, Item> = mutableMapOf()
 
     val query = """
         SELECT
-            items.id,
-            items.name,
-            items.price,
-            items.idUnit,
-            items.idPlace
+            *
         FROM items
             WHERE idPlace = ?
     """.trimIndent()
@@ -41,32 +36,30 @@ fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, MutableItem> {
     val cursor = this.rawQuery(query, arrayOf(idPlace.toString()))
 
     while (cursor.moveToNext()){
-        val item = fromCursorToMutableItem(cursor)
+        val item = fromCursorToItem(cursor)
 
-        mapItems[item.id] = item
+        listItems[item.id] = item
     }
 
     cursor.close()
-    return mapItems
+    return listItems
 }
 
 fun DbManager.selectShoppingCartInRange(
     startDate: String,
     endDate: String,
     idPlace: Long
-) : Map<Long, MutableItem> {
+) : List<Item> {
 
     val query = """
         SELECT 
-            planning.id,
-            planning.idItem, 
+            items.id,
             items.name,
-            IFNULL(inventory.amount, 0) as amountInventory,
+            items.amount_inventory,
             SUM(planning.amount) as amount,
             items.idUnit
         FROM planning 
             INNER JOIN items ON planning.idItem = items.id
-            LEFT JOIN inventory ON planning.idItem = inventory.idItem
         WHERE planning.date>=? and planning.date <=? and idPlace=?
         GROUP BY items.id
     """.trimIndent()
@@ -74,13 +67,13 @@ fun DbManager.selectShoppingCartInRange(
     val cursor = this.rawQuery(query, arrayOf(startDate, endDate, idPlace.toString()))
 
 
-    val listItems : MutableMap<Long, MutableItem> = mutableMapOf()
+    val listItems : MutableList<Item> = mutableListOf()
 
     if (cursor.moveToFirst()) {
         do {
-            val item = fromCursorToMutableItem(cursor)
+            val item = fromCursorToItem(cursor)
 
-            listItems[item.idItem] = item
+            listItems.add(item)
 
         } while (cursor.moveToNext())
     }
@@ -92,12 +85,12 @@ fun DbManager.selectShoppingCartInRange(
 
 
 
-fun DbManager.dailyPlan(date: String, idPlace: Long) : MutableMap<Long, MutableMap<Long, MutableItem>> {
+fun DbManager.dailyPlan(date: String, idPlace: Long) : MutableMap<Long, MutableMap<Long, Item>> {
 
     val query = """
             SELECT 
-                planning.id as id,
-                items.id as idItem,
+                planning.id,
+                planning.idItem,
                 items.name,
                 planning.amount,
                 planning.checked,
@@ -113,19 +106,19 @@ fun DbManager.dailyPlan(date: String, idPlace: Long) : MutableMap<Long, MutableM
     val cursor = this.rawQuery(query, arrayOf(date, idPlace.toString()))
 
 
-    val listItems : MutableMap<Long, MutableMap<Long, MutableItem>> = mutableMapOf()
+    val mapItems : MutableMap<Long, MutableMap<Long, Item>> = mutableMapOf()
 
     while (cursor.moveToNext()){
 
-        val item = fromCursorToMutableItem(cursor)
+        val item = fromCursorToItem(cursor)
 
-        if (!listItems.containsKey(item.idMoment))
-            listItems[item.idMoment] = mutableMapOf()
+        if (!mapItems.containsKey(item.idMoment))
+            mapItems[item.idMoment] = mutableMapOf()
 
-        listItems[item.idMoment]?.set(item.id, item)
+        mapItems[item.idMoment]?.set(item.id, item)
     }
     cursor.close()
-    return listItems
+    return mapItems
 }
 
 

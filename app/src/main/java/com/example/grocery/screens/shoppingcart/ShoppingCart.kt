@@ -23,6 +23,7 @@ import com.example.grocery.database.selectShoppingCartInRange
 import com.example.grocery.screens.Screen
 import com.example.grocery.uielements.date.getDateNow
 import com.example.grocery.items.ItemUI
+import com.example.grocery.utilities.fromPairToMapEntry
 
 @Composable
 fun ShoppingCart(app: App) {
@@ -82,7 +83,7 @@ fun ShoppingCart(app: App) {
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 shoppingCart.forEach {
-                    ItemUI(app = app, item = it)
+                    ItemUI(app = app, item = fromPairToMapEntry(Pair(it.idItem, it)) )
                 }
             }
         } else {

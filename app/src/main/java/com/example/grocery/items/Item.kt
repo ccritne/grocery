@@ -3,7 +3,7 @@ package com.example.grocery.items
 import android.database.Cursor
 import android.util.Log
 
-class Item(
+data class Item(
     val id: Long,
     val idItem: Long,
     val name: String,
@@ -82,7 +82,7 @@ fun fromCursorToItem(cursor: Cursor) : Item{
     if (amountColumnIndex != -1)
         amount = cursor.getInt(amountColumnIndex)
 
-    val amountInventoryColumnIndex = cursor.getColumnIndex("amountInventory")
+    val amountInventoryColumnIndex = cursor.getColumnIndex("amount_inventory")
     if (amountInventoryColumnIndex != -1)
         amountInventory = cursor.getInt(amountInventoryColumnIndex)
 

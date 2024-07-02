@@ -24,7 +24,6 @@ fun BottomAppBar(
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         IconButton(onClick = {
-            app.setItem(app.voidMapEntry)
             app.isNewItem.value = false
             app.screen = Screen.Plan
             app.navController.navigate(Screen.Plan.name)
@@ -35,7 +34,6 @@ fun BottomAppBar(
             )
         }
         IconButton(onClick = {
-            app.setItem(app.voidMapEntry)
             app.isNewItem.value = false
             app.screen = Screen.ShoppingCart
             app.navController.navigate(Screen.ShoppingCart.name)
@@ -46,7 +44,6 @@ fun BottomAppBar(
             )
         }
         IconButton(onClick = {
-            app.setItem(app.voidMapEntry)
             app.isNewItem.value = false
             app.screen = Screen.Items
             app.navController.navigate(Screen.Items.name)

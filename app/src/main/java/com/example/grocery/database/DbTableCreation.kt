@@ -131,6 +131,7 @@ fun createItemsTableIfNotExists(db: SQLiteDatabase){
                         id             INTEGER     PRIMARY KEY AUTOINCREMENT NOT NULL,
                         idParent       INTEGER     NOT NULL DEFAULT(-1),
                         name           TEXT        NOT NULL,
+                        amount_inventory         INTEGER     NOT NULL DEFAULT(0),
                         price          REAL        NOT NULL DEFAULT(-1.0),
                         idUnit         INTEGER     NOT NULL REFERENCES units (id),
                         idPlace        INTEGER     NOT NULL REFERENCES places (id),
