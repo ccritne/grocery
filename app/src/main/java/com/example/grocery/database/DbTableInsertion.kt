@@ -2,6 +2,7 @@ package com.example.grocery.database
 
 import android.content.ContentValues
 import com.example.grocery.items.Item
+import com.example.grocery.items.MutableItem
 
 
 fun DbManager.insertPlace(name: String) : Long{

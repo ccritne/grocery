@@ -1,6 +1,8 @@
 package com.example.grocery.database
 
 import com.example.grocery.items.Item
+import com.example.grocery.items.MutableItem
+import com.example.grocery.items.fromCursorToMutableItem
 
 fun DbManager.itemExists(name: String) : Pair<Long, Boolean> {
 
@@ -20,10 +22,10 @@ fun DbManager.itemExists(name: String) : Pair<Long, Boolean> {
 
 }
 
-fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
+fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, MutableItem> {
 
 
-    val mapItems : MutableMap<Long, Item> = mutableMapOf()
+    val mapItems : MutableMap<Long, MutableItem> = mutableMapOf()
 
     val query = """
         SELECT
@@ -39,7 +41,7 @@ fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
     val cursor = this.rawQuery(query, arrayOf(idPlace.toString()))
 
     while (cursor.moveToNext()){
-        val item = Item(cursor)
+        val item = fromCursorToMutableItem(cursor)
 
         mapItems[item.id] = item
     }
@@ -48,45 +50,11 @@ fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
     return mapItems
 }
 
-fun DbManager.selectInventoryItems(idPlace: Long) : MutableMap<Long, Item>{
-    val query = """
-            SELECT 
-                inventory.id,
-                items.id as idItem,
-                items.name,
-                items.idUnit,
-                inventory.amount,
-                inventory.amount as amountInventory
-            FROM inventory
-                INNER JOIN items ON inventory.idItem = items.id
-            WHERE items.idPlace = ? AND inventory.amount > 0
-        """.trimIndent()
-
-    val cursor = this.rawQuery(query, arrayOf(idPlace.toString()))
-
-
-    val listItem : MutableMap<Long, Item> = mutableMapOf()
-
-    if (cursor.moveToFirst()) {
-        do {
-
-            val item = Item(cursor)
-
-            listItem[item.id] = item
-
-        } while (cursor.moveToNext())
-    }
-
-    cursor.close()
-
-    return listItem
-}
-
 fun DbManager.selectShoppingCartInRange(
     startDate: String,
     endDate: String,
     idPlace: Long
-) : Map<Long, Item> {
+) : Map<Long, MutableItem> {
 
     val query = """
         SELECT 
@@ -105,13 +73,12 @@ fun DbManager.selectShoppingCartInRange(
 
     val cursor = this.rawQuery(query, arrayOf(startDate, endDate, idPlace.toString()))
 
-    var item: Item
 
-    val listItems : MutableMap<Long, Item> = mutableMapOf()
+    val listItems : MutableMap<Long, MutableItem> = mutableMapOf()
 
     if (cursor.moveToFirst()) {
         do {
-            item = Item(cursor)
+            val item = fromCursorToMutableItem(cursor)
 
             listItems[item.idItem] = item
 
@@ -125,7 +92,7 @@ fun DbManager.selectShoppingCartInRange(
 
 
 
-fun DbManager.dailyPlan(date: String, idPlace: Long) : MutableMap<Long, MutableMap<Long, Item>> {
+fun DbManager.dailyPlan(date: String, idPlace: Long) : MutableMap<Long, MutableMap<Long, MutableItem>> {
 
     val query = """
             SELECT 
@@ -146,11 +113,11 @@ fun DbManager.dailyPlan(date: String, idPlace: Long) : MutableMap<Long, MutableM
     val cursor = this.rawQuery(query, arrayOf(date, idPlace.toString()))
 
 
-    val listItems : MutableMap<Long, MutableMap<Long, Item>> = mutableMapOf()
+    val listItems : MutableMap<Long, MutableMap<Long, MutableItem>> = mutableMapOf()
 
     while (cursor.moveToNext()){
 
-        val item = Item(cursor)
+        val item = fromCursorToMutableItem(cursor)
 
         if (!listItems.containsKey(item.idMoment))
             listItems[item.idMoment] = mutableMapOf()

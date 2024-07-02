@@ -35,6 +35,8 @@ fun Plan(
     app: App
 ) {
 
+    val dailyPlan = app.dailyPlanMap.value
+
     Scaffold(
         floatingActionButtonPosition = FabPosition.Center,
         floatingActionButton = { ButtonAdd(app = app) }
@@ -57,13 +59,13 @@ fun Plan(
                 date -> app.changeDateOperation(date)
             }
 
-                if (app.dailyPlanMap.value.isNotEmpty()) {
+                if (dailyPlan.isNotEmpty()) {
 
                     LazyColumn(
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Top,
                     ) {
-                            app.dailyPlanMap.value.forEach { moment ->
+                            dailyPlan.forEach { moment ->
                                 if (moment.value.isNotEmpty()) {
                                     stickyHeader {
                                         app.momentsMap.value[moment.key]?.let { momentName ->

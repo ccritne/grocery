@@ -14,7 +14,6 @@ class DbHelper(context: Context?) :
     override fun onCreate(db: SQLiteDatabase) {
 
         createPlanTableIfNotExists(db)
-        createInventoryTableIfNotExists(db)
         createMomentsTableIfNotExists(db)
         createPlaceTableIfNotExists(db)
         createUnitsTableIfNotExists(db)
@@ -54,7 +53,6 @@ class DbManager
 
         val db = dbHelper.writableDatabase
 
-        createInventoryTableIfNotExists(db)
         createPlanTableIfNotExists(db)
         createMomentsTableIfNotExists(db)
         createPlaceTableIfNotExists(db)
@@ -68,7 +66,7 @@ class DbManager
         return db.update(table, values, whereClause, whereArgs)
     }
 
-    fun insert(table: String,nullColumnHack: String?, values : ContentValues) : Long{
+    fun insert(table: String, nullColumnHack: String?, values : ContentValues) : Long{
         val db = dbHelper.writableDatabase
         return db.insert(table, nullColumnHack, values)
     }

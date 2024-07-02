@@ -18,9 +18,6 @@ fun NavigationGraph(app: App){
 
 
     NavHost(navController = app.navController, startDestination = Screen.Plan.name){
-        composable(route = Screen.Inventory.name){
-            Inventory(app)
-        }
         composable(route = Screen.Plan.name){
             Plan(app)
         }

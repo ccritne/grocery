@@ -4,11 +4,6 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteException
 import android.util.Log
 
-fun DbManager.deleteInventoryItem(id: Long){
-
-    this.delete("inventory", "id=?", arrayOf(id.toString()))
-
-}
 
 fun DbManager.deleteItem(table: String, id: Long) : Int {
     if (table == "planning")

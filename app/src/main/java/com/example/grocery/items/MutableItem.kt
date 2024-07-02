@@ -2,24 +2,48 @@ package com.example.grocery.items
 
 import android.database.Cursor
 import android.util.Log
+import androidx.compose.runtime.MutableFloatState
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableLongState
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
-class Item(
-    val id: Long,
-    val idItem: Long,
-    val name: String,
-    val amount: Int,
-    val amountInventory : Int,
-    val date: String,
-    val price: Float,
-    val checked : Boolean,
-    val idParent: Long,
-    val idUnit: Long,
-    val idMoment: Long,
-    val idPlace: Long,
-) {
-    constructor(): this(
-        id = -1,
-        name = "",
+class MutableItem(){
+
+    val id: MutableLongState
+    val name: MutableState<String>
+    val amount: MutableIntState
+    val amountInventory : MutableIntState
+    val date: MutableState<String>
+    val price: MutableFloatState
+    val checked : MutableState<Boolean>
+    val idParent: MutableLongState
+    val idItem: MutableLongState
+    val idUnit: MutableLongState
+    val idMoment: MutableLongState
+    val idPlace: MutableLongState
+
+    constructor(
+        id: Long,
+        idItem: Long,
+        name: String,
+        amount: Int,
+        amountInventory : Int,
+        date: String,
+        price: Float,
+        checked : Boolean,
+        idParent: Long,
+        idUnit: Long,
+        idMoment: Long,
+        idPlace: Long,
+    ): this(
+        id = id,
+        name = name,
         amount = -1,
         amountInventory = -1,
         date = "",
@@ -31,6 +55,24 @@ class Item(
         idMoment = -1,
         idPlace = -1
     )
+
+    fun toItem() : Item{
+        return Item(
+            id = id.longValue,
+            name = name.value,
+            amount = amount.intValue,
+            amountInventory = amountInventory.intValue,
+            date = date.value,
+            price = price.floatValue,
+            checked = checked.value,
+            idParent = idParent.longValue,
+            idItem = idItem.longValue,
+            idUnit = idUnit.longValue,
+            idMoment = idMoment.longValue,
+            idPlace = idPlace.longValue
+        )
+    }
+
 
     override fun toString(): String {
         return """
@@ -52,7 +94,7 @@ class Item(
     }
 }
 
-fun fromCursorToItem(cursor: Cursor) : Item{
+fun fromCursorToMutableItem(cursor: Cursor) : MutableItem{
     var id: Long = -1
     var idItem: Long = -1
     var name: String = ""
@@ -111,7 +153,7 @@ fun fromCursorToItem(cursor: Cursor) : Item{
     if (idPlaceColumnIndex != -1)
         idPlace = cursor.getLong(idPlaceColumnIndex)
 
-    return Item(
+    return MutableItem(
         id = id,
         idItem = idItem,
         name = name,

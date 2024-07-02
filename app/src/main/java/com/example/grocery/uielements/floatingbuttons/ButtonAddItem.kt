@@ -18,11 +18,6 @@ fun ButtonAdd(
         onClick = {
             app.isNewItem.value = true
 
-            if (app.itemsMap.value.isNotEmpty())
-                app.setItem(app.itemsMap.value.entries.first())
-            else
-                app.setItem(app.voidMapEntry)
-
             app.navController.navigate(Screen.UpdateItem.name)
         }) {
         Icon(imageVector = Icons.Default.Add, contentDescription = "Add item")

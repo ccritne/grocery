@@ -1,6 +1,5 @@
 package com.example.grocery.screens.updateitem.ui.referenceSetup.amount
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,6 +13,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableIntState
+import androidx.compose.runtime.MutableLongState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -27,27 +29,16 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.grocery.screens.updateitem.UpdateItem
+import com.example.grocery.items.Item
+import com.example.grocery.items.MutableItem
 
 @Composable
 fun UiAmountReference(
-    updateItem: UpdateItem
+    forShoppingCart: Boolean,
+    unit: MutableState<String>,
+    amount: MutableIntState,
+    amountInventory: MutableIntState
 ){
-
-    var amount by remember {
-        mutableIntStateOf(
-            if(updateItem.isNewItem || updateItem.forShoppingCart)
-                0
-            else
-                updateItem.amount
-        )
-    }
-
-    var amountInventory by remember(updateItem.amountInventory) {
-        mutableIntStateOf(
-            updateItem.amountInventory
-        )
-    }
 
     Row(
         modifier = Modifier.fillMaxWidth(1f),
@@ -55,8 +46,8 @@ fun UiAmountReference(
         horizontalArrangement = Arrangement.Center
     ) {
 
-        if (updateItem.forShoppingCart) {
-            Text(text = amountInventory.toString(), fontSize = 35.sp)
+        if (forShoppingCart) {
+            Text(text = amountInventory.intValue.toString(), fontSize = 35.sp)
             Icon(
                 imageVector = Icons.Default.Add,
                 contentDescription = "Add",
@@ -67,7 +58,7 @@ fun UiAmountReference(
         OutlinedTextField(
             maxLines = 1,
             shape = RectangleShape,
-            value = if (amount != 0) amount.toString() else "",
+            value = if (amount.intValue != 0) amount.intValue.toString() else "",
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.NumberPassword,
                 imeAction = ImeAction.Done
@@ -82,11 +73,9 @@ fun UiAmountReference(
             textStyle = TextStyle(textAlign = TextAlign.Center),
             onValueChange = {
                 if (it.isNotEmpty()) {
-                    amount = it.toInt()
-                    updateItem.setValues(amount = it.toInt())
+                    amount.intValue = it.toInt()
                 } else {
-                    amount = 0
-                    updateItem.setValues(amount = 0)
+                    amount.intValue = 0
                 }
             },
             modifier = Modifier
@@ -95,7 +84,7 @@ fun UiAmountReference(
                 .fillMaxHeight(0.1f)
         )
 
-        Text(text = updateItem.unitsMap[updateItem.idUnit]?.second.toString(), fontSize = 35.sp)
+        Text(text = unit.value, fontSize = 35.sp)
 
         
     }

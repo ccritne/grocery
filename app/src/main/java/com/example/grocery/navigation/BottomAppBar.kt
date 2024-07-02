@@ -26,14 +26,6 @@ fun BottomAppBar(
         IconButton(onClick = {
             app.setItem(app.voidMapEntry)
             app.isNewItem.value = false
-            app.screen = Screen.Inventory
-            app.navController.navigate(Screen.Inventory.name)
-        }) {
-            Icon(imageVector = Icons.Default.Home, contentDescription = "House")
-        }
-        IconButton(onClick = {
-            app.setItem(app.voidMapEntry)
-            app.isNewItem.value = false
             app.screen = Screen.Plan
             app.navController.navigate(Screen.Plan.name)
         }) {

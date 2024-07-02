@@ -24,6 +24,7 @@ import com.example.grocery.database.getAllUnits
 import com.example.grocery.database.getDefaultIdPlace
 import com.example.grocery.database.selectInventoryItems
 import com.example.grocery.items.Item
+import com.example.grocery.items.MutableItem
 import com.example.grocery.screens.Screen
 import com.example.grocery.uielements.date.getDateNow
 import com.example.grocery.uielements.date.getUpdateDate
@@ -55,7 +56,6 @@ class App: ComponentActivity() {
         private set
     private var placesMutableMap = mutableMapOf<Long, String>()
 
-
     var momentsMap : MutableState<Map<Long, String>> = mutableStateOf(mapOf())
         private set
     private var momentsMutableMap = mutableMapOf<Long, String>()
@@ -66,11 +66,7 @@ class App: ComponentActivity() {
 
     var dailyPlanMap : MutableState<Map<Long, Map<Long, Item>>> = mutableStateOf(mapOf())
         private set
-    private var dailyPlanMutableMap = mutableMapOf<Long, MutableMap<Long, Item>>()
-
-    var inventoryMap : MutableState<Map<Long, Item>> = mutableStateOf(mapOf())
-        private set
-    private var inventoryMutableMap = mutableMapOf<Long, Item>()
+    private var dailyPlanMutableMap = mutableMapOf<Long, MutableMap<Long, MutableItem>>()
 
     var itemsMap : MutableState<Map<Long, Item>> = mutableStateOf(mapOf())
         private set
@@ -147,9 +143,7 @@ class App: ComponentActivity() {
 
     fun addOrUpdateItemInPlan(item: Item, oldMoment: Long = -1){
 
-        if (oldMoment != -1L)
-            dailyPlanMutableMap[oldMoment]?.remove(item.id)
-
+        dailyPlanMutableMap[oldMoment]?.remove(item.id)
 
         if (!dailyPlanMutableMap.containsKey(item.idMoment))
             dailyPlanMutableMap[item.idMoment] = mutableMapOf()
@@ -157,27 +151,6 @@ class App: ComponentActivity() {
         dailyPlanMutableMap[item.idMoment]?.set(item.id, item)
 
         updateDailyPlanMap()
-    }
-
-    private fun updateInventoryMap(){
-        inventoryMap.value = inventoryMutableMap
-    }
-
-    fun deleteItemsFromInventory(idItems: List<Long>){
-
-        idItems.forEach { idItem ->
-            inventoryMutableMap.remove(idItem)
-        }
-
-        updateInventoryMap()
-    }
-
-    fun addOrUpdateItemInInventory(item: Item){
-
-        inventoryMutableMap[item.idItem] = item
-
-
-        updateInventoryMap()
     }
 
     private fun updateItemsMap(){
@@ -257,11 +230,10 @@ class App: ComponentActivity() {
         )
         updateDailyPlanMap()
 
-        inventoryMutableMap = dbManager.selectInventoryItems(placeSelector.first)
-        updateInventoryMap()
-
         itemsMutableMap = dbManager.getAllItems(placeSelector.first)
         updateItemsMap()
+
+        Log.i("List items", itemsMap.value.toString())
 
         if (itemsMutableMap.isNotEmpty())
             setItem(itemsMutableMap.entries.first())

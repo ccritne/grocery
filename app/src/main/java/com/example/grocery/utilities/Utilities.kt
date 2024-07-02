@@ -1,7 +1,6 @@
 package com.example.grocery.utilities
 
 import com.example.grocery.database.DbManager
-import com.example.grocery.database.insertItemIntoInventory
 import com.example.grocery.database.insertItemIntoList
 import com.example.grocery.database.insertMoment
 import com.example.grocery.database.insertPlanItem

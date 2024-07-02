@@ -5,13 +5,11 @@ import android.util.Log
 import com.example.grocery.items.Item
 import com.example.grocery.screens.updateitem.UpdateItem
 
-fun DbManager.updateShoppingCart(updateItem: UpdateItem, idPlace: Long): Item{
+fun DbManager.updateShoppingCart(updatedItem: Item): Item{
 
-    Log.i("UPDATE SHOPPING CART", updateItem.toItem(idPlace).toString())
+    // TODO REMAKE
 
-    val cursorExist = this.rawQuery("SELECT EXISTS(SELECT 1 FROM inventory WHERE idItem=?) as exist", arrayOf(updateItem.idItem.toString()))
-
-    val item = updateItem.toItem(idPlace)
+    val cursorExist = this.rawQuery("SELECT EXISTS(SELECT 1 FROM  WHERE idItem=?) as exist", arrayOf(updatedItem.idItem.toString()))
 
 
     if(cursorExist.moveToFirst()) {
@@ -25,34 +23,26 @@ fun DbManager.updateShoppingCart(updateItem: UpdateItem, idPlace: Long): Item{
 
             cursorExist.close()
 
-            this.insertItemIntoInventory(item)
+            this.insertItemIntoInventory(updatedItem)
         }else{
-            val cursorAmountInventory = this.rawQuery("SELECT IFNULL(amount, 0) as amountInventory FROM inventory WHERE idItem=?", arrayOf(updateItem.idItem.toString()))
+            val cursorAmountInventory = this.rawQuery("SELECT IFNULL(amount, 0) as amountInventory FROM inventory WHERE idItem=?", arrayOf(updatedItem.idItem.toString()))
             if(cursorAmountInventory.moveToFirst())
                 amountInventory = cursorAmountInventory.getInt(cursorAmountInventory.getColumnIndexOrThrow("amountInventory"))
         }
 
-        item.update(amountInventory = updateItem.amount + amountInventory)
+        updatedItem.update(amountInventory = updatedItem.amount + amountInventory)
 
         val cv = ContentValues()
 
-        cv.put("amount", item.amountInventory)
+        cv.put("amount", updatedItem.amountInventory)
 
-        this.update("inventory", cv, "idItem=?", arrayOf(updateItem.idItem.toString()))
+        this.update("items", cv, "id=?", arrayOf(updatedItem.idItem.toString()))
     }
 
-    return item
+    return updatedItem
 }
 
 
-fun DbManager.updateInventoryItem(idItem: Long, amount: Int) : Int{
-
-    val cv = ContentValues()
-
-    cv.put("amount", amount)
-
-    return this.update("inventory", cv, "idItem=?", arrayOf(idItem.toString()))
-}
 
 fun DbManager.updatePlanItem(item: Item) : Int {
 
@@ -86,7 +76,7 @@ fun DbManager.updateItemOfList(item: Item) : Int{
     cv.put("idUnit", item.idUnit)
     cv.put("idPlace", item.idPlace)
 
-    return this.update("items", cv, "id = ?", arrayOf(item.idItem.toString()))
+    return this.update("items", cv, "id = ?", arrayOf(item.id.toString()))
 }
 
 fun DbManager.updateDefaultIdPlace(idPlace: Long) : Int{

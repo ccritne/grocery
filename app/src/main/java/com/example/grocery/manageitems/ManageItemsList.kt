@@ -6,21 +6,23 @@ import com.example.grocery.database.insertItemIntoList
 import com.example.grocery.database.insertPlanItem
 import com.example.grocery.database.updateItemOfList
 import com.example.grocery.database.updatePlanItem
+import com.example.grocery.items.Item
 import com.example.grocery.screens.updateitem.UpdateItem
 
 fun updateItemsList(
     app: App,
-    updateItem: UpdateItem
+    updatedItem: Item
 ){
-    val item = updateItem.toItem(app.placeSelector.first)
 
-    if (updateItem.isNewItem) {
-        val id = app.dbManager.insertItemIntoList(item)
-        item.update(id = id, idItem = id)
+
+    if (app.isNewItem.value) {
+        val id = app.dbManager.insertItemIntoList(updatedItem)
+        updatedItem.update(id = id, idItem = id)
     }
     else
-        app.dbManager.updateItemOfList(item)
+        app.dbManager.updateItemOfList(updatedItem)
 
-    if (item.id != -1L)
-        app.addOrUpdateItemInList(item)
+
+    if (updatedItem.id != -1L)
+        app.addOrUpdateItemInList(updatedItem)
 }

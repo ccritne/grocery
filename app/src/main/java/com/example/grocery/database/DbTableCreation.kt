@@ -124,23 +124,6 @@ fun createPlanTableIfNotExists(db: SQLiteDatabase){
     }
 }
 
-fun createInventoryTableIfNotExists(db: SQLiteDatabase){
-    try {
-
-        val query = """CREATE TABLE IF NOT EXISTS inventory (
-                        id             INTEGER     PRIMARY KEY AUTOINCREMENT
-                                                   NOT NULL,
-                        idItem         INTEGER     NOT NULL REFERENCES items (id),
-                        amount         INTEGER     NOT NULL
-                    );"""
-
-        db.execSQL(query)
-    } catch (e: SQLiteException) {
-        e.printStackTrace()
-        Log.e("CREATE", "Couldn't create : ${e.message.toString()}")
-    }
-}
-
 fun createItemsTableIfNotExists(db: SQLiteDatabase){
     try {
 
@@ -159,6 +142,21 @@ fun createItemsTableIfNotExists(db: SQLiteDatabase){
     } catch (e: SQLiteException) {
         e.printStackTrace()
         Log.e("CREATE", "Couldn't create : ${e.message.toString()}")
+    }
+
+    try {
+        val queryInsertion = """INSERT INTO items(name, idUnit, idPlace) 
+            VALUES
+                ("TestItem1", 1, 1),
+                ("TestItem2", 1, 2),
+                ("TestItem3", 1, 3)
+            ;""".trimMargin()
+
+        db.execSQL(queryInsertion)
+    }catch (e: SQLiteException){
+        e.printStackTrace()
+        Log.e("INSERT", "Couldn't insert default places : ${e.message.toString()}")
+
     }
 }
 

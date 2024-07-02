@@ -4,26 +4,24 @@ import android.util.Log
 import com.example.grocery.App
 import com.example.grocery.database.insertPlanItem
 import com.example.grocery.database.updatePlanItem
-import com.example.grocery.screens.updateitem.UpdateItem
+import com.example.grocery.items.Item
+import com.example.grocery.items.MutableItem
+import com.example.grocery.utilities.getFormatterDateSql
 
 fun updateItemsPlan(
     app: App,
-    updateItem: UpdateItem
+    item: Item,
+    updatedItem: Item
 ){
 
-    val oldMoment = updateItem.item.idMoment
-    val item = updateItem.toItem(app.placeSelector.first)
-
-    Log.i("moments", "$oldMoment -> ${item.idMoment}")
-
-    if (updateItem.isNewItem) {
-        val id = app.dbManager.insertPlanItem(item)
-        item.update(id = id)
+    if (app.isNewItem.value) {
+        val id = app.dbManager.insertPlanItem(updatedItem)
+        updatedItem.update(id = id)
     }
     else
-        app.dbManager.updatePlanItem(item)
+        app.dbManager.updatePlanItem(updatedItem)
 
     if (item.id != -1L)
-        app.addOrUpdateItemInPlan(item, oldMoment)
+        app.addOrUpdateItemInPlan(updatedItem, item.idMoment)
 
 }
