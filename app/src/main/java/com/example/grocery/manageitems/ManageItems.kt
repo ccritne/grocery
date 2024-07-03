@@ -1,5 +1,6 @@
 package com.example.grocery.manageitems
 
+import android.util.Log
 import com.example.grocery.App
 import com.example.grocery.items.Item
 import com.example.grocery.screens.Screen
@@ -11,9 +12,10 @@ fun updateItem(
 
     if (app.screen == Screen.Plan) {
 
+        Log.i("Arrived", updatedItem.toString())
+
         updateItemsPlan(
             app = app,
-            item = app.item.value,
             updatedItem = updatedItem
         )
     }

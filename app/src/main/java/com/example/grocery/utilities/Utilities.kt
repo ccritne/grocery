@@ -19,7 +19,7 @@ fun <T, R> fromPairToMapEntry(pair : Pair<T, R>) : Map.Entry<T, R> {
 }
 
 fun getFormatterDateSql() : SimpleDateFormat {
-    return SimpleDateFormat("y/MM/dd", Locale.getDefault())
+    return SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
 }
 
 

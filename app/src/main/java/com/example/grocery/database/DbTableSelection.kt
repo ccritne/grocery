@@ -28,7 +28,8 @@ fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
 
     val query = """
         SELECT
-            *
+            *,
+            id as idItem
         FROM items
             WHERE idPlace = ?
     """.trimIndent()

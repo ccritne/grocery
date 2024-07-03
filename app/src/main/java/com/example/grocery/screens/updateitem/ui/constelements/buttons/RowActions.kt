@@ -17,14 +17,7 @@ import java.util.Date
 @Composable
 fun RowActions(
     app: App,
-    newId: MutableLongState,
-    newIdItem: MutableLongState,
-    newName: MutableState<String>,
-    newIdMoment: MutableLongState,
-    newDate: MutableState<Date>,
-    newAmount: MutableIntState,
-    newIdUnit: MutableLongState,
-    item: MutableState<Item>
+    item: Item
 ){
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -33,13 +26,6 @@ fun RowActions(
         DeleteItem(app = app)
         SaveUpdate(
             app = app,
-            newId = newId,
-            newIdItem = newIdItem,
-            newAmount = newAmount,
-            newDate = newDate,
-            newIdMoment = newIdMoment,
-            newName = newName,
-            newIdUnit = newIdUnit,
             item = item
         )
     }

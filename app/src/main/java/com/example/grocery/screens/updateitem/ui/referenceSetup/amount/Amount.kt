@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 
 @Composable
 fun UiAmountReference(
@@ -36,9 +37,14 @@ fun UiAmountReference(
     modifier: Modifier = Modifier,
     onChangeAmount: (Int) -> Unit
 ){
+    var starterInt by remember {
+        mutableIntStateOf(starter)
+    }
 
     Row(
-        modifier = modifier.fillMaxWidth(1f),
+        modifier = modifier
+            .fillMaxWidth(1f)
+            .padding(start = 30.dp, end = 30.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -46,7 +52,7 @@ fun UiAmountReference(
         OutlinedTextField(
             maxLines = 1,
             shape = RectangleShape,
-            value = if (starter != 0) starter.toString() else "",
+            value = if (starterInt != 0) starterInt.toString() else "",
             keyboardOptions = KeyboardOptions(
                 keyboardType = KeyboardType.NumberPassword,
                 imeAction = ImeAction.Done
@@ -61,17 +67,14 @@ fun UiAmountReference(
             textStyle = TextStyle(textAlign = TextAlign.Center),
             onValueChange = {
 
-
-                if (it.isNotEmpty())
+                if (it.isNotEmpty() && it.isDigitsOnly()) {
+                    starterInt = it.toInt()
                     onChangeAmount(it.toInt())
-                else
+                }else {
+                    starterInt = 0
                     onChangeAmount(0)
-
+                }
             },
-            modifier = Modifier
-                .fillMaxWidth(0.90f)
-                .padding(end = 15.dp)
-                .fillMaxHeight(0.1f)
         )
         
     }

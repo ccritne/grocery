@@ -33,8 +33,8 @@ fun ItemUI(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                app.setItem(item = item)
-                app.isNewItem.value = false
+                app.setTempItem(item = itemObject.copy())
+                app.updateItem.value = !app.updateItem.value
                 app.navController.navigate(Screen.UpdateItem.name)
             }
             .background(

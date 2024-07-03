@@ -17,12 +17,15 @@ import androidx.compose.ui.unit.dp
 import com.example.grocery.App
 import com.example.grocery.database.selectShoppingCartInRange
 import com.example.grocery.items.ItemUI
+import com.example.grocery.screens.Screen
 import com.example.grocery.uielements.date.Date
 import com.example.grocery.uielements.date.getDateNow
 import com.example.grocery.utilities.fromPairToMapEntry
 
 @Composable
 fun ShoppingCart(app: App) {
+
+    app.screen = Screen.ShoppingCart
 
     val shoppingCart = app.dbManager.selectShoppingCartInRange(
                 startDate = app.formatterSql.format(app.startDateOperation.value),

@@ -44,7 +44,7 @@ class App: ComponentActivity() {
 
     var endDateOperation = mutableStateOf(getUpdateDate(getDateNow(), 6))
 
-    lateinit var item : Map.Entry<Long, Item>
+    var item = mutableStateOf(Item())
         private set
 
     var placeSelector by mutableStateOf(Pair(-1L, ""))
@@ -70,7 +70,10 @@ class App: ComponentActivity() {
         private set
     private var itemsMutableMap = mutableMapOf<Long, Item>()
 
-    var isNewItem: MutableState<Boolean> = mutableStateOf(false)
+    var isNewItem = mutableStateOf(false)
+        private set
+
+    var updateItem = mutableStateOf(false)
 
     var screen : Screen = Screen.Plan
 
@@ -81,6 +84,10 @@ class App: ComponentActivity() {
         placesMap.value = placesMutableMap
     }
 
+    fun setItemState(state: Boolean){
+        Log.i("ITEM STATE", "DENTRO" )
+        isNewItem.value = state
+    }
 
 
     fun deletePlaces(idPlaces: List<Long>){
@@ -206,8 +213,8 @@ class App: ComponentActivity() {
     }
 
 
-    fun setItem(item: Map.Entry<Long, Item>){
-        this.item = item
+    fun setTempItem(item: Item){
+        this.item.value = item
     }
 
     fun updateMaps(){
@@ -226,7 +233,8 @@ class App: ComponentActivity() {
 
 
         if (itemsMutableMap.isNotEmpty())
-            setItem(itemsMutableMap.entries.first())
+            setTempItem(itemsMutableMap.entries.first().value.copy())
+
 
     }
 

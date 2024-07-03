@@ -53,6 +53,7 @@ fun DbManager.insertItemIntoList(item: Item) : Long{
 
     cv.put("idParent", item.idParent)
     cv.put("name", item.name)
+    cv.put("amount_inventory", item.amountInventory)
     cv.put("idUnit", item.idUnit)
     cv.put("idPlace", item.idPlace)
 

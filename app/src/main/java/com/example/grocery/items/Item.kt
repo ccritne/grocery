@@ -20,7 +20,7 @@ data class Item(
     val idPlace: Long,
 ) {
     constructor(): this(
-        id = -1,
+        id = 0,
         name = "",
         amount = 0,
         amountInventory = 0,
@@ -41,7 +41,7 @@ data class Item(
                 "name": "$name",
                 "amount": $amount,
                 "amountInventory": $amountInventory,
-                "date": "$date",
+                "date": "${getFormatterDateSql().format(date)}",
                 "price": $price,
                 "checked": $checked,
                 "idParent": $idParent,
@@ -90,7 +90,7 @@ fun fromCursorToItem(cursor: Cursor) : Item{
 
     val dateColumnIndex = cursor.getColumnIndex("date")
     if (dateColumnIndex != -1)
-        date = getFormatterDateSql().parse(cursor.getString(dateColumnIndex))
+        date = getFormatterDateSql().parse(cursor.getString(dateColumnIndex))!!
 
     val priceColumnIndex = cursor.getColumnIndex("price")
     if (priceColumnIndex != -1)

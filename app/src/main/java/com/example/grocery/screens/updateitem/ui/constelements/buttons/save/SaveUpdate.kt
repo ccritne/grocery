@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableLongState
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import com.example.grocery.App
 import com.example.grocery.items.Item
 import com.example.grocery.manageitems.updateItem
@@ -18,37 +19,14 @@ import java.util.Date
 @Composable
 fun SaveUpdate(
     app: App,
-    newId: MutableLongState,
-    newIdItem: MutableLongState,
-    newName: MutableState<String>,
-    newIdMoment: MutableLongState,
-    newDate: MutableState<Date>,
-    newAmount: MutableIntState,
-    newIdUnit: MutableLongState,
-    item: MutableState<Item>
+    item: Item
 ){
+
     IconButton(onClick = {
-
-        val updatedItem = Item(
-            id = newId.longValue,
-            name = newName.value,
-            amount = newAmount.intValue,
-            amountInventory = app.item.value.amountInventory,
-            date = newDate.value,
-            price = -1.0f,
-            checked = app.item.value.checked,
-            idParent = -1L,
-            idItem = newIdItem.longValue,
-            idMoment = newIdMoment.longValue,
-            idUnit = newIdUnit.longValue,
-            idPlace = app.placeSelector.first
-        )
-
-        Log.i("ARRIVED TAG", item.value.toString())
 
         updateItem(
             app = app,
-            updatedItem = item.value
+            updatedItem = item
         )
 
         app.navController.navigateUp()

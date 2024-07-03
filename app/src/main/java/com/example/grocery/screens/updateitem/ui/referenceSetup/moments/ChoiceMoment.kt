@@ -42,7 +42,10 @@ fun ChoiceMoment(
 
                 RadioButton(
                     selected = momentState == momentCheckedStates[index].longValue,
-                    onClick = { onChange(momentCheckedStates[index].longValue) })
+                    onClick = {
+                        onChange(momentCheckedStates[index].longValue)
+                    }
+                )
 
                 momentsMap[momentCheckedStates[index].longValue]?.let { Text(text = it) }
             }

@@ -9,15 +9,12 @@ fun updateItemsList(
     app: App,
     updatedItem: Item
 ){
-
     var localCopy = updatedItem.copy()
-    if (app.isNewItem.value) {
+    if(app.isNewItem.value) {
         val id = app.dbManager.insertItemIntoList(updatedItem)
         localCopy = updatedItem.copy(id = id, idItem = id)
-    }
-    else
+    }else
         app.dbManager.updateItemOfList(localCopy)
 
-    if (updatedItem.id != -1L)
-        app.addOrUpdateItemInList(localCopy)
+    app.addOrUpdateItemInList(localCopy)
 }
