@@ -21,6 +21,7 @@ import com.example.grocery.screens.Screen
 import com.example.grocery.uielements.date.Date
 import com.example.grocery.uielements.date.getDateNow
 import com.example.grocery.utilities.fromPairToMapEntry
+import java.util.concurrent.TimeUnit
 
 @Composable
 fun ShoppingCart(app: App) {
@@ -63,7 +64,7 @@ fun ShoppingCart(app: App) {
                 modifier = Modifier.fillMaxWidth(),
                 date = app.endDateOperation.value,
                 enableLeft = app.endDateOperation.value.after(app.startDateOperation.value),
-                enableRight = true,
+                enableRight = TimeUnit.MILLISECONDS.toDays(app.endDateOperation.value.time - app.startDateOperation.value.time) < 14,
                 modifierIcons = Modifier.size(15.dp),
                 fontSizeText = 20
             ){
