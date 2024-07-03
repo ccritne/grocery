@@ -144,21 +144,6 @@ fun createItemsTableIfNotExists(db: SQLiteDatabase){
         e.printStackTrace()
         Log.e("CREATE", "Couldn't create : ${e.message.toString()}")
     }
-
-    try {
-        val queryInsertion = """INSERT INTO items(name, idUnit, idPlace) 
-            VALUES
-                ("TestItem1", 1, 1),
-                ("TestItem2", 1, 2),
-                ("TestItem3", 1, 3)
-            ;""".trimMargin()
-
-        db.execSQL(queryInsertion)
-    }catch (e: SQLiteException){
-        e.printStackTrace()
-        Log.e("INSERT", "Couldn't insert default places : ${e.message.toString()}")
-
-    }
 }
 
 fun createInfoTableIfNotExists(db: SQLiteDatabase){
