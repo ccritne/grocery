@@ -5,11 +5,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.example.grocery.items.Item
 import com.example.grocery.uielements.dropdownmenu.DropdownMenuSelection
 
 @Composable
 fun UiNameReference(
+    modifier : Modifier = Modifier,
     itemsMap: Map<Long, Item>,
     starter: Pair<Long, String?>,
     onChange: (Long) -> Unit
@@ -20,6 +22,7 @@ fun UiNameReference(
 
 
     DropdownMenuSelection(
+        modifier = modifier,
         enabled = true,
         list = itemsMap.map { item -> Pair(item.key, item.value.name) },
         starter = starterDrop,

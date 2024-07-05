@@ -32,6 +32,7 @@ fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
             id as idItem
         FROM items
             WHERE idPlace = ?
+            
     """.trimIndent()
 
     val cursor = this.rawQuery(query, arrayOf(idPlace.toString()))
@@ -44,6 +45,12 @@ fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
 
     cursor.close()
     return listItems
+}
+
+fun DbManager.checkIfItemWithNameExistsInThisPlace(name: String, idPlace: Long) : Boolean{
+    val cursor = this.rawQuery("SELECT count(*) > 0 as itemExist FROM items WHERE UPPER(name)=UPPER(?) AND idPlace=? LIMIT 1", arrayOf(name, idPlace.toString()))
+    cursor.moveToNext()
+    return cursor.getInt(cursor.getColumnIndexOrThrow("itemExist")) == 1
 }
 
 fun DbManager.selectShoppingCartInRange(

@@ -5,17 +5,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
 import com.example.grocery.uielements.dropdownmenu.DropdownMenuSelection
 
 @Composable
 fun UnitSelectorUpdateItem(
     starter: Pair<Long, String?>,
     enabled: Boolean,
+    modifier : Modifier = Modifier,
     unitsMap: Map<Long, Pair<String, String>>,
     onChange: (Long) -> Unit
 ){
 
     DropdownMenuSelection(
+        modifier = modifier,
         enabled = enabled,
         list = unitsMap.map { item -> Pair(item.key, item.value.second) },
         starter = starter,

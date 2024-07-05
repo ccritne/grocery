@@ -73,8 +73,6 @@ class App: ComponentActivity() {
     var isNewItem = mutableStateOf(false)
         private set
 
-    var updateItem = mutableStateOf(false)
-
     var screen : Screen = Screen.Plan
 
     lateinit var navController: NavHostController
@@ -85,7 +83,6 @@ class App: ComponentActivity() {
     }
 
     fun setItemState(state: Boolean){
-        Log.i("ITEM STATE", "DENTRO" )
         isNewItem.value = state
     }
 

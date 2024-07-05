@@ -20,7 +20,6 @@ fun updateItemsPlan(
         app.dbManager.updatePlanItem(localCopy)
         idMoment = app.item.value.idMoment
     }
-    app.setItemState(false)
 
 
     app.addOrUpdateItemInPlan(localCopy, idMoment)

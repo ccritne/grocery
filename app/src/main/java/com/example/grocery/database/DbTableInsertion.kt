@@ -1,6 +1,7 @@
 package com.example.grocery.database
 
 import android.content.ContentValues
+import android.database.sqlite.SQLiteDatabase
 import com.example.grocery.items.Item
 import com.example.grocery.utilities.getFormatterDateSql
 
@@ -51,11 +52,14 @@ fun DbManager.insertPlanItem(item: Item) : Long {
 fun DbManager.insertItemIntoList(item: Item) : Long{
     val cv = ContentValues()
 
-    cv.put("idParent", item.idParent)
-    cv.put("name", item.name)
+    cv.put("children", item.children.toString())
+    cv.put("name", item.name.trim())
     cv.put("amount_inventory", item.amountInventory)
     cv.put("idUnit", item.idUnit)
     cv.put("idPlace", item.idPlace)
-
-    return this.insert("items", null, cv)
+    return try{
+        this.insertWithOnConflict("items", null, cv, SQLiteDatabase.CONFLICT_FAIL)
+    }catch (e: Exception){
+        -1L
+    }
 }

@@ -6,6 +6,9 @@ import com.example.grocery.database.insertMoment
 import com.example.grocery.database.insertPlanItem
 import com.example.grocery.database.itemExists
 import com.example.grocery.items.Item
+import com.example.grocery.items.NeedItem
+import org.json.JSONArray
+import org.json.JSONObject
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -130,4 +133,14 @@ fun fromGoogleToApp(dbManager: DbManager){
     }
 }
 
+
+fun JSONArray.toListNeedItem(): List<NeedItem>{
+    val listItems = mutableListOf<NeedItem>()
+    for (i in 0 until this.length()) {
+        listItems.add(NeedItem(JSONObject(this.getString(i))))
+    }
+
+    return listItems
+
+}
 

@@ -62,6 +62,7 @@ dependencies {
 
     //Icons
     implementation("androidx.compose.material:material-icons-extended:$2.7.7")
+    implementation(libs.androidx.camera.core)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

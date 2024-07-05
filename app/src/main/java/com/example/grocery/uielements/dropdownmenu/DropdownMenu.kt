@@ -1,5 +1,6 @@
 package com.example.grocery.uielements.dropdownmenu
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun DropdownMenuSelection(
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
     list: List<Pair<Long, String>>,
     starter: Pair<Long, String?>,
@@ -30,15 +32,14 @@ fun DropdownMenuSelection(
     var expanded by remember { mutableStateOf(false) }
 
     Column(
-        modifier = Modifier.fillMaxWidth(0.5f)
+        modifier = modifier,
+        verticalArrangement = Arrangement.Center
     ) {
         IconButton(
             modifier = Modifier.fillMaxWidth(),
             onClick =  { if (enabled) expanded = true }
         ){
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row {
                 starter.second?.let { Text(text = it, fontSize = 25.sp) }
                 if (enabled) {
                     Icon(

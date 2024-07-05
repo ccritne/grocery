@@ -4,13 +4,13 @@ import android.content.ContentValues
 import com.example.grocery.items.Item
 import com.example.grocery.utilities.getFormatterDateSql
 
-fun DbManager.updateShoppingCart(item: Item, amount: Int): Int{
+fun DbManager.updateShoppingCart(item: Item): Int{
 
     val cv = ContentValues()
 
-    cv.put("amount", item.amountInventory+amount)
+    cv.put("amount_inventory", item.amountInventory)
 
-    return this.update("items", cv, "id=?", arrayOf(item.idItem.toString()))
+    return this.update("items", cv, "id=?", arrayOf(item.id.toString()))
 
 }
 
@@ -42,7 +42,7 @@ fun DbManager.updateItemOfList(item: Item) : Int{
     val cv = ContentValues()
 
 
-    cv.put("idParent", item.idParent)
+    cv.put("children", item.children.toString())
     cv.put("name", item.name)
     cv.put("amount_inventory", item.amountInventory)
     cv.put("price", item.price)

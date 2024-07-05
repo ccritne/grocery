@@ -12,8 +12,6 @@ fun updateItem(
 
     if (app.screen == Screen.Plan) {
 
-        Log.i("Arrived", updatedItem.toString())
-
         updateItemsPlan(
             app = app,
             updatedItem = updatedItem
@@ -21,6 +19,7 @@ fun updateItem(
     }
 
     if (app.screen == Screen.Items){
+
         updateItemsList(
             app = app,
             updatedItem = updatedItem
@@ -30,8 +29,7 @@ fun updateItem(
     if (app.screen == Screen.ShoppingCart){
         updateItemsShoppingCart(
             app = app,
-            updatedItem = app.item.value,
-            amount = updatedItem.amount
+            updatedItem = updatedItem
         )
     }
 

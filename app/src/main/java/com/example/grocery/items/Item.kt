@@ -3,7 +3,29 @@ package com.example.grocery.items
 import android.database.Cursor
 import com.example.grocery.uielements.date.getDateNow
 import com.example.grocery.utilities.getFormatterDateSql
+import com.example.grocery.utilities.toListNeedItem
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.Date
+
+data class NeedItem(
+    val id: Long,
+    val amount: Int,
+){
+    constructor(jsonObject: JSONObject): this(
+        id = jsonObject["id"].toString().toLong(),
+        amount = jsonObject["amount"].toString().toInt()
+    )
+
+    override fun toString(): String {
+        return """
+            {
+                "id":$id,
+                "amount": $amount
+            }
+        """.trimIndent()
+    }
+}
 
 data class Item(
     val id: Long,
@@ -14,7 +36,7 @@ data class Item(
     var date: Date,
     val price: Float,
     val checked : Boolean,
-    val idParent: Long,
+    val children: List<NeedItem>,
     val idUnit: Long,
     val idMoment: Long,
     val idPlace: Long,
@@ -27,11 +49,26 @@ data class Item(
         date = getDateNow(),
         price = -1f,
         checked = false,
-        idParent = -1,
+        children = emptyList(),
         idItem = -1,
         idUnit = -1,
         idMoment = -1,
         idPlace = -1
+    )
+
+    constructor(jsonObject: JSONObject): this(
+        id = jsonObject["id"].toString().toLong(),
+        name = jsonObject["name"].toString(),
+        amount = jsonObject["amount"].toString().toInt(),
+        amountInventory = jsonObject["amountInventory"].toString().toInt(),
+        date = getFormatterDateSql().parse(jsonObject["date"].toString())!!,
+        price = jsonObject["price"].toString().toFloat(),
+        checked = jsonObject["checked"].toString().toBoolean(),
+        children = JSONArray(jsonObject["children"].toString()).toListNeedItem(),
+        idItem = jsonObject["idItem"].toString().toLong(),
+        idUnit = jsonObject["idUnit"].toString().toLong(),
+        idMoment = jsonObject["idMoment"].toString().toLong(),
+        idPlace = jsonObject["idPlace"].toString().toLong(),
     )
 
     override fun toString(): String {
@@ -44,7 +81,7 @@ data class Item(
                 "date": "${getFormatterDateSql().format(date)}",
                 "price": $price,
                 "checked": $checked,
-                "idParent": $idParent,
+                "children": $children,
                 "idItem": $idItem,
                 "idUnit": $idUnit,
                 "idMoment": $idMoment,
@@ -63,7 +100,7 @@ fun fromCursorToItem(cursor: Cursor) : Item{
     var date: Date = Date()
     var price: Float = 0f
     var checked : Boolean = false
-    var idParent: Long = -1
+    var children: List<NeedItem> = emptyList()
     var idUnit: Long = -1
     var idMoment: Long = -1
     var idPlace: Long = -1
@@ -100,9 +137,10 @@ fun fromCursorToItem(cursor: Cursor) : Item{
     if (dateColumnIndex != -1)
         checked = cursor.getInt(checkedColumnIndex) == 1
 
-    val idParentColumnIndex = cursor.getColumnIndex("idParent")
-    if (idParentColumnIndex != -1)
-        idParent = cursor.getLong(idParentColumnIndex)
+    val childrenColumnIndex = cursor.getColumnIndex("children")
+    if (childrenColumnIndex != -1)
+        children = JSONArray(cursor.getString(childrenColumnIndex)).toListNeedItem()
+
     val idUnitColumnIndex = cursor.getColumnIndex("idUnit")
     if (idUnitColumnIndex != -1)
         idUnit = cursor.getLong(idUnitColumnIndex)
@@ -122,7 +160,7 @@ fun fromCursorToItem(cursor: Cursor) : Item{
         date = date,
         price = price,
         checked = checked,
-        idParent = idParent,
+        children = children,
         idUnit = idUnit,
         idMoment = idMoment,
         idPlace = idPlace

@@ -1,5 +1,6 @@
 package com.example.grocery.manageitems
 
+import android.util.Log
 import com.example.grocery.App
 import com.example.grocery.database.updateShoppingCart
 import com.example.grocery.items.Item
@@ -7,11 +8,11 @@ import com.example.grocery.items.Item
 fun updateItemsShoppingCart(
     app: App,
     updatedItem: Item,
-    amount: Int,
 ){
+    val localCopy = updatedItem.copy()
 
-    val rows = app.dbManager.updateShoppingCart(updatedItem, amount)
+    val rows = app.dbManager.updateShoppingCart(updatedItem)
 
-    if(rows != 0)
-        app.addOrUpdateItemInList(updatedItem)
+
+    app.addOrUpdateItemInList(localCopy)
 }

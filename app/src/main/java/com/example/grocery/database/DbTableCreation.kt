@@ -24,12 +24,12 @@ fun createMomentsTableIfNotExists(db: SQLiteDatabase){
     try {
         val queryInsertion = """INSERT INTO moments(name, idPlace) 
             VALUES
-                ("Breakfast", 1),
-                ("Lunch", 1),
-                ("Dinner", 1),
-                ("Cleanings", 2),
-                ("Morning", 3),
-                ("Night", 3);""".trimMargin()
+                ('Breakfast', 1),
+                ('Lunch', 1),
+                ('Dinner', 1),
+                ('Cleanings', 2),
+                ('Morning', 3),
+                ('Night', 3);""".trimMargin()
 
         db.execSQL(queryInsertion)
     } catch (e: SQLiteException) {
@@ -57,10 +57,10 @@ fun createUnitsTableIfNotExists(db: SQLiteDatabase){
     try {
         val queryInsertion = """INSERT INTO units(name, symbol) 
             VALUES
-                ("Grams", "g"),
-                ("Pieces", "pz"),
-                ("Liters", "l"),
-                ("Milliliters", "ml")
+                ('Grams', 'g'),
+                ('Pieces', 'pz'),
+                ('Liters', 'l'),
+                ('Milliliters', 'ml')
             ;""".trimMargin()
 
         db.execSQL(queryInsertion)
@@ -90,9 +90,9 @@ fun createPlaceTableIfNotExists(db: SQLiteDatabase){
     try {
         val queryInsertion = """INSERT INTO places(name, dismissed) 
             VALUES
-                ("Sideboard", 0),
-                ("Home", 0),
-                ("Outfits", 0);""".trimMargin()
+                ('Sideboard', 0),
+                ('Home', 0),
+                ('Outfits', 0);""".trimMargin()
 
         db.execSQL(queryInsertion)
     }catch (e: SQLiteException){
@@ -129,8 +129,8 @@ fun createItemsTableIfNotExists(db: SQLiteDatabase){
 
         val query = """CREATE TABLE IF NOT EXISTS items (
                         id             INTEGER     PRIMARY KEY AUTOINCREMENT NOT NULL,
-                        idParent       INTEGER     NOT NULL DEFAULT(-1),
-                        name           TEXT        NOT NULL,
+                        children       TEXT        NOT NULL,
+                        name           TEXT        NOT NULL UNIQUE,
                         amount_inventory         INTEGER     NOT NULL DEFAULT(0),
                         price          REAL        NOT NULL DEFAULT(-1.0),
                         idUnit         INTEGER     NOT NULL REFERENCES units (id),
@@ -152,7 +152,7 @@ fun createInfoTableIfNotExists(db: SQLiteDatabase){
         val query = """CREATE TABLE IF NOT EXISTS info (
                         id             INTEGER     PRIMARY KEY AUTOINCREMENT NOT NULL,
                         name           TEXT        NOT NULL,
-                        value          INTEGER     NOT NULL
+                        value          TEXT        NOT NULL
                     );"""
 
         db.execSQL(query)
@@ -164,7 +164,9 @@ fun createInfoTableIfNotExists(db: SQLiteDatabase){
     try {
         val queryInsertion = """INSERT INTO info(name, value) 
             VALUES
-                ("defaultIdPlace", "1"); """.trimMargin()
+                ('defaultIdPlace', '1'),
+                ('filepathUserImage', 'file')
+; """.trimMargin()
 
         db.execSQL(queryInsertion)
     }catch (e: SQLiteException){

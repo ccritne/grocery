@@ -71,6 +71,11 @@ class DbManager
         return db.insert(table, nullColumnHack, values)
     }
 
+    fun insertWithOnConflict(table: String, nullColumnHack: String?, initialValues : ContentValues, conflictAlgorithm: Int) : Long{
+        val db = dbHelper.writableDatabase
+        return db.insertWithOnConflict(table, nullColumnHack, initialValues, conflictAlgorithm)
+    }
+
     fun rawQuery(sql: String, selectionArgs: Array<String>?) : Cursor{
         val db = dbHelper.readableDatabase
         return db.rawQuery(sql, selectionArgs)
