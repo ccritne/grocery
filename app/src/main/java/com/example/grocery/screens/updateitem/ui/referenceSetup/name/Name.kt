@@ -24,7 +24,7 @@ fun UiNameReference(
     DropdownMenuSelection(
         modifier = modifier,
         enabled = true,
-        list = itemsMap.map { item -> Pair(item.key, item.value.name) },
+        list = itemsMap.map { item -> Pair(item.key, item.value.name) }.sortedBy { item -> item.second.uppercase() },
         starter = starterDrop,
         onChange = {
             starterDrop = it

@@ -1,6 +1,10 @@
 package com.example.grocery.screens.plan
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,7 +28,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
 import com.example.grocery.database.deleteItem
+import com.example.grocery.database.insertPlanItem
 import com.example.grocery.database.updatePlanChecked
+import com.example.grocery.database.updatePlanItem
+import com.example.grocery.items.Item
 import com.example.grocery.items.ItemUI
 import com.example.grocery.items.swipeable.SwipeableItems
 import com.example.grocery.screens.Screen
@@ -42,15 +49,60 @@ fun Plan(
 
     app.screen = Screen.Plan
 
-    val dailyPlan by remember(app.dailyPlanMap){
-        app.dailyPlanMap
-    }
-
     Column(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxSize()
+            .combinedClickable(
+                onClick = {
+                    app.copied.forEach { item ->
+                        var newItem : Item
+                        val id : Long
+
+                        if (app.dailyPlanMap.containsKey(item.idMoment) && app.dailyPlanMap[item.idMoment]!!.containsKey(item.idItem)) {
+                            val oldValue = app.dailyPlanMap[item.idMoment]!![item.idItem]!!.amount
+                            val aggregateId = app.dailyPlanMap[item.idMoment]!![item.idItem]!!.id
+                            newItem = item.copy(id = aggregateId, date = app.dateOperation.value, amount = oldValue + item.amount)
+                            id = app.dbManager.updatePlanItem(item = newItem).toLong()
+                        }
+                        else {
+                            newItem = item.copy(date = app.dateOperation.value)
+                            id = app.dbManager.insertPlanItem(newItem)
+                            newItem = newItem.copy(id = id)
+                        }
+                        if (id > 0L) {
+                            app.addOrUpdateItemInPlan(newItem)
+                        }
+                    }
+
+
+                    val toast = Toast.makeText(
+                        app.applicationContext,
+                        "Added all items!",
+                        Toast.LENGTH_LONG
+                    ) // in Activity
+                    toast.show()
+                    app.copied.clear()
+                },
+                onLongClick = {
+
+                    app.copied = app.dailyPlanMap
+                        .flatMap { item -> item.value.values }
+                        .toMutableList()
+
+
+                    val toast = Toast.makeText(
+                        app.applicationContext,
+                        "Copied all items!",
+                        Toast.LENGTH_LONG
+                    ) // in Activity
+                    toast.show()
+                },
+                onLongClickLabel = "Copied items!"
+
+            )
+        ,
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceAround
+        verticalArrangement = Arrangement.Top
     ) {
 
         Date(
@@ -63,19 +115,71 @@ fun Plan(
                 date -> app.changeDateOperation(date)
         }
 
-        if (dailyPlan.isNotEmpty()) {
+        if (app.dailyPlanMap.isNotEmpty()) {
 
             LazyColumn(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Top,
             ) {
-                dailyPlan.forEach { moment ->
+                app.dailyPlanMap.forEach { moment ->
                     if (moment.value.isNotEmpty()) {
                         stickyHeader {
                             app.momentsMap.value[moment.key]?.let { momentName ->
                                 Text(
                                     text = momentName,
-                                    modifier = Modifier.padding(10.dp),
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .combinedClickable(
+                                            onClick = {
+                                                Log.i("Clicked on", app.momentsMap.value[moment.key].toString()+" <- ${moment.key}")
+                                                Log.i("map", app.dailyPlanMap.entries.joinToString(separator = "\n") { (idMoment, map) -> "idMoment: $idMoment \n ${map.entries.joinToString("\n"){ (idItem, item) -> "idItem: $idItem -> item: $item"} }" })
+
+                                                val momentKey = moment.key
+
+                                                app.copied.forEach { item ->
+                                                    var newItem : Item
+                                                    val id : Long
+
+                                                    if (app.dailyPlanMap[momentKey]!!.containsKey(item.idItem)) {
+                                                        val oldValue = app.dailyPlanMap[momentKey]!![item.idItem]!!.amount
+                                                        val aggregateId = app.dailyPlanMap[momentKey]!![item.idItem]!!.id
+                                                        newItem = item.copy(id = aggregateId, date = app.dateOperation.value, idMoment = momentKey, amount = oldValue + item.amount)
+                                                        id = app.dbManager.updatePlanItem(item = newItem).toLong()
+                                                    }
+                                                    else {
+                                                        newItem = item.copy(date = app.dateOperation.value, idMoment = momentKey)
+
+                                                        id = app.dbManager.insertPlanItem(newItem)
+                                                        newItem = newItem.copy(id = id)
+                                                    }
+
+                                                    Log.i("New Item", newItem.toString())
+                                                    if (id > 0L) {
+                                                        app.addOrUpdateItemInPlan(newItem)
+                                                    }
+                                                }
+
+                                                app.copied.clear()
+                                            },
+                                            onLongClick = {
+
+                                                app.copied = moment.value
+                                                    .map { item -> item.value }
+                                                    .toMutableList()
+
+
+                                                val toast = Toast.makeText(
+                                                    app.applicationContext,
+                                                    "Copied all items!",
+                                                    Toast.LENGTH_LONG
+                                                ) // in Activity
+                                                toast.show()
+
+                                                Log.i("item copied - moment", "${app.copied}")
+                                            },
+                                            onLongClickLabel = "Copied items!"
+
+                                        ),
                                     fontSize = 35.sp,
                                     fontWeight = FontWeight.ExtraBold,
                                 )
@@ -91,10 +195,10 @@ fun Plan(
                             SwipeableItems(
                                 stayWhenStartEnd = false,
                                 onStartEnd = {
-                                    app.dbManager.deleteItem("planning", item.first)
+                                    app.dbManager.deleteItem("planning", item.second.id)
                                     app.deleteItemsFromDailyPlan(
                                         listOf(
-                                            Pair(moment.key, item.first)
+                                            Pair(moment.key, item.second.idItem)
                                         )
                                     )
 
@@ -106,7 +210,7 @@ fun Plan(
 
                                     checkedState.value = newValue
                                     app.dbManager.updatePlanChecked(
-                                        item.first,
+                                        item.second.id,
                                         newValue
                                     )
 

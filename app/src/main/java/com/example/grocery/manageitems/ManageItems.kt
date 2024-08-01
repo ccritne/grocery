@@ -10,7 +10,7 @@ fun updateItem(
     updatedItem: Item
 ){
 
-    if (app.screen == Screen.Plan) {
+    if (app.screen == Screen.Plan ) {
 
         updateItemsPlan(
             app = app,
@@ -18,7 +18,7 @@ fun updateItem(
         )
     }
 
-    if (app.screen == Screen.Items){
+    if (app.screen == Screen.Items || app.screen == Screen.CompositeItems){
 
         updateItemsList(
             app = app,

@@ -55,7 +55,7 @@ fun ButtonAdd(
     FloatingActionButton(
         shape = CircleShape,
         onClick = {
-            if(app.itemsMap.value.isNotEmpty() || app.screen == Screen.Items) {
+            if(app.itemsMap.isNotEmpty() || app.screen == Screen.Items) {
                 app.setItemState(true)
                 app.navController.navigate(Screen.UpdateItem.name)
             }else

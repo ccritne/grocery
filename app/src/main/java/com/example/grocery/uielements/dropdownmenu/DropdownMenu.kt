@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.compose.ui.unit.sp
 
 @Composable
@@ -52,6 +53,7 @@ fun DropdownMenuSelection(
 
 
         DropdownMenu(
+            modifier = modifier.fillMaxWidth(),
             expanded = expanded,
             onDismissRequest = { expanded = false },
         ) {

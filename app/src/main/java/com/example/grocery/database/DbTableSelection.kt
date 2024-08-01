@@ -1,5 +1,7 @@
 package com.example.grocery.database
 
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.example.grocery.items.Item
 import com.example.grocery.items.fromCursorToItem
 
@@ -17,14 +19,14 @@ fun DbManager.itemExists(name: String) : Pair<Long, Boolean> {
 
 
     cursor.close()
-    return Pair(-1L, false)
+    return pair
 
 }
 
-fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
+fun DbManager.getAllItems(idPlace: Long) : SnapshotStateMap<Long, Item> {
 
 
-    val listItems : MutableMap<Long, Item> = mutableMapOf()
+    val listItems : SnapshotStateMap<Long, Item> = mutableStateMapOf()
 
     val query = """
         SELECT
@@ -32,6 +34,7 @@ fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
             id as idItem
         FROM items
             WHERE idPlace = ?
+        ORDER BY UPPER(name) ASC
             
     """.trimIndent()
 
@@ -47,8 +50,14 @@ fun DbManager.getAllItems(idPlace: Long) : MutableMap<Long, Item> {
     return listItems
 }
 
-fun DbManager.checkIfItemWithNameExistsInThisPlace(name: String, idPlace: Long) : Boolean{
-    val cursor = this.rawQuery("SELECT count(*) > 0 as itemExist FROM items WHERE UPPER(name)=UPPER(?) AND idPlace=? LIMIT 1", arrayOf(name, idPlace.toString()))
+fun DbManager.checkIfItemWithIdExistsInThisMoment(idItem: Long, idMoment: Long, date: String): Boolean{
+    val cursor = this.rawQuery("SELECT count(*) > 0 as itemExist FROM planning WHERE idItem=? AND idMoment=? AND date=? LIMIT 1", arrayOf(idItem.toString(), idMoment.toString(), date))
+    cursor.moveToNext()
+    return cursor.getInt(cursor.getColumnIndexOrThrow("itemExist")) == 1
+}
+
+fun DbManager.checkIfItemWithNameExistsInThisPlace(name: String, idPlace: Long, idItem: Long = -1L) : Boolean{
+    val cursor = this.rawQuery("SELECT count(*) > 0 as itemExist FROM items WHERE UPPER(name)=UPPER(?) AND idPlace=? AND id<>? LIMIT 1", arrayOf(name, idPlace.toString(), idItem.toString()))
     cursor.moveToNext()
     return cursor.getInt(cursor.getColumnIndexOrThrow("itemExist")) == 1
 }
@@ -65,7 +74,8 @@ fun DbManager.selectShoppingCartInRange(
             items.name,
             items.amount_inventory,
             SUM(planning.amount) as amount,
-            items.idUnit
+            items.idUnit,
+            items.children
         FROM planning 
             INNER JOIN items ON planning.idItem = items.id
         WHERE planning.date>=? and planning.date <=? and idPlace=?
@@ -93,7 +103,7 @@ fun DbManager.selectShoppingCartInRange(
 
 
 
-fun DbManager.dailyPlan(date: String, idPlace: Long) : MutableMap<Long, MutableMap<Long, Item>> {
+fun DbManager.dailyPlan(date: String, idPlace: Long) : SnapshotStateMap<Long, SnapshotStateMap<Long, Item>> {
 
     val query = """
             SELECT 
@@ -114,16 +124,16 @@ fun DbManager.dailyPlan(date: String, idPlace: Long) : MutableMap<Long, MutableM
     val cursor = this.rawQuery(query, arrayOf(date, idPlace.toString()))
 
 
-    val mapItems : MutableMap<Long, MutableMap<Long, Item>> = mutableMapOf()
+    val mapItems : SnapshotStateMap<Long, SnapshotStateMap<Long, Item>> = mutableStateMapOf()
 
     while (cursor.moveToNext()){
 
         val item = fromCursorToItem(cursor)
 
         if (!mapItems.containsKey(item.idMoment))
-            mapItems[item.idMoment] = mutableMapOf()
+            mapItems[item.idMoment] = mutableStateMapOf()
 
-        mapItems[item.idMoment]?.set(item.id, item)
+        mapItems[item.idMoment]?.set(item.idItem, item)
     }
     cursor.close()
     return mapItems

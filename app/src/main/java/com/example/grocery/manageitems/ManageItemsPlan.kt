@@ -10,18 +10,23 @@ fun updateItemsPlan(
     app: App,
     updatedItem: Item
 ){
+    Log.i("oldItem", app.item.toString())
+    Log.i("updatedItem", updatedItem.toString())
+
     var localCopy = updatedItem.copy()
     var idMoment = -1L
+    var id = -1L
+
     if(app.isNewItem.value) {
-        val id = app.dbManager.insertPlanItem(updatedItem)
+        id = app.dbManager.insertPlanItem(updatedItem)
         localCopy = updatedItem.copy(id = id)
     }
     else {
-        app.dbManager.updatePlanItem(localCopy)
+        id = app.dbManager.updatePlanItem(localCopy).toLong()
         idMoment = app.item.value.idMoment
     }
 
-
-    app.addOrUpdateItemInPlan(localCopy, idMoment)
+    if (id > 0L)
+        app.addOrUpdateItemInPlan(localCopy, idMoment)
 
 }

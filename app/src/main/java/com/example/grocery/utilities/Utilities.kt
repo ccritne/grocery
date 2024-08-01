@@ -1,15 +1,19 @@
 package com.example.grocery.utilities
 
+import android.util.Log
 import com.example.grocery.database.DbManager
+import com.example.grocery.database.dailyPlan
 import com.example.grocery.database.insertItemIntoList
 import com.example.grocery.database.insertMoment
 import com.example.grocery.database.insertPlanItem
 import com.example.grocery.database.itemExists
 import com.example.grocery.items.Item
 import com.example.grocery.items.NeedItem
+import com.example.grocery.uielements.date.getUpdateDate
 import org.json.JSONArray
 import org.json.JSONObject
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 fun <T, R> fromPairToMapEntry(pair : Pair<T, R>) : Map.Entry<T, R> {
@@ -25,14 +29,50 @@ fun getFormatterDateSql() : SimpleDateFormat {
     return SimpleDateFormat("yyyy/MM/dd", Locale.getDefault())
 }
 
+fun fromAppToGoogle(unitsMap: Map<Long, Pair<String, String>>, startDate: Date, endDate: Date, dbManager: DbManager){
 
-fun fromGoogleToApp(dbManager: DbManager){
-    val string = "SD2024/06/17;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta125g;Pumpkin200g;Banana;SM2;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/18;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta50g;Peas80g;JobLunch;Apple;SM2;Bread100g;Chickpeas125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/19;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;BroadBeans100g;Spinach400g;Bread150g;Apple;SM2;PizzaTeglia300g;SD2024/06/20;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta50g;Beans125g;JobLunch;Banana;SM2;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/21;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta80g;Soia130g;Tomatoes160g;Zucchini100g;Carrots100g;Banana;SM2;Flatbreads250g;PestoSauce95g;Mozzarella125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/06/22;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta125g;Eggs150g;Parmisan25g;Apple;SM2;Pizza250g;Mozzarella125g;SD2024/06/23;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta125g;TomatoSauce80g;JobLunch;Banana;SM2;Bread250g;Chickpeas125g;Zucchini100g;Iceberg/Batavia50g;Tomatoes100g"
+    var string = ""
+    var dateIndex = startDate
+    while (!dateIndex.after(endDate)) {
+        val dateSQL = getFormatterDateSql().format(dateIndex)
+        string += "SD$dateSQL;"
+        val items = dbManager.dailyPlan(dateSQL, 1)
+
+        items.forEach{ idMoment ->
+            string+= "SM${idMoment.key-1};"
+
+            idMoment.value.forEach{ pair ->
+                string += pair.value.name
+                string += if (unitsMap[pair.value.idUnit]!!.second == "g")
+                    "${pair.value.amount}${unitsMap[pair.value.idUnit]!!.second};"
+                else
+                    ";"
+            }
+
+
+        }
+
+
+
+        dateIndex = getUpdateDate(dateIndex, 1)
+    }
+
+
+    //val stringComparator = "SD2024/07/08;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta125g;Pumpkin200g;Banana;SM2;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/07/09;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta50g;Peas80g;JobLunch;Apple;SM2;Bread100g;Chickpeas125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/07/10;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;BroadBeans100g;Spinach400g;Bread150g;Apple;SM2;PizzaTeglia300g;SD2024/07/11;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta50g;Beans125g;JobLunch;Banana;SM2;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/07/12;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta80g;Soia130g;Tomatoes160g;Zucchini100g;Carrots100g;Banana;SM2;Flatbreads250g;PestoSauce95g;Mozzarella125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/07/13;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta125g;Eggs150g;Parmisan25g;Apple;SM2;Pizza250g;Mozzarella125g;SD2024/07/14;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta125g;TomatoSauce80g;JobLunch;Banana;SM2;Bread250g;Chickpeas125g;Zucchini100g;Iceberg/Batavia50g;Tomatoes100g;"
+
+    Log.i("String result", string)
+    //Log.i("String comparator", stringComparator)
+
+    //assert(string == stringComparator)
+
+    // fromGoogleToApp(string, dbManager)
+}
+
+
+fun fromGoogleToApp(string: String, dbManager: DbManager){
     val filterByDay = string.split("SD").toMutableList()
 
     val items: MutableList<Item> = mutableListOf()
-
-    dbManager.recreateDb()
 
     val idGrams = 1L
     val idPieces = 2L
@@ -126,10 +166,9 @@ fun fromGoogleToApp(dbManager: DbManager){
             else
                 pair.first
 
+        val localCopy = item.copy(id = idItem, idItem = idItem, amountInventory = 0)
 
-        val localCopy = item.copy(idItem = idItem, amountInventory = 0)
-
-        dbManager.insertPlanItem(item)
+        dbManager.insertPlanItem(localCopy)
     }
 }
 

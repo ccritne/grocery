@@ -9,8 +9,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -62,16 +64,16 @@ class App: ComponentActivity() {
         private set
     private var unitsMutableMap = mutableMapOf<Long, Pair<String, String>>()
 
-    var dailyPlanMap : MutableState<Map<Long, Map<Long, Item>>> = mutableStateOf(mapOf())
+    var dailyPlanMap = mutableStateMapOf<Long, SnapshotStateMap<Long, Item>>()
         private set
-    private var dailyPlanMutableMap = mutableMapOf<Long, MutableMap<Long, Item>>()
 
-    var itemsMap : MutableState<Map<Long, Item>> = mutableStateOf(mapOf())
+    var itemsMap = mutableStateMapOf<Long, Item>()
         private set
-    private var itemsMutableMap = mutableMapOf<Long, Item>()
 
     var isNewItem = mutableStateOf(false)
         private set
+
+    var copied : MutableList<Item> = mutableListOf()
 
     var screen : Screen = Screen.Plan
 
@@ -111,60 +113,54 @@ class App: ComponentActivity() {
         updateMaps()
     }
 
-    private fun updateDailyPlanMap(){
-        dailyPlanMap.value = dailyPlanMutableMap
-    }
-
     fun changeDateOperation(newDate: Date){
 
         dateOperation.value = newDate
 
-        dailyPlanMutableMap = dbManager.dailyPlan(
+        dailyPlanMap = dbManager.dailyPlan(
             date = formatterSql.format(newDate),
             idPlace = placeSelector.first
         )
 
-        updateDailyPlanMap()
     }
 
-    fun deleteItemsFromDailyPlan(idsMomentPlan: List<Pair<Long, Long>>) {
+    fun deleteItemsFromDailyPlan(idsMomentItems: List<Pair<Long, Long>>) {
 
-        idsMomentPlan.forEach{ ids ->
-            dailyPlanMutableMap[ids.first]?.remove(ids.second)
+        idsMomentItems.forEach{ ids ->
+            dailyPlanMap[ids.first]?.remove(ids.second)
+            if (dailyPlanMap[ids.first]?.isEmpty() == true)
+                dailyPlanMap.remove(ids.first)
         }
 
-        updateDailyPlanMap()
     }
 
-    fun addOrUpdateItemInPlan(item: Item, oldMoment: Long = -1){
+    fun addOrUpdateItemInPlan(item: Item, oldMoment: Long = -1L){
 
-        dailyPlanMutableMap[oldMoment]?.remove(item.id)
+        Log.i("item - moment", "$item $oldMoment")
 
-        if (!dailyPlanMutableMap.containsKey(item.idMoment))
-            dailyPlanMutableMap[item.idMoment] = mutableMapOf()
+        if (oldMoment != -1L)
+            dailyPlanMap[oldMoment]?.remove(item.idItem)
 
-        dailyPlanMutableMap[item.idMoment]?.set(item.id, item)
+        if (!dailyPlanMap.containsKey(item.idMoment))
+            dailyPlanMap[item.idMoment] = mutableStateMapOf()
 
-        updateDailyPlanMap()
+
+        dailyPlanMap[item.idMoment]?.set(item.idItem, item)
+
+
     }
 
-    private fun updateItemsMap(){
-        itemsMap.value = itemsMutableMap
-    }
 
     fun deleteItemsFromList(idItems: List<Long>){
         idItems.forEach { idItem ->
-            itemsMutableMap.remove(idItem)
+            itemsMap.remove(idItem)
         }
-
-        updateItemsMap()
     }
 
     fun addOrUpdateItemInList(item: Item){
 
-        itemsMutableMap[item.idItem] = item
+        itemsMap[item.idItem] = item
 
-        updateItemsMap()
     }
 
     private fun updateUnitsMap(){
@@ -219,18 +215,16 @@ class App: ComponentActivity() {
         momentsMutableMap = dbManager.getAllMoments(placeSelector.first)
         updateMomentsMap()
 
-        dailyPlanMutableMap = dbManager.dailyPlan(
+        dailyPlanMap = dbManager.dailyPlan(
             date = formatterSql.format(dateOperation.value),
             idPlace = placeSelector.first
         )
-        updateDailyPlanMap()
 
-        itemsMutableMap = dbManager.getAllItems(placeSelector.first)
-        updateItemsMap()
+        itemsMap = dbManager.getAllItems(placeSelector.first)
 
 
-        if (itemsMutableMap.isNotEmpty())
-            setTempItem(itemsMutableMap.entries.first().value.copy())
+        if (itemsMap.isNotEmpty())
+            setTempItem(itemsMap.entries.first().value.copy())
 
 
     }

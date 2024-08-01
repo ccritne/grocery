@@ -39,6 +39,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.grocery.App
+import com.example.grocery.uielements.dynamicform.DynamicChildrenForm
+import com.example.grocery.uielements.dynamicform.DynamicUnitsForm
 import com.example.grocery.utilities.loadImageFromUri
 import java.io.File
 import java.io.FileOutputStream
@@ -92,11 +94,12 @@ fun Profile(app: App) {
     ) {
         if (imageBitmap != null)
             Image(
-                modifier = Modifier.size(200.dp)
+                modifier = Modifier
+                    .size(200.dp)
                     .clip(CircleShape)
                     .clickable {
-                    galleryLauncher.launch("image/*")
-                },
+                        galleryLauncher.launch("image/*")
+                    },
                 contentScale = ContentScale.Crop,
                 bitmap = imageBitmap!!.asImageBitmap(),
                 contentDescription = "user image")

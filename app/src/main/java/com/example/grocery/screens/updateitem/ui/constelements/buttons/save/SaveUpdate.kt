@@ -14,10 +14,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import com.example.grocery.App
+import com.example.grocery.database.checkIfItemWithIdExistsInThisMoment
 import com.example.grocery.database.checkIfItemWithNameExistsInThisPlace
 import com.example.grocery.items.Item
 import com.example.grocery.manageitems.updateItem
 import com.example.grocery.screens.Screen
+import com.example.grocery.utilities.getFormatterDateSql
 
 @Composable
 fun SaveUpdate(
@@ -40,8 +42,10 @@ fun SaveUpdate(
     IconButton(onClick = {
 
         var proceed = true
-        if(app.screen == Screen.Items && app.isNewItem.value)
-            proceed = !app.dbManager.checkIfItemWithNameExistsInThisPlace(item.name.trim(), app.placeSelector.first)
+        if(app.screen == Screen.Items || app.screen == Screen.CompositeItems)
+            proceed = !app.dbManager.checkIfItemWithNameExistsInThisPlace(item.name.trim(), app.placeSelector.first, if (app.isNewItem.value) -1L else item.id)
+        if(app.screen == Screen.Plan && app.isNewItem.value)
+            proceed = !app.dbManager.checkIfItemWithIdExistsInThisMoment(item.idItem, item.idMoment, getFormatterDateSql().format(app.dateOperation.value))
 
         if (proceed) {
             updateItem(

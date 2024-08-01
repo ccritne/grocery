@@ -1,5 +1,6 @@
 package com.example.grocery.items
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.AlertDialog
@@ -37,13 +40,15 @@ import androidx.compose.ui.window.PopupProperties
 import androidx.compose.ui.zIndex
 import com.example.grocery.App
 import com.example.grocery.screens.Screen
+import com.example.grocery.utilities.fromPairToMapEntry
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ItemUI(
     app: App,
     item: Map.Entry<Long, Item>,
-    checkedState : Boolean = false
+    checkedState : Boolean = false,
+    isANeed : Boolean = false
 ){
 
     val itemObject = item.value
@@ -52,41 +57,61 @@ fun ItemUI(
         mutableStateOf(false)
     }
 
-    if (isNeedsVisible){
+    var isNeedsGeneralVisible by remember {
+        mutableStateOf(false)
+    }
+
+    if (isNeedsVisible || isNeedsGeneralVisible){
 
         val itemId = itemObject.idItem
 
-        val listNeeds = app.itemsMap.value[itemId]!!.children
+        val listNeeds = app.itemsMap[itemId]!!.children
 
         BasicAlertDialog(
             modifier = Modifier
                 .height(500.dp)
                 .fillMaxWidth(0.75f)
                 .background(Color.White),
-            onDismissRequest = {isNeedsVisible = true},
+            onDismissRequest = {
+                isNeedsVisible = false
+                isNeedsGeneralVisible = false
+            }
         ){
-            LazyColumn(
-                modifier = Modifier.fillMaxSize().padding(bottom = 50.dp),
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(bottom = 50.dp),
                 verticalArrangement = Arrangement.SpaceAround
             ) {
-                items(listNeeds) { need ->
-                    Row(
-                        modifier = Modifier.fillMaxWidth().height(50.dp),
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        verticalAlignment = Alignment.CenterVertically
-                        ) {
-                        Text(app.itemsMap.value[need.id]!!.name)
-                        Row(
-                        ) {
-                            Text(need.amount.toString())
-                            Text(app.unitsMap.value[app.itemsMap.value[need.id]!!.idUnit]!!.second)
-                        }
+                listNeeds.forEach { need ->
+
+                    val childItem = app.itemsMap[need.id]!!.copy(amount = need.amount)
+
+                    ItemUI(app = app, item = fromPairToMapEntry(Pair(need.id, childItem)), isANeed = true)
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(onClick = { isNeedsVisible = false }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "back",
+                            tint = Color.Gray
+                        )
+                    }
+
+                    IconButton(onClick = { isNeedsVisible = false }) {
+                        Icon(
+                            imageVector = Icons.Default.Done,
+                            contentDescription = "see",
+                            tint = Color.Gray
+                        )
                     }
                 }
             }
-            IconButton(onClick = { isNeedsVisible = false }) {
-                Icon(imageVector = Icons.Default.Done, contentDescription = "see", tint = Color.Gray)
-            }
+
 
         }
     }
@@ -98,13 +123,18 @@ fun ItemUI(
             .fillMaxWidth()
             .combinedClickable(
                 onClick = {
-                    app.setTempItem(item = itemObject.copy())
-                    app.setItemState(false)
-                    app.navController.navigate(Screen.UpdateItem.name)
+                    if (!isANeed) {
+                        app.setTempItem(item = itemObject.copy())
+                        app.setItemState(false)
+                        Log.i("To change", itemObject.toString())
+                        app.navController.navigate(Screen.UpdateItem.name)
+                    }
                 },
                 onLongClick = {
-                    if (app.screen == Screen.Plan)
+                    if (app.screen == Screen.Plan) {
                         isNeedsVisible = true
+                        isNeedsGeneralVisible = false
+                    }
                 },
                 onLongClickLabel = "See needs"
 
@@ -134,21 +164,26 @@ fun ItemUI(
             )
         }
 
-        Row(
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = (if (app.screen == Screen.ShoppingCart)
-                    itemObject.amountInventory.toString() + "/"
-                else "")
-                        +
-                        (if(app.screen == Screen.Items) itemObject.amountInventory.toString() else itemObject.amount.toString())
-                        +
-                        app.unitsMap.value[itemObject.idUnit]?.second,
-                fontSize = 30.sp,
-                modifier = Modifier.padding(end = 15.dp)
-            )
+        if (app.screen != Screen.CompositeItems) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = (
+                            when(app.screen){
+                                Screen.Items -> itemObject.amountInventory.toString()
+                                Screen.CompositeItems -> itemObject.amountInventory.toString()
+                                Screen.ShoppingCart -> itemObject.amountInventory.toString() + "/" + itemObject.amount.toString()
+                                else -> itemObject.amount.toString()
+                            }
+                            )
+                            +
+                            app.unitsMap.value[itemObject.idUnit]?.second,
+                    fontSize = 30.sp,
+                    modifier = Modifier.padding(end = 15.dp)
+                )
 
+            }
         }
 
     }

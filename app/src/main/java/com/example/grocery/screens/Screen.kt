@@ -4,6 +4,7 @@ enum class Screen{
     Plan,
     ShoppingCart,
     Items,
+    CompositeItems,
     UpdateItem,
     Profile
 }

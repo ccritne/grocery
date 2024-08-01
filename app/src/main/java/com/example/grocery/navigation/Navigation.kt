@@ -5,6 +5,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.grocery.App
 import com.example.grocery.screens.Screen
+import com.example.grocery.screens.compositeItems.CompositeItems
 import com.example.grocery.screens.listitems.ListItems
 import com.example.grocery.screens.plan.Plan
 import com.example.grocery.screens.shoppingcart.ShoppingCart
@@ -28,6 +29,9 @@ fun NavigationGraph(app: App){
         }
         composable(route = Screen.Items.name){
             ListItems(app)
+        }
+        composable(route = Screen.CompositeItems.name){
+            CompositeItems(app)
         }
         composable(route = Screen.Profile.name){
             Profile(app)

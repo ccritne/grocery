@@ -30,7 +30,13 @@ class DbManager
     private val dbHelper = DbHelper(ctx)
 
     fun fillDataWeek(){
-        fromGoogleToApp(this)
+
+        recreateDb()
+
+        val string = "SD2024/07/08;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta125g;Pumpkin200g;Banana;SM2;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/07/09;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta50g;Peas80g;JobLunch;Apple;SM2;Bread100g;Chickpeas125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/07/10;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;BroadBeans100g;Spinach400g;Bread150g;Apple;SM2;PizzaTeglia300g;SD2024/07/11;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta50g;Beans125g;JobLunch;Banana;SM2;Potatoes500g;VegetablePeppers200g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/07/12;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta80g;Soia130g;Tomatoes160g;Zucchini100g;Carrots100g;Banana;SM2;Flatbreads250g;PestoSauce95g;Mozzarella125g;Tomatoes250g;Carrots200g;Fennel100g;SD2024/07/13;SM0;Bread100g;Philadelphia60g;YogurtFruit125g;Blueberries25g;SM1;Pasta125g;Eggs150g;Parmisan25g;Apple;SM2;Pizza250g;Mozzarella125g;SD2024/07/14;SM0;Bread100g;Eggs60g;YogurtFruit125g;Strawberry25g;SM1;Pasta125g;TomatoSauce80g;JobLunch;Banana;SM2;Bread250g;Chickpeas125g;Zucchini100g;Iceberg/Batavia50g;Tomatoes100g;"
+        val secondString = "SD2024/07/08;SM0;coffee;Biscuits0g;SD2024/07/09;SM0;coffee;Biscuits0g;SM1;Pasta100g;Carrots;Zucchini;SM2;bread0g;Tomatoes0g;SD2024/07/10;SM0;coffee;Biscuits0g;SM1;Pasta0g;Tuna;Tomatoes0g;SM2;Pizza0g;SD2024/07/11;SD2024/07/12;SD2024/07/13;SD2024/07/14;"
+
+        fromGoogleToApp(string+secondString, this)
     }
 
     fun cleanDb(){
@@ -46,6 +52,11 @@ class DbManager
 
         cursor.close()
 
+    }
+
+    fun deletePlan(){
+        val db = dbHelper.writableDatabase
+        db.execSQL("DELETE FROM planning")
     }
 
     fun recreateDb(){

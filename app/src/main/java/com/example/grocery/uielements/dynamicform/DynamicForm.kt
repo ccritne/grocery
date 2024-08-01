@@ -1,14 +1,12 @@
 package com.example.grocery.uielements.dynamicform
 
-import android.util.Log
-import androidx.compose.foundation.background
+import android.inputmethodservice.Keyboard
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,11 +14,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.Row
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -29,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -39,31 +36,26 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.text.isDigitsOnly
 import com.example.grocery.App
-import com.example.grocery.items.Item
 import com.example.grocery.items.NeedItem
-import com.example.grocery.screens.updateitem.ui.referenceSetup.amount.UiAmountReference
-import com.example.grocery.screens.updateitem.ui.referenceSetup.name.UiNameReference
 import com.example.grocery.uielements.dropdownmenu.DropdownMenuSelection
-import java.util.Collections.addAll
-import kotlin.random.Random
+
+
 
 @Composable
-fun DynamicChildrenForm(
+fun DynamicUnitsForm(
     app: App,
     modifier: Modifier = Modifier,
-    starter: List<NeedItem>,
-    onAddChildren: (NeedItem) -> Unit,
-    onDeleteChildren: (Int) -> Unit,
-    onChangeChildren: (Int, NeedItem) -> Unit
+    starter: List<Pair<Long, Pair<String, String>>>,
+    onAddChildren: () -> Unit,
+    onDeleteChildren: (Long) -> Unit,
+    onChangeChildren: (Long, String, String) -> Unit
 ){
 
     val list = remember {
-        mutableStateListOf<NeedItem>().apply { addAll(starter) }
+        mutableStateListOf<Pair<Long, Pair<String, String>>>().apply { addAll(starter) }
     }
 
-    var listId = list.map { item -> item.id }
-    if (!app.isNewItem.value)
-        listId = listId + app.item.value.idItem
+    var listId = list.map { item -> item.first}
 
     Column(
         modifier = modifier
@@ -77,15 +69,11 @@ fun DynamicChildrenForm(
             verticalAlignment = Alignment.CenterVertically
         ){
 
-            Text(text = "Needs (for 100g): ", fontSize = 30.sp)
-            if (app.itemsMap.filter { item -> item.key !in listId }.isNotEmpty()) {
+            Text(text = "Units: ", fontSize = 30.sp)
+            if (app.unitsMap.value.filter { item -> item.key !in listId }.isNotEmpty()) {
                 IconButton(onClick = {
-                    val filteredList = app.itemsMap.filter { item -> item.key !in listId }
-                    val newId = filteredList.entries.first().value.idItem
-                    val newItem = NeedItem(id = newId, amount = 0)
-                    list.add(newItem)
-                    listId = listId + newItem.id
-                    onAddChildren(newItem)
+                    listId = listId + -1L
+                    list.add(Pair(-1L,Pair("","")))
                 }) {
                     Icon(imageVector = Icons.Default.Add, contentDescription = "Add ingredient")
                 }
@@ -104,57 +92,59 @@ fun DynamicChildrenForm(
 
             list.forEachIndexed { index, field ->
 
+                var nameUnit by remember {
+                    mutableStateOf("")
+                }
+
+                var symbolUnit by remember {
+                    mutableStateOf("")
+                }
+
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceAround,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    DropdownMenuSelection(
-                        modifier = Modifier
-                            .fillMaxWidth(0.4f),
-                        enabled = true,
-                        list = app.itemsMap.filter { item -> item.key !in listId }
-                            .map { item -> Pair(item.key, item.value.name) },
-                        starter = Pair(field.id, app.itemsMap[field.id]?.name),
-                        onChange = {
-                            val copyField = field.copy(id = it.first)
-                            list[index] = copyField
-                            onChangeChildren(index, copyField)
-                        }
-                    )
+
                     OutlinedTextField(
                         modifier = Modifier
                             .size(width = 150.dp, height = 65.dp),
                         singleLine = true,
                         shape = RectangleShape,
-                        value = if (field.amount != 0) field.amount.toString() else "",
+                        value = nameUnit,
                         keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.NumberPassword,
+                            keyboardType = KeyboardType.Text,
                             imeAction = ImeAction.Done
                         ),
                         textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 25.sp),
                         onValueChange = {
-
-                            var newAmount = 0
-
-                            if (it.isNotEmpty() && it.isDigitsOnly())
-                                newAmount = it.toInt()
-
-
-                            val copyField = field.copy(amount = newAmount)
-                            list[index] = copyField
-                            onChangeChildren(index, copyField)
+                            nameUnit = it
+                            onChangeChildren(list[index].first, nameUnit, symbolUnit)
                         },
                     )
-                    app.unitsMap.value[app.itemsMap[field.id]!!.idUnit]?.second?.let {
-                        Text(text = it, fontSize = 24.sp)
-                    }
+
+                    OutlinedTextField(
+                        modifier = Modifier
+                            .size(width = 150.dp, height = 65.dp),
+                        singleLine = true,
+                        shape = RectangleShape,
+                        value = symbolUnit,
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done
+                        ),
+                        textStyle = TextStyle(textAlign = TextAlign.Center, fontSize = 25.sp),
+                        onValueChange = {
+                            symbolUnit = it
+                            onChangeChildren(index.toLong(), nameUnit, symbolUnit)
+                        },
+                    )
 
                     // Delete button
                     IconButton(onClick = {
+                        onDeleteChildren(index.toLong())
                         list.removeAt(index)
-                        onDeleteChildren(index)
                     }) {
                         Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
                     }
@@ -171,45 +161,4 @@ fun DynamicChildrenForm(
         Spacer(modifier = Modifier.height(16.dp))
 
     }
-}
-
-
-@Composable
-fun FailedTry(app: App, field: Map.Entry<Long, Pair<String?, Int>>, fieldsView: MutableMap<Long, Pair<String?, Int>>){
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(Color.Green),
-        horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text("${field.key}° ingredient: ")
-        UiNameReference(
-            modifier = Modifier.fillMaxWidth(0.5f),
-            itemsMap = app.itemsMap, starter = Pair(field.key, field.value.first)
-        ) {
-            val copyField = field.value.copy(first = app.itemsMap[it]?.name)
-            fieldsView.remove(field.key)
-            fieldsView[it] = copyField
-        }
-        UiAmountReference(
-            fontSize = 24.sp,
-            modifier = Modifier.size(height = 65.dp, width = 100.dp),
-            starter = field.value.second
-        ) {
-            fieldsView[field.key] = field.value.copy(second = it)
-        }
-        IconButton(onClick = {
-
-
-            fieldsView.remove(field.key)
-
-
-        }) {
-            Icon(imageVector = Icons.Default.Delete, contentDescription = "Delete")
-        }
-    }
-    Spacer(modifier = Modifier
-        .height(16.dp)
-        .fillMaxWidth())
 }

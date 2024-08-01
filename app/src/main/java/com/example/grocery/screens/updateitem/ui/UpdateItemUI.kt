@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -46,6 +47,7 @@ fun UpdateItem(
     val isNewItem by app.isNewItem
 
 
+
     val initialItem by remember(itemLast, isNewItem) {
         mutableStateOf(
             if (!isNewItem)
@@ -53,15 +55,15 @@ fun UpdateItem(
             else
                 Item(
                     id = 0,
-                    idItem = if(app.screen == Screen.Plan) app.itemsMap.value.entries.first().key else 0,
-                    name = if(app.screen == Screen.Plan) app.itemsMap.value.entries.first().value.name else "",
+                    idItem = if(app.screen == Screen.Plan) app.itemsMap.entries.first().key else 0,
+                    name = if(app.screen == Screen.Plan) app.itemsMap.entries.first().value.name else "",
                     amount = 0,
                     amountInventory = 0,
                     date = app.dateOperation.value,
                     price = 0f,
                     checked = false,
                     children = emptyList(),
-                    idUnit = if(app.screen == Screen.Plan) app.itemsMap.value.entries.first().value.idUnit else app.unitsMap.value.entries.first().key,
+                    idUnit = if(app.screen == Screen.Plan) app.itemsMap.entries.first().value.idUnit else if(app.screen == Screen.CompositeItems) 2L else app.unitsMap.value.entries.first().key,
                     idMoment = app.momentsMap.value.entries.first().key,
                     idPlace = app.placeSelector.first
                 )
@@ -80,12 +82,12 @@ fun UpdateItem(
     Column(
         modifier = Modifier
             .fillMaxSize(),
-        verticalArrangement = if(app.screen != Screen.Items) Arrangement.SpaceEvenly else Arrangement.Center,
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
 
-        if(app.screen == Screen.Items) {
+        if(app.screen == Screen.Items || app.screen == Screen.CompositeItems) {
 
             UiNameListItems(item.name) {
                 item = item.copy(name = it)
@@ -93,13 +95,13 @@ fun UpdateItem(
         }else
             UiNameReference(
                 modifier = Modifier.fillMaxWidth(),
-                app.itemsMap.value,
+                app.itemsMap,
                 if(app.screen == Screen.Plan)
-                    Pair(item.idItem, app.itemsMap.value[item.idItem]?.name)
+                    Pair(item.idItem, app.itemsMap[item.idItem]?.name)
                 else
                     Pair(item.id, item.name)
             ){
-                item = item.copy(idItem = it, name = app.itemsMap.value[it]?.name?:"", idUnit = app.itemsMap.value[it]!!.idUnit)
+                item = item.copy(idItem = it, name = app.itemsMap[it]?.name?:"", idUnit = app.itemsMap[it]!!.idUnit)
             }
 
         if (app.screen == Screen.Plan)
@@ -110,6 +112,7 @@ fun UpdateItem(
             ) {
                 moment, date ->
                     item = item.copy(idMoment = moment, date = date)
+                    app.changeDateOperation(date)
             }
 
         if(app.screen == Screen.ShoppingCart){
@@ -119,47 +122,49 @@ fun UpdateItem(
                     app.unitsMap.value[item.idUnit]?.second, fontSize = 30.sp)
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 50.dp, bottom = 50.dp),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-
-
-            UiAmountReference(
-                starter = when(app.screen) {
-                    Screen.Plan -> item.amount
-                    Screen.Items -> item.amountInventory
-                    else -> 0
-                },
-                fontSize = 50.sp,
+        if (app.screen != Screen.CompositeItems) {
+            Row(
                 modifier = Modifier
-                    .size(width = 250.dp, height = 100.dp)
-                    .padding(end = 35.dp)
-            ){
-                item = when(app.screen){
-                    Screen.Plan -> item.copy(amount = it)
-                    Screen.ShoppingCart -> item.copy(amountInventory = amountInventoryStarter + it)
-                    Screen.Items ->item.copy(amountInventory = it)
-                    else -> item
-                }
+                    .fillMaxWidth()
+                    .padding(top = 50.dp, bottom = 50.dp),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-            }
-            UnitSelectorUpdateItem(
-                modifier = Modifier.size(width = 50.dp, height = 100.dp),
-                starter = Pair(item.idUnit, app.unitsMap.value[item.idUnit]?.second),
-                enabled = app.screen == Screen.Items,
-                unitsMap = app.unitsMap.value
-            ){
-                item = item.copy(idUnit = it)
+
+                UiAmountReference(
+                    starter = when(app.screen) {
+                        Screen.Plan -> item.amount
+                        Screen.Items -> item.amountInventory
+                        else -> 0
+                    },
+                    fontSize = 50.sp,
+                    modifier = Modifier
+                        .size(width = 250.dp, height = 100.dp)
+                        .padding(end = 35.dp)
+                ){
+                    item = when(app.screen){
+                        Screen.Plan -> item.copy(amount = it)
+                        Screen.ShoppingCart -> item.copy(amountInventory = amountInventoryStarter + it)
+                        Screen.Items ->item.copy(amountInventory = it)
+                        else -> item
+                    }
+
+                }
+                UnitSelectorUpdateItem(
+                    modifier = Modifier.size(width = 50.dp, height = 100.dp),
+                    starter = Pair(item.idUnit, app.unitsMap.value[item.idUnit]?.second),
+                    enabled = app.screen == Screen.Items,
+                    unitsMap = app.unitsMap.value
+                ){
+                    item = item.copy(idUnit = it)
+                }
             }
         }
 
-        if (app.screen == Screen.Items && app.itemsMap.value.isNotEmpty() )
+        if (app.screen == Screen.CompositeItems && app.itemsMap.isNotEmpty() )
             DynamicChildrenForm(
-                modifier = Modifier.fillMaxSize(0.75f),
+                modifier = Modifier.fillMaxWidth().fillMaxHeight(0.75f),
                 app = app,
                 starter = item.children,
                 onAddChildren = { newItem ->
